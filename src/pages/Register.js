@@ -24,7 +24,13 @@ const SectionStyle = styled(Card)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
-  margin: theme.spacing(2, 0, 2, 2)
+  margin: theme.spacing(2, 0, 2, 2),
+  backgroundImage: 'url(https://source.unsplash.com/random)',
+  backgroundRepeat: 'no-repeat',
+  backgroundColor:
+    theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
+  backgroundSize: 'cover',
+  backgroundPosition: 'center'
 }));
 
 const ContentStyle = styled('div')(({ theme }) => ({
@@ -37,24 +43,27 @@ const ContentStyle = styled('div')(({ theme }) => ({
   padding: theme.spacing(12, 0)
 }));
 
+const CardTypography = styled(Typography)(() => ({
+  color: '#FFFFFF',
+  textAlign: 'center'
+}));
 // ----------------------------------------------------------------------
 
 export default function Register() {
   return (
-    <RootStyle title="Register | Minimal-UI">
+    <RootStyle title="Register | TTAALLKK">
       <AuthLayout>
-        Already have an account? &nbsp;
+        이미 회원이신가요? &nbsp;
         <Link underline="none" variant="subtitle2" component={RouterLink} to="/login">
-          Login
+          로그인
         </Link>
       </AuthLayout>
 
       <MHidden width="mdDown">
         <SectionStyle>
-          <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
-            Manage the job more effectively with Minimal
-          </Typography>
-          <img alt="register" src="/static/illustrations/illustration_register.png" />
+          <CardTypography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
+            Communication more effectively with TTAALLKK
+          </CardTypography>
         </SectionStyle>
       </MHidden>
 
@@ -62,10 +71,10 @@ export default function Register() {
         <ContentStyle>
           <Box sx={{ mb: 5 }}>
             <Typography variant="h4" gutterBottom>
-              Get started absolutely free.
+              SIGNUP
             </Typography>
             <Typography sx={{ color: 'text.secondary' }}>
-              Free forever. No credit card needed.
+              회원가입하고 다양한 서비스를 이용해보세요
             </Typography>
           </Box>
 
@@ -73,23 +82,28 @@ export default function Register() {
 
           <RegisterForm />
 
-          <Typography variant="body2" align="center" sx={{ color: 'text.secondary', mt: 3 }}>
-            By registering, I agree to Minimal&nbsp;
-            <Link underline="always" sx={{ color: 'text.primary' }}>
-              Terms of Service
+          <Typography
+            variant="body2"
+            fontSize={12}
+            align="center"
+            sx={{ color: 'text.secondary', mt: 3 }}
+          >
+            회원가입 시 TTAALLKK의&nbsp;
+            <Link href="#" underline="hover" sx={{ color: '#00AB55', fontWeight: 'bold' }}>
+              서비스 이용 약관
             </Link>
-            &nbsp;and&nbsp;
-            <Link underline="always" sx={{ color: 'text.primary' }}>
-              Privacy Policy
+            과&nbsp;
+            <Link href="#" underline="hover" sx={{ color: '#00AB55', fontWeight: 'bold' }}>
+              개인정보 보호정책
             </Link>
-            .
+            에 동의하게 됩니다.
           </Typography>
 
           <MHidden width="smUp">
             <Typography variant="subtitle2" sx={{ mt: 3, textAlign: 'center' }}>
-              Already have an account?&nbsp;
-              <Link to="/login" component={RouterLink}>
-                Login
+              이미 회원이신가요? &nbsp;
+              <Link underline="none" component={RouterLink} to="/login">
+                로그인
               </Link>
             </Typography>
           </MHidden>

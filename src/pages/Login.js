@@ -24,7 +24,13 @@ const SectionStyle = styled(Card)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
-  margin: theme.spacing(2, 0, 2, 2)
+  margin: theme.spacing(2, 0, 2, 2),
+  backgroundImage: 'url(https://source.unsplash.com/random)',
+  backgroundRepeat: 'no-repeat',
+  backgroundColor:
+    theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
+  backgroundSize: 'cover',
+  backgroundPosition: 'center'
 }));
 
 const ContentStyle = styled('div')(({ theme }) => ({
@@ -37,24 +43,28 @@ const ContentStyle = styled('div')(({ theme }) => ({
   padding: theme.spacing(12, 0)
 }));
 
+const CardTypography = styled(Typography)(() => ({
+  color: '#FFFFFF',
+  textAlign: 'center'
+}));
+
 // ----------------------------------------------------------------------
 
 export default function Login() {
   return (
-    <RootStyle title="Login | Minimal-UI">
+    <RootStyle title="Login | TTAALLKK">
       <AuthLayout>
-        Don’t have an account? &nbsp;
+        아직 회원이 아닌가요? &nbsp;
         <Link underline="none" variant="subtitle2" component={RouterLink} to="/register">
-          Get started
+          회원가입
         </Link>
       </AuthLayout>
 
       <MHidden width="mdDown">
         <SectionStyle>
-          <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
-            Hi, Welcome Back
-          </Typography>
-          <img src="/static/illustrations/illustration_login.png" alt="login" />
+          <CardTypography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
+            Community With Talk
+          </CardTypography>
         </SectionStyle>
       </MHidden>
 
@@ -62,9 +72,9 @@ export default function Login() {
         <ContentStyle>
           <Stack sx={{ mb: 5 }}>
             <Typography variant="h4" gutterBottom>
-              Sign in to Minimal
+              LOGIN
             </Typography>
-            <Typography sx={{ color: 'text.secondary' }}>Enter your details below.</Typography>
+            <Typography sx={{ color: 'text.secondary' }}>로그인이 필요한 서비스입니다</Typography>
           </Stack>
           <AuthSocial />
 
@@ -72,9 +82,9 @@ export default function Login() {
 
           <MHidden width="smUp">
             <Typography variant="body2" align="center" sx={{ mt: 3 }}>
-              Don’t have an account?&nbsp;
-              <Link variant="subtitle2" component={RouterLink} to="register">
-                Get started
+              아직 계정이 없나요? &nbsp;
+              <Link underline="none" variant="subtitle2" component={RouterLink} to="/register">
+                회원가입
               </Link>
             </Typography>
           </MHidden>

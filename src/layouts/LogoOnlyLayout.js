@@ -1,8 +1,6 @@
 import { Link as RouterLink, Outlet } from 'react-router-dom';
 // material
 import { styled } from '@material-ui/core/styles';
-// components
-import Logo from '../components/Logo';
 
 // ----------------------------------------------------------------------
 
@@ -24,9 +22,7 @@ export default function LogoOnlyLayout() {
   return (
     <>
       <HeaderStyle>
-        <RouterLink to="/">
-          <Logo />
-        </RouterLink>
+        <RouterLink to="/" />
       </HeaderStyle>
       <Outlet />
     </>

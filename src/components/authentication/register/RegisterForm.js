@@ -16,25 +16,23 @@ export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
 
   const RegisterSchema = Yup.object().shape({
-    firstName: Yup.string()
-      .min(2, 'Too Short!')
-      .max(50, 'Too Long!')
-      .required('First name required'),
-    lastName: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('Last name required'),
-    email: Yup.string().email('Email must be a valid email address').required('Email is required'),
-    password: Yup.string().required('Password is required')
+    nickName: Yup.string()
+      .min(2, '닉네임이 너무 짧아요!')
+      .max(50, '닉네임이 너무 길어요!')
+      .required('닉네임을 입력해 주세요.'),
+    email: Yup.string().email('이메일 형식이 아니에요 :(').required('이메일을 입력해 주세요'),
+    password: Yup.string().required('비밀번호를 입력해 주세요')
   });
 
   const formik = useFormik({
     initialValues: {
-      firstName: '',
-      lastName: '',
+      nickName: '',
       email: '',
       password: ''
     },
     validationSchema: RegisterSchema,
     onSubmit: () => {
-      navigate('/dashboard', { replace: true });
+      navigate('/login', { replace: true });
     }
   });
 
@@ -47,18 +45,10 @@ export default function RegisterForm() {
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
             <TextField
               fullWidth
-              label="First name"
-              {...getFieldProps('firstName')}
-              error={Boolean(touched.firstName && errors.firstName)}
-              helperText={touched.firstName && errors.firstName}
-            />
-
-            <TextField
-              fullWidth
-              label="Last name"
-              {...getFieldProps('lastName')}
-              error={Boolean(touched.lastName && errors.lastName)}
-              helperText={touched.lastName && errors.lastName}
+              label="닉네임"
+              {...getFieldProps('nickName')}
+              error={Boolean(touched.nickName && errors.nickName)}
+              helperText={touched.nickName && errors.nickName}
             />
           </Stack>
 
@@ -66,7 +56,7 @@ export default function RegisterForm() {
             fullWidth
             autoComplete="username"
             type="email"
-            label="Email address"
+            label="이메일"
             {...getFieldProps('email')}
             error={Boolean(touched.email && errors.email)}
             helperText={touched.email && errors.email}
@@ -76,7 +66,7 @@ export default function RegisterForm() {
             fullWidth
             autoComplete="current-password"
             type={showPassword ? 'text' : 'password'}
-            label="Password"
+            label="비밀번호"
             {...getFieldProps('password')}
             InputProps={{
               endAdornment: (
@@ -98,7 +88,7 @@ export default function RegisterForm() {
             variant="contained"
             loading={isSubmitting}
           >
-            Register
+            SIGNUP
           </LoadingButton>
         </Stack>
       </Form>

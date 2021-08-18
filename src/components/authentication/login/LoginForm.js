@@ -16,16 +16,19 @@ import {
   FormControlLabel
 } from '@material-ui/core';
 import { LoadingButton } from '@material-ui/lab';
-
+import { useDispatch } from 'react-redux';
+import { signInUser } from '../../../api/action/userAction';
+import storage from '../../../utils/storage';
 // ----------------------------------------------------------------------
 
 export default function LoginForm() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const dispatch = useDispatch();
 
   const LoginSchema = Yup.object().shape({
-    email: Yup.string().email('Email must be a valid email address').required('Email is required'),
-    password: Yup.string().required('Password is required')
+    email: Yup.string().email('이메일 형식이 아니에요 :(').required('이메일을 입력해 주세요'),
+    password: Yup.string().required('비밀번호를 입력해 주세요')
   });
 
   const formik = useFormik({
@@ -35,8 +38,8 @@ export default function LoginForm() {
       remember: true
     },
     validationSchema: LoginSchema,
-    onSubmit: () => {
-      navigate('/dashboard', { replace: true });
+    onSubmit: (account, { setSubmitting }) => {
+      signIn(account, setSubmitting); // Formik 라이브러리에서 제공되는 onSubmit함수에 인자값으로 form input값을 가져와서 로그인처리
     }
   });
 
@@ -44,6 +47,29 @@ export default function LoginForm() {
 
   const handleShowPassword = () => {
     setShowPassword((show) => !show);
+  };
+
+  // 로그인
+  const signIn = (account, setSubmiting) => {
+    const body = {
+      email: account.email,
+      password: account.password
+    };
+    dispatch(signInUser(body))
+      .then((res) => {
+        if (res) {
+          if (account.remember) {
+            storage.set('user', res);
+          }
+          setSubmiting(false);
+          navigate('/dashboard', { replace: true });
+        }
+      })
+      .catch((e) => {
+        console.log(`로그인 오류 : ${JSON.stringify(e)}`);
+        setSubmiting(false);
+        alert('로그인 실패');
+      });
   };
 
   return (
@@ -54,7 +80,7 @@ export default function LoginForm() {
             fullWidth
             autoComplete="username"
             type="email"
-            label="Email address"
+            label="이메일"
             {...getFieldProps('email')}
             error={Boolean(touched.email && errors.email)}
             helperText={touched.email && errors.email}
@@ -64,7 +90,7 @@ export default function LoginForm() {
             fullWidth
             autoComplete="current-password"
             type={showPassword ? 'text' : 'password'}
-            label="Password"
+            label="비밀번호"
             {...getFieldProps('password')}
             InputProps={{
               endAdornment: (
@@ -83,11 +109,11 @@ export default function LoginForm() {
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
           <FormControlLabel
             control={<Checkbox {...getFieldProps('remember')} checked={values.remember} />}
-            label="Remember me"
+            label="로그인 상태 유지"
           />
 
-          <Link component={RouterLink} variant="subtitle2" to="#">
-            Forgot password?
+          <Link underline="none" component={RouterLink} variant="subtitle2" to="#">
+            비밀번호를 잊으셨나요?
           </Link>
         </Stack>
 
@@ -98,7 +124,7 @@ export default function LoginForm() {
           variant="contained"
           loading={isSubmitting}
         >
-          Login
+          LOGIN
         </LoadingButton>
       </Form>
     </FormikProvider>

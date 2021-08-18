@@ -6,18 +6,27 @@ import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 
 //
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import { Provider } from 'react-redux';
+import { applyMiddleware, createStore } from 'redux';
+import promiseMiddlerware from 'redux-promise';
+import reduxThunk from 'redux-thunk';
+import reducer from './api/reducer';
 import reportWebVitals from './reportWebVitals';
+import * as serviceWorker from './serviceWorker';
+import App from './App';
 
 // ----------------------------------------------------------------------
 
+const createStoreWithMiddleware = applyMiddleware(promiseMiddlerware, reduxThunk)(createStore);
+
 ReactDOM.render(
-  <HelmetProvider>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </HelmetProvider>,
+  <Provider store={createStoreWithMiddleware(reducer)}>
+    <HelmetProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </HelmetProvider>
+  </Provider>,
   document.getElementById('root')
 );
 
