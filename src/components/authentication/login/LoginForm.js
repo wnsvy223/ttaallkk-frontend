@@ -17,6 +17,7 @@ import {
 } from '@material-ui/core';
 import { LoadingButton } from '@material-ui/lab';
 import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
 import { signInUser } from '../../../api/action/userAction';
 import storage from '../../../utils/storage';
 // ----------------------------------------------------------------------
@@ -63,12 +64,17 @@ export default function LoginForm() {
           }
           setSubmiting(false);
           navigate('/dashboard', { replace: true });
+          toast.success('로그인 성공', {
+            position: toast.POSITION.TOP_CENTER
+          });
         }
       })
       .catch((e) => {
         console.log(`로그인 오류 : ${JSON.stringify(e)}`);
         setSubmiting(false);
-        alert('로그인 실패');
+        toast.error('로그인 실패', {
+          position: toast.POSITION.TOP_CENTER
+        });
       });
   };
 

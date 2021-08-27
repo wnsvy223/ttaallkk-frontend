@@ -1,5 +1,5 @@
 import { Icon } from '@iconify/react';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState } from 'react';
 import homeFill from '@iconify/icons-eva/home-fill';
 import personFill from '@iconify/icons-eva/person-fill';
 import settings2Fill from '@iconify/icons-eva/settings-2-fill';
@@ -12,6 +12,7 @@ import { useSelector } from 'react-redux';
 import MenuPopover from '../../components/MenuPopover';
 //
 import storage from '../../utils/storage';
+import decodeHTMLEntities from '../../utils/decodeHtmlEntity';
 
 // ----------------------------------------------------------------------
 
@@ -38,12 +39,6 @@ const MENU_OPTIONS = [
 export default function AccountPopover() {
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
-  const [isLogin, setIsLogin] = useState(false);
-  const [currentUser, setCurrentUser] = useState({
-    email: '이메일',
-    displayName: '닉네임',
-    photoURL: ''
-  });
 
   const handleOpen = () => {
     setOpen(true);
@@ -52,23 +47,13 @@ export default function AccountPopover() {
     setOpen(false);
   };
 
-  const user = useSelector((store) => store.user);
-  useEffect(() => {
-    const storageUser = storage.get('user');
-    if (storageUser) {
-      setCurrentUser(storage.get('user'));
-      setIsLogin(true);
-    }
-    if (user) {
-      setCurrentUser(user.success);
-      setIsLogin(true);
-    }
-  }, [user]);
+  const isLoggedIn = useSelector((store) => store.auth.isLoggedIn);
+  const user = useSelector((store) => store.auth.user);
 
   const navigate = useNavigate();
   const handleSignOut = () => {
     storage.remove('user');
-    navigate('/login', { replace: true });
+    navigate('/login');
   };
 
   return (
@@ -93,7 +78,11 @@ export default function AccountPopover() {
           })
         }}
       >
-        <Avatar src={currentUser.photoURL} alt="photoURL" />
+        {isLoggedIn ? (
+          <Avatar src={user?.profileUrl} alt="profileUrl" />
+        ) : (
+          <Avatar src="/static/mock-images/avatars/avatar_default.jpg" alt="profileUrl" />
+        )}
       </IconButton>
 
       <MenuPopover
@@ -104,10 +93,10 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2.5 }}>
           <Typography variant="subtitle1" noWrap>
-            {currentUser.displayName}
+            {isLoggedIn ? decodeHTMLEntities(user?.displayName) : '닉네임'}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {currentUser.email}
+            {isLoggedIn ? decodeHTMLEntities(user?.email) : '이메일'}
           </Typography>
         </Box>
 
@@ -137,7 +126,7 @@ export default function AccountPopover() {
 
         <Box sx={{ p: 2, pt: 1.5 }}>
           <Button fullWidth color="inherit" variant="outlined" onClick={handleSignOut}>
-            {isLogin ? '로그아웃' : '로그인'}
+            {isLoggedIn ? '로그아웃' : '로그인'}
           </Button>
         </Box>
       </MenuPopover>

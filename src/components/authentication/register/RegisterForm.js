@@ -8,12 +8,16 @@ import { useNavigate } from 'react-router-dom';
 // material
 import { Stack, TextField, IconButton, InputAdornment } from '@material-ui/core';
 import { LoadingButton } from '@material-ui/lab';
-
+import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import { signUpUser } from '../../../api/action/userAction';
 // ----------------------------------------------------------------------
 
 export default function RegisterForm() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+
+  const dispatch = useDispatch();
 
   const RegisterSchema = Yup.object().shape({
     nickName: Yup.string()
@@ -31,12 +35,38 @@ export default function RegisterForm() {
       password: ''
     },
     validationSchema: RegisterSchema,
-    onSubmit: () => {
-      navigate('/login', { replace: true });
+    onSubmit: (account, { setSubmitting }) => {
+      signUp(account, setSubmitting);
     }
   });
 
   const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
+
+  // 회원가입
+  const signUp = (account, setSubmiting) => {
+    const body = {
+      displayName: account.nickName,
+      email: account.email,
+      password: account.password
+    };
+    dispatch(signUpUser(body))
+      .then((res) => {
+        if (res) {
+          setSubmiting(false);
+          navigate('/login', { replace: true });
+          toast.success('회원가입 성공', {
+            position: toast.POSITION.TOP_CENTER
+          });
+        }
+      })
+      .catch((e) => {
+        console.log(`회원가입 오류 : ${JSON.stringify(e)}`);
+        setSubmiting(false);
+        toast.error('회원가입 실패', {
+          position: toast.POSITION.TOP_CENTER
+        });
+      });
+  };
 
   return (
     <FormikProvider value={formik}>

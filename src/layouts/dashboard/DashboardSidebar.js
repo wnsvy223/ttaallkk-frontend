@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 // material
@@ -12,7 +12,7 @@ import NavSection from '../../components/NavSection';
 import { MHidden } from '../../components/@material-extend';
 //
 import sidebarConfig from './SidebarConfig';
-import storage from '../../utils/storage';
+import decodeHTMLEntities from '../../utils/decodeHtmlEntity';
 // ----------------------------------------------------------------------
 
 const DRAWER_WIDTH = 280;
@@ -49,22 +49,8 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
-  const [currentUser, setCurrentUser] = useState({
-    email: '이메일',
-    displayName: '닉네임',
-    photoURL: ''
-  });
-
-  const user = useSelector((store) => store.user);
-  useEffect(() => {
-    const storageUser = storage.get('user');
-    if (storageUser) {
-      setCurrentUser(storage.get('user'));
-    }
-    if (user) {
-      setCurrentUser(user.success);
-    }
-  }, [user]);
+  const isLoggedIn = useSelector((store) => store.auth.isLoggedIn);
+  const user = useSelector((store) => store.auth.user);
 
   const renderContent = (
     <Scrollbar
@@ -82,13 +68,17 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
       <Box sx={{ mb: 5, mx: 2.5 }}>
         <Link underline="none" component={RouterLink} to="#">
           <AccountStyle>
-            <Avatar src={currentUser.photoURL} alt="photoURL" />
+            {isLoggedIn ? (
+              <Avatar src={user?.profileUrl} alt="profileUrl" />
+            ) : (
+              <Avatar src="/static/mock-images/avatars/avatar_default.jpg" alt="profileUrl" />
+            )}
             <Box sx={{ ml: 2 }}>
               <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
-                {currentUser.displayName}
+                {isLoggedIn ? decodeHTMLEntities(user?.displayName) : '닉네임'}
               </Typography>
               <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                {currentUser.email}
+                {isLoggedIn ? decodeHTMLEntities(user?.email) : '이메일'}
               </Typography>
             </Box>
           </AccountStyle>
