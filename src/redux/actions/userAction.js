@@ -1,5 +1,5 @@
-import { SIGNIN_SUCCESS, SIGNIN_FAILURE, SIGNUP_SUCCESS, SIGNUP_FAILURE } from './type';
-import { request } from '../axios/axios';
+import { SIGNIN_SUCCESS, SIGNIN_FAILURE, SIGNUP_SUCCESS, SIGNUP_FAILURE } from '../actionType/type';
+import { request } from '../../api/axios/axios';
 import { setMessage } from './messageAction';
 
 const url = '/api/user';

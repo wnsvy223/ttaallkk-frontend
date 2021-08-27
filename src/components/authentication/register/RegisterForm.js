@@ -10,7 +10,7 @@ import { Stack, TextField, IconButton, InputAdornment } from '@material-ui/core'
 import { LoadingButton } from '@material-ui/lab';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import { signUpUser } from '../../../api/action/userAction';
+import { signUpUser } from '../../../redux/actions/userAction';
 // ----------------------------------------------------------------------
 
 export default function RegisterForm() {

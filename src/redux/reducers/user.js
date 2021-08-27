@@ -1,4 +1,4 @@
-import { SIGNIN_SUCCESS, SIGNIN_FAILURE, SIGNUP_SUCCESS, SIGNUP_FAILURE } from '../action/type';
+import { SIGNIN_SUCCESS, SIGNIN_FAILURE, SIGNUP_SUCCESS, SIGNUP_FAILURE } from '../actionType/type';
 import storage from '../../utils/storage';
 
 const user = storage.get('user');

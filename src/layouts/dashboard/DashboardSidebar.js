@@ -116,12 +116,7 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
             </Typography>
           </Box>
 
-          <Button
-            fullWidth
-            href="https://material-ui.com/store/items/minimal-dashboard/"
-            target="_blank"
-            variant="contained"
-          >
+          <Button fullWidth target="_blank" variant="contained">
             Contact Us
           </Button>
         </Stack>

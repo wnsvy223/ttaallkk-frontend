@@ -1,4 +1,4 @@
-import { SET_MESSAGE, CLEAR_MESSAGE } from '../action/type';
+import { SET_MESSAGE, CLEAR_MESSAGE } from '../actionType/type';
 
 const initialState = {};
 

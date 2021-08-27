@@ -10,7 +10,7 @@ import { Provider } from 'react-redux';
 import { applyMiddleware, createStore } from 'redux';
 import promiseMiddlerware from 'redux-promise';
 import reduxThunk from 'redux-thunk';
-import reducer from './api/reducer';
+import reducer from './redux/reducers';
 import reportWebVitals from './reportWebVitals';
 import * as serviceWorker from './serviceWorker';
 import App from './App';
