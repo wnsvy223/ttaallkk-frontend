@@ -1,4 +1,10 @@
-import { SIGNIN_SUCCESS, SIGNIN_FAILURE, SIGNUP_SUCCESS, SIGNUP_FAILURE } from '../actionType/type';
+import {
+  SIGNIN_SUCCESS,
+  SIGNIN_FAILURE,
+  SIGNUP_SUCCESS,
+  SIGNUP_FAILURE,
+  LOG_OUT
+} from '../actionType/type';
 import storage from '../../utils/storage';
 
 const user = storage.get('user');
@@ -25,6 +31,12 @@ export default function auth(state = initialState, action) {
         user: payload.user
       };
     case SIGNIN_FAILURE:
+      return {
+        ...state,
+        isLoggedIn: false,
+        user: null
+      };
+    case LOG_OUT:
       return {
         ...state,
         isLoggedIn: false,
