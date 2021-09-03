@@ -10,7 +10,7 @@ import Products from './pages/Products';
 import Blog from './pages/Blog';
 import User from './pages/User';
 import NotFound from './pages/Page404';
-
+import UserSearch from './pages/UserSearch';
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -23,7 +23,8 @@ export default function Router() {
         { path: 'app', element: <DashboardApp /> },
         { path: 'user', element: <User /> },
         { path: 'products', element: <Products /> },
-        { path: 'blog', element: <Blog /> }
+        { path: 'blog', element: <Blog /> },
+        { path: 'search', element: <UserSearch /> }
       ]
     },
     {
@@ -34,7 +35,7 @@ export default function Router() {
         { path: 'login', element: <Login /> },
         { path: 'register', element: <Register /> },
         { path: '404', element: <NotFound /> },
-        { path: '*', element: <Navigate to="/404" /> }
+        { path: '*', element: <Navigate to="/404" replace /> }
       ]
     },
 

@@ -1,6 +1,6 @@
 import { Icon } from '@iconify/react';
 import { useRef, useState } from 'react';
-import homeFill from '@iconify/icons-eva/home-fill';
+import peopleFill from '@iconify/icons-eva/people-fill';
 import personFill from '@iconify/icons-eva/person-fill';
 import settings2Fill from '@iconify/icons-eva/settings-2-fill';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
@@ -8,27 +8,27 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { alpha } from '@material-ui/core/styles';
 import { Button, Box, Divider, MenuItem, Typography, Avatar, IconButton } from '@material-ui/core';
 // components
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import MenuPopover from '../../components/MenuPopover';
 //
 import storage from '../../utils/storage';
 import decodeHTMLEntities from '../../utils/decodeHtmlEntity';
-
+import { LOG_OUT } from '../../redux/actionType/type';
 // ----------------------------------------------------------------------
 
 const MENU_OPTIONS = [
   {
-    label: 'Home',
-    icon: homeFill,
-    linkTo: '/'
-  },
-  {
-    label: 'Profile',
+    label: '프로필',
     icon: personFill,
     linkTo: '#'
   },
   {
-    label: 'Settings',
+    label: '친구',
+    icon: peopleFill,
+    linkTo: '/dashboard/user'
+  },
+  {
+    label: '설정',
     icon: settings2Fill,
     linkTo: '#'
   }
@@ -37,6 +37,7 @@ const MENU_OPTIONS = [
 // ----------------------------------------------------------------------
 
 export default function AccountPopover() {
+  const dispatch = useDispatch();
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
 
@@ -52,8 +53,9 @@ export default function AccountPopover() {
 
   const navigate = useNavigate();
   const handleSignOut = () => {
-    storage.remove('user');
-    navigate('/login');
+    dispatch({ type: LOG_OUT }); // LOG_OUT액션을 dispatch하여 스토어에 저장된 상태값 초기화
+    storage.remove('user'); // 스토리지에서 유저 정보 제거
+    navigate('/login'); // 로그인 페이지로 이동
   };
 
   return (
@@ -92,40 +94,41 @@ export default function AccountPopover() {
         sx={{ width: 220 }}
       >
         <Box sx={{ my: 1.5, px: 2.5 }}>
-          <Typography variant="subtitle1" noWrap>
+          <Typography variant="subtitle1" noWrap textAlign="center">
             {isLoggedIn ? decodeHTMLEntities(user?.displayName) : '닉네임'}
           </Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
+          <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap textAlign="center">
             {isLoggedIn ? decodeHTMLEntities(user?.email) : '이메일'}
           </Typography>
         </Box>
 
         <Divider sx={{ my: 1 }} />
 
-        {MENU_OPTIONS.map((option) => (
-          <MenuItem
-            key={option.label}
-            to={option.linkTo}
-            component={RouterLink}
-            onClick={handleClose}
-            sx={{ typography: 'body2', py: 1, px: 2.5 }}
-          >
-            <Box
-              component={Icon}
-              icon={option.icon}
-              sx={{
-                mr: 2,
-                width: 24,
-                height: 24
-              }}
-            />
+        {isLoggedIn &&
+          MENU_OPTIONS.map((option) => (
+            <MenuItem
+              key={option.label}
+              to={option.linkTo}
+              component={RouterLink}
+              onClick={handleClose}
+              sx={{ typography: 'body2', py: 1, px: 2.5 }}
+            >
+              <Box
+                component={Icon}
+                icon={option.icon}
+                sx={{
+                  mr: 2,
+                  width: 24,
+                  height: 24
+                }}
+              />
 
-            {option.label}
-          </MenuItem>
-        ))}
+              {option.label}
+            </MenuItem>
+          ))}
 
         <Box sx={{ p: 2, pt: 1.5 }}>
-          <Button fullWidth color="inherit" variant="outlined" onClick={handleSignOut}>
+          <Button fullWidth color="inherit" variant="contained" onClick={handleSignOut}>
             {isLoggedIn ? '로그아웃' : '로그인'}
           </Button>
         </Box>

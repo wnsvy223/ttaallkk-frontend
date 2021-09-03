@@ -20,6 +20,7 @@ import {
   TableContainer,
   TablePagination
 } from '@material-ui/core';
+import { styled } from '@material-ui/core/styles';
 // components
 import Page from '../components/Page';
 import Label from '../components/Label';
@@ -39,6 +40,13 @@ const TABLE_HEAD = [
   { id: 'status', label: 'Status', alignRight: false },
   { id: '' }
 ];
+
+// ----------------------------------------------------------------------
+
+const SmallAvatar = styled(Avatar)(() => ({
+  width: '30px',
+  height: '30px'
+}));
 
 // ----------------------------------------------------------------------
 
@@ -141,10 +149,10 @@ export default function User() {
           <Button
             variant="contained"
             component={RouterLink}
-            to="#"
+            to="/dashboard/search"
             startIcon={<Icon icon={plusFill} />}
           >
-            New User
+            친구 추가
           </Button>
         </Stack>
 
@@ -191,7 +199,7 @@ export default function User() {
                           </TableCell>
                           <TableCell component="th" scope="row" padding="none">
                             <Stack direction="row" alignItems="center" spacing={2}>
-                              <Avatar alt={name} src={avatarUrl} />
+                              <SmallAvatar alt={name} src={avatarUrl} />
                               <Typography variant="subtitle2" noWrap>
                                 {name}
                               </Typography>

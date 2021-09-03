@@ -12,7 +12,7 @@ import ScrollToTop from './components/ScrollToTop';
 export default function App() {
   return (
     <ThemeConfig>
-      <ToastContainer theme="colored" hideProgressBar />
+      <ToastContainer theme="colored" hideProgressBar style={{ fontSize: '12px' }} />
       <ScrollToTop />
       <Router />
     </ThemeConfig>

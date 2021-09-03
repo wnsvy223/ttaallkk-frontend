@@ -12,11 +12,11 @@ export default function SearchNotFound({ searchQuery = '', ...other }) {
   return (
     <Paper {...other}>
       <Typography gutterBottom align="center" variant="subtitle1">
-        Not found
+        검색 결과 없음
       </Typography>
       <Typography variant="body2" align="center">
-        No results found for &nbsp;
-        <strong>&quot;{searchQuery}&quot;</strong>. Try checking for typos or using complete words.
+        <strong>&quot;{searchQuery}&quot;</strong>의 검색 결과가 없습니다. &nbsp; 이메일 또는
+        닉네임을 다시 확인해 주세요.
       </Typography>
     </Paper>
   );
