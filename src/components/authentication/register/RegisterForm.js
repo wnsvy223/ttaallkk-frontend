@@ -59,12 +59,14 @@ export default function RegisterForm() {
           });
         }
       })
-      .catch((e) => {
-        console.log(`회원가입 오류 : ${JSON.stringify(e)}`);
-        setSubmiting(false);
-        toast.error('회원가입 실패', {
-          position: toast.POSITION.TOP_CENTER
-        });
+      .catch((error) => {
+        if (error.response) {
+          console.error(error.response.data);
+          setSubmiting(false);
+          toast.error(error.response.data.message, {
+            position: toast.POSITION.TOP_CENTER
+          });
+        }
       });
   };
 

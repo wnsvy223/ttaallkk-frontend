@@ -69,12 +69,14 @@ export default function LoginForm() {
           });
         }
       })
-      .catch((e) => {
-        console.log(`로그인 오류 : ${JSON.stringify(e)}`);
-        setSubmiting(false);
-        toast.error('로그인 실패', {
-          position: toast.POSITION.TOP_CENTER
-        });
+      .catch((error) => {
+        if (error.response) {
+          console.error(error.response.data);
+          setSubmiting(false);
+          toast.error(error.response.data.message, {
+            position: toast.POSITION.TOP_CENTER
+          });
+        }
       });
   };
 

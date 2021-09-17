@@ -1,5 +1,6 @@
 import { Navigate, useRoutes } from 'react-router-dom';
 // layouts
+import { useSelector } from 'react-redux';
 import DashboardLayout from './layouts/dashboard';
 import LogoOnlyLayout from './layouts/LogoOnlyLayout';
 //
@@ -11,9 +12,12 @@ import Blog from './pages/Blog';
 import User from './pages/User';
 import NotFound from './pages/Page404';
 import UserSearch from './pages/UserSearch';
+import Profile from './pages/Profile';
 // ----------------------------------------------------------------------
 
 export default function Router() {
+  const { isLoggedIn } = useSelector((state) => state.auth);
+
   return useRoutes([
     {
       path: '/dashboard',
@@ -25,6 +29,16 @@ export default function Router() {
         { path: 'products', element: <Products /> },
         { path: 'blog', element: <Blog /> },
         { path: 'search', element: <UserSearch /> }
+      ]
+    },
+    {
+      path: '/user',
+      element: <DashboardLayout />,
+      children: [
+        {
+          path: '/profile',
+          element: isLoggedIn ? <Profile /> : <Navigate to="/dashboard/app" replace />
+        }
       ]
     },
     {

@@ -20,7 +20,7 @@ const MENU_OPTIONS = [
   {
     label: '프로필',
     icon: personFill,
-    linkTo: '#'
+    linkTo: '/user/profile'
   },
   {
     label: '친구',
