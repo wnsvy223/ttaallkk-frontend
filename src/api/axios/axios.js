@@ -2,9 +2,7 @@ import axios from 'axios';
 import { cacheAdapterEnhancer } from 'axios-extensions';
 
 export const request = axios.create({
-  // baseURL: 'https://ttaallkk.duckdns.org',
-  baseURL: 'http://localhost:8080',
-  // baseURL: 'http://192.168.0.2:8080',
+  baseURL: 'https://ttaallkk.duckdns.org',
   withCredentials: true, // 시큐어 쿠키를 전송받기 위한 설정.
   Accept: 'application/json',
   headers: { 'Cache-Control': 'no-cache' },
