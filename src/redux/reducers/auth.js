@@ -3,7 +3,8 @@ import {
   SIGNIN_FAILURE,
   SIGNUP_SUCCESS,
   SIGNUP_FAILURE,
-  LOG_OUT
+  LOG_OUT,
+  UPDATE_PROFILE
 } from '../actionType/type';
 import storage from '../../utils/storage';
 
@@ -41,6 +42,11 @@ export default function auth(state = initialState, action) {
         ...state,
         isLoggedIn: false,
         user: null
+      };
+    case UPDATE_PROFILE:
+      return {
+        ...state,
+        user: payload.user
       };
     default:
       return state;

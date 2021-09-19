@@ -7,10 +7,11 @@ import { Icon } from '@iconify/react';
 import messageCircleFill from '@iconify/icons-eva/message-circle-fill';
 import heartFill from '@iconify/icons-eva/heart-fill';
 // material
-import { Box, Stack, Link, Card, Divider, Typography, CircularProgress } from '@material-ui/core';
+import { Box, Stack, Link, Card, Typography, CircularProgress } from '@material-ui/core';
 // hook
 import Moment from 'react-moment';
 import 'moment/locale/ko';
+import { numToKorean, FormatOptions } from 'num-to-korean';
 import useRequest from '../../../hook/useRequest';
 // api
 import { request } from '../../../api/axios/axios';
@@ -59,20 +60,13 @@ function UserMyPostItem({ post }) {
         </Link>
       </Box>
 
-      <Stack
-        sx={{ minWidth: 50 }}
-        direction="row"
-        justifyContent="flex-start"
-        alignItems="center"
-        spacing={2}
-      >
+      <Stack direction="row" spacing={2}>
         <Box
           sx={{
             display: 'flex',
             alignItems: 'center',
             color: 'grey.600',
-            p: 0.5,
-            maxWidth: 100
+            minWidth: 70
           }}
         >
           <Box
@@ -80,12 +74,8 @@ function UserMyPostItem({ post }) {
             icon={messageCircleFill}
             sx={{ minWidth: 20, minHeight: 20, color: 'primary.main' }}
           />
-          <Typography
-            variant="overline"
-            noWrap
-            sx={{ ml: 0.5, fontSize: '15px', color: 'text.primary' }}
-          >
-            {commentCnt}
+          <Typography variant="subtitle2" sx={{ ml: 0.5, fontSize: '15px', color: 'text.primary' }}>
+            {numToKorean(commentCnt, FormatOptions.MIXED)}
           </Typography>
         </Box>
 
@@ -94,17 +84,12 @@ function UserMyPostItem({ post }) {
             display: 'flex',
             alignItems: 'center',
             color: 'grey.600',
-            p: 0.5,
-            maxWidth: 100
+            minWidth: 70
           }}
         >
           <VisibilityIcon fontSize="small" sx={{ color: 'secondary.main' }} />
-          <Typography
-            variant="overline"
-            noWrap
-            sx={{ ml: 0.5, fontSize: '15px', color: 'text.primary' }}
-          >
-            {views}
+          <Typography variant="subtitle2" sx={{ ml: 0.5, fontSize: '15px', color: 'text.primary' }}>
+            {numToKorean(views, FormatOptions.MIXED)}
           </Typography>
         </Box>
 
@@ -113,8 +98,8 @@ function UserMyPostItem({ post }) {
             display: 'flex',
             alignItems: 'center',
             color: 'grey.600',
-            p: 0.5,
-            maxWidth: 100
+            minWidth: 70,
+            pr: 2
           }}
         >
           <Box
@@ -122,12 +107,8 @@ function UserMyPostItem({ post }) {
             icon={heartFill}
             sx={{ minWidth: 20, minHeight: 20, color: 'red' }}
           />
-          <Typography
-            variant="overline"
-            noWrap
-            sx={{ ml: 0.5, fontSize: '15px', color: 'text.primary' }}
-          >
-            {likeCnt}
+          <Typography variant="subtitle2" sx={{ ml: 0.5, fontSize: '15px', color: 'text.primary' }}>
+            {numToKorean(likeCnt, FormatOptions.MIXED)}
           </Typography>
         </Box>
       </Stack>

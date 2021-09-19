@@ -82,7 +82,7 @@ function MUISwitch(props) {
   return (
     <SwitchRoot className={clsx(stateClasses)}>
       <SwitchTrack>
-        <SwitchThumb className={clsx(stateClasses)} checked={checked} />
+        <SwitchThumb className={clsx(stateClasses)} checked={checked} sx={{ boxShadow: 3 }} />
       </SwitchTrack>
       <SwitchInput {...getInputProps()} aria-label="Notification switch" />
     </SwitchRoot>

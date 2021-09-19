@@ -76,6 +76,10 @@ const ERROR = {
   darker: '#7A0C2E',
   contrastText: '#fff'
 };
+const PURPLE = {
+  main: '#A335F1',
+  contrastText: '#fff'
+};
 
 const GRADIENTS = {
   primary: createGradient(PRIMARY.light, PRIMARY.main),
@@ -93,6 +97,7 @@ const palette = {
   success: { ...SUCCESS },
   warning: { ...WARNING },
   error: { ...ERROR },
+  purple: { ...PURPLE },
   grey: GREY,
   gradients: GRADIENTS,
   divider: GREY[500_24],

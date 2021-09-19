@@ -3,6 +3,7 @@ export const SIGNIN_FAILURE = 'SIGNIN_FAILURE';
 export const SIGNUP_SUCCESS = 'SIGNUP_SUCCESS';
 export const SIGNUP_FAILURE = 'SIGNUP_FAILURE';
 export const LOG_OUT = 'LOG_OUT';
+export const UPDATE_PROFILE = 'UPDATE_PROFILE';
 export const SET_MESSAGE = 'SET_MESSAGE';
 export const CLEAR_MESSAGE = 'CLEAR_MESSAGE';
 export const SEARCH_USER = 'SEARCH_USER';

@@ -9,6 +9,7 @@ import heartFill from '@iconify/icons-eva/heart-fill';
 // hook
 import Moment from 'react-moment';
 import 'moment/locale/ko';
+import { numToKorean, FormatOptions } from 'num-to-korean';
 import useRequest from '../../../hook/useRequest';
 // api
 import { request } from '../../../api/axios/axios';
@@ -58,7 +59,7 @@ function UserMyLikeItem({ likes }) {
           noWrap
           sx={{ ml: 1, fontSize: '15px', color: 'text.primary' }}
         >
-          {likeCnt}
+          {numToKorean(likeCnt, FormatOptions.MIXED)}
         </Typography>
       </Box>
 

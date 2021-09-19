@@ -1,11 +1,16 @@
-import { SIGNIN_SUCCESS, SIGNIN_FAILURE, SIGNUP_SUCCESS, SIGNUP_FAILURE } from '../actionType/type';
+import {
+  SIGNIN_SUCCESS,
+  SIGNIN_FAILURE,
+  SIGNUP_SUCCESS,
+  SIGNUP_FAILURE,
+  UPDATE_PROFILE
+} from '../actionType/type';
 import { request } from '../../api/axios/axios';
 import { setMessage } from './messageAction';
 
 const url = '/api/user';
 
-// -------------------------------로그인---------------------------------------
-// 로그인 axios 요청
+// 로그인
 export const signInUser = (req) => async (dispatch) => {
   try {
     const res = await request.post(`${url}/login`, req);
@@ -24,8 +29,7 @@ export const signInUser = (req) => async (dispatch) => {
   }
 };
 
-// -------------------------------회원가입---------------------------------------
-// 회원가입 axios 요청
+// 회원가입
 export const signUpUser = (req) => async (dispatch) => {
   try {
     const res = await request.post(`${url}/signUp`, req);
@@ -44,3 +48,17 @@ export const signUpUser = (req) => async (dispatch) => {
   }
 };
 // -----------------------------------------------------------------------------
+
+// 프로필 업데이트
+export const updateProfile = (req) => async (dispatch) => {
+  try {
+    const res = await request.put(`${url}/${req.uid}`, req);
+    dispatch({
+      type: UPDATE_PROFILE,
+      payload: { user: res.data }
+    });
+    return Promise.resolve(res.data);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
