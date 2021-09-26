@@ -23,8 +23,8 @@ export default function Router() {
       path: '/dashboard',
       element: <DashboardLayout />,
       children: [
-        { path: '/', element: <Navigate to="/dashboard/app" replace /> },
-        { path: 'app', element: <DashboardApp /> },
+        { path: '/', element: <Navigate to="/dashboard/home" replace /> },
+        { path: 'home', element: <DashboardApp /> },
         { path: 'user', element: <User /> },
         { path: 'products', element: <Products /> },
         { path: 'blog', element: <Blog /> },
@@ -37,7 +37,7 @@ export default function Router() {
       children: [
         {
           path: '/profile',
-          element: isLoggedIn ? <Profile /> : <Navigate to="/dashboard/app" replace />
+          element: isLoggedIn ? <Profile /> : <Navigate to="/dashboard/home" replace />
         }
       ]
     },

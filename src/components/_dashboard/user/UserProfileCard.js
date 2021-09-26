@@ -3,6 +3,9 @@ import { Card, Button, Typography, Box, TextField, Stack } from '@material-ui/co
 import { styled } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import EditRounded from '@material-ui/icons/EditRounded';
+import CancelRounded from '@material-ui/icons/CancelRounded';
+import CheckCircle from '@material-ui/icons/CheckCircle';
 import { updateProfile } from '../../../redux/actions/userAction';
 import storage from '../../../utils/storage';
 
@@ -12,10 +15,15 @@ const ProfileCard = styled(Card)(() => ({
   backgroundColor: '#E5E5E5'
 }));
 
-const ProfileEditBox = styled(Box)(() => ({
+const ProfileEditBox = styled(Box)(({ theme }) => ({
   display: 'flex',
   justifyContent: 'flex-end',
-  alignItems: 'flex-end'
+  alignItems: 'flex-end',
+  // Material Ui의 미디어 쿼리기능인 breakpoints를 이용하여 모바일화면의 경우 버튼 가운데정렬
+  [theme.breakpoints.down('sm')]: {
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
 }));
 
 function UserProfileCard() {
@@ -113,6 +121,7 @@ function UserProfileCard() {
         <ProfileEditBox p={2}>
           <Button
             sx={{ mr: 2 }}
+            startIcon={<CheckCircle sx={{ fontSize: 16 }} />}
             color="purple"
             variant="contained"
             size="normal"
@@ -121,6 +130,7 @@ function UserProfileCard() {
             확인
           </Button>
           <Button
+            startIcon={<CancelRounded sx={{ fontSize: 16 }} />}
             color="purple"
             variant="contained"
             size="normal"
@@ -131,7 +141,13 @@ function UserProfileCard() {
         </ProfileEditBox>
       ) : (
         <ProfileEditBox p={2}>
-          <Button color="secondary" variant="contained" size="normal" onClick={handleEditAble}>
+          <Button
+            startIcon={<EditRounded sx={{ fontSize: 16 }} />}
+            color="secondary"
+            variant="contained"
+            size="normal"
+            onClick={handleEditAble}
+          >
             프로필 편집
           </Button>
         </ProfileEditBox>

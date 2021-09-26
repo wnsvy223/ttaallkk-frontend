@@ -4,6 +4,11 @@ import SimpleBarReact from 'simplebar-react';
 import { alpha, styled } from '@material-ui/core/styles';
 import { Box } from '@material-ui/core';
 
+/**
+ * 해당 탬플릿의 스크롤바 컴포넌트 사용 시 테이블 컴포넌트 밖에서 감싸서 사용하면
+ * 테이블 컨테이너에서 생성되는 스크롤바와 SimpleBarReact가
+ * 겹쳐서 생성되는 이슈. 테이블을 제외한 컴포넌트에서만 사용.
+ */
 // ----------------------------------------------------------------------
 
 const RootStyle = styled('div')({

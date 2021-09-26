@@ -20,9 +20,9 @@ import {
 import { useDispatch } from 'react-redux';
 import { toast, Zoom } from 'react-toastify';
 import { styled } from '@material-ui/core/styles';
+import SimpleBarReact from 'simplebar-react';
 import Page from '../components/Page';
 import Label from '../components/Label';
-import Scrollbar from '../components/Scrollbar';
 import SearchNotFound from '../components/SearchNotFound';
 import { UserSearchToolbar } from '../components/_dashboard/user';
 //
@@ -98,8 +98,9 @@ export default function UserSearch() {
             onFilterName={handleFilterByName}
             onSearchUser={handleSearch}
           />
-          <Scrollbar>
-            <TableContainer sx={{ minWidth: 800 }}>
+
+          <TableContainer>
+            <SimpleBarReact>
               <Table>
                 {searchUsers.length > 0 && (
                   <TableHead>
@@ -166,8 +167,8 @@ export default function UserSearch() {
                   </TableBody>
                 )}
               </Table>
-            </TableContainer>
-          </Scrollbar>
+            </SimpleBarReact>
+          </TableContainer>
 
           {searchUsers.length > 0 && (
             <UserSearchPagination
