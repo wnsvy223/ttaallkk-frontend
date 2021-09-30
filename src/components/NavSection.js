@@ -2,8 +2,8 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from '@iconify/react';
 import { NavLink as RouterLink, matchPath, useLocation } from 'react-router-dom';
-import arrowIosForwardFill from '@iconify/icons-eva/arrow-ios-forward-fill';
-import arrowIosDownwardFill from '@iconify/icons-eva/arrow-ios-downward-fill';
+import chevronRightFill from '@iconify/icons-eva/chevron-right-fill';
+import chevronDownFill from '@iconify/icons-eva/chevron-down-fill';
 // material
 import { alpha, useTheme, styled } from '@material-ui/core/styles';
 import { Box, List, Collapse, ListItemText, ListItemIcon, ListItemButton } from '@material-ui/core';
@@ -60,14 +60,14 @@ function NavItem({ item, active }) {
   };
 
   const activeRootStyle = {
-    color: 'primary.main',
+    color: 'background.paper',
     fontWeight: 'fontWeightMedium',
     bgcolor: alpha(theme.palette.primary.main, theme.palette.action.selectedOpacity),
     '&:before': { display: 'block' }
   };
 
   const activeSubStyle = {
-    color: 'text.primary',
+    color: 'background.paper',
     fontWeight: 'fontWeightMedium'
   };
 
@@ -85,8 +85,8 @@ function NavItem({ item, active }) {
           {info && info}
           <Box
             component={Icon}
-            icon={open ? arrowIosDownwardFill : arrowIosForwardFill}
-            sx={{ width: 16, height: 16, ml: 1 }}
+            icon={open ? chevronDownFill : chevronRightFill}
+            sx={{ width: 28, height: 28, ml: 1 }}
           />
         </ListItemStyle>
 
@@ -102,10 +102,11 @@ function NavItem({ item, active }) {
                   component={RouterLink}
                   to={path}
                   sx={{
-                    ...(isActiveSub && activeSubStyle)
+                    ...(isActiveSub && activeSubStyle),
+                    backgroundColor: 'rgba(71, 98, 130, 0.2)'
                   }}
                 >
-                  <ListItemIconStyle>
+                  <ListItemIconStyle sx={{ ml: 3 }}>
                     <Box
                       component="span"
                       sx={{
@@ -124,7 +125,7 @@ function NavItem({ item, active }) {
                       }}
                     />
                   </ListItemIconStyle>
-                  <ListItemText disableTypography primary={title} />
+                  <ListItemText disableTypography primary={title} sx={{ fontSize: 12 }} />
                 </ListItemStyle>
               );
             })}
@@ -155,7 +156,7 @@ NavSection.propTypes = {
 
 export default function NavSection({ navConfig, ...other }) {
   const { pathname } = useLocation();
-  const match = (path) => (path ? !!matchPath({ path, end: false }, pathname) : false);
+  const match = (path) => (path ? !!matchPath({ path, end: false }, pathname) : false); // 요청 경로와 현재 경로 일치할시 active
 
   return (
     <Box {...other}>

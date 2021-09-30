@@ -13,3 +13,7 @@ export { default as AppWeeklySales } from './AppWeeklySales';
 export { default as AppMainCard } from './AppMainCard';
 export { default as AppHotPost } from './AppHotPost';
 export { default as AppNewPost } from './AppNewPost';
+export { default as AppAdminNotice } from './AppAdminNotice';
+export { default as AppAdminRecommend } from './AppAdminRecommend';
+export { default as AppTodayImgVideo } from './AppTodayImgVideo';
+export { default as AppTechAndTip } from './AppTechAndTip';

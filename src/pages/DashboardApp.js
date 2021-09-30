@@ -3,21 +3,25 @@ import { Box, Grid, Container, Typography } from '@material-ui/core';
 // components
 import Page from '../components/Page';
 import {
-  AppTasks,
+  // AppTasks,
   // AppNewUsers,
   // AppBugReports,
   // AppItemOrders,
-  AppNewsUpdate,
+  // AppNewsUpdate,
   // AppWeeklySales,
-  AppOrderTimeline,
+  // AppOrderTimeline,
   // AppCurrentVisits,
   // AppWebsiteVisits,
-  AppTrafficBySite,
-  AppCurrentSubject,
-  AppConversionRates,
+  // AppTrafficBySite,
+  // AppCurrentSubject,
+  // AppConversionRates,
   AppMainCard,
   AppHotPost,
-  AppNewPost
+  AppNewPost,
+  AppAdminNotice,
+  AppAdminRecommend,
+  AppTodayImgVideo,
+  AppTechAndTip
 } from '../components/_dashboard/app';
 
 // ----------------------------------------------------------------------
@@ -30,16 +34,16 @@ export default function DashboardApp() {
           <Typography variant="h4">Home</Typography>
         </Box>
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={6} md={3}>
-            <AppMainCard title="공지사항" color="primary.light" />
+          <Grid item xs={6} sm={6} md={3}>
+            <AppMainCard title="친구찾기" color="primary.light" />
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid item xs={6} sm={6} md={3}>
             <AppMainCard title="커뮤니티" color="info.light" />
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid item xs={6} sm={6} md={3}>
             <AppMainCard title="음성대화" color="warning.light" />
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid item xs={6} sm={6} md={3}>
             <AppMainCard title="질문/응답" color="error.light" />
           </Grid>
 
@@ -51,28 +55,21 @@ export default function DashboardApp() {
             <AppNewPost />
           </Grid>
 
-          <Grid item xs={12} md={6} lg={8}>
-            <AppConversionRates />
+          <Grid item xs={12} md={6} lg={6} container direction="column" rowSpacing={2}>
+            <Grid item sx={{ height: '50%' }}>
+              <AppAdminNotice />
+            </Grid>
+            <Grid item sx={{ height: '50%' }}>
+              <AppAdminRecommend />
+            </Grid>
           </Grid>
 
-          <Grid item xs={12} md={6} lg={4}>
-            <AppCurrentSubject />
+          <Grid item xs={12} md={6} lg={6}>
+            <AppTodayImgVideo />
           </Grid>
 
-          <Grid item xs={12} md={6} lg={8}>
-            <AppNewsUpdate />
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={4}>
-            <AppOrderTimeline />
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={4}>
-            <AppTrafficBySite />
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={8}>
-            <AppTasks />
+          <Grid item xs={12} md={12} lg={12}>
+            <AppTechAndTip />
           </Grid>
         </Grid>
       </Container>

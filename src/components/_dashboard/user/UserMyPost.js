@@ -147,7 +147,9 @@ export default function UserMyPost() {
           {data?.length > 0 ? (
             data.map((post) => <UserMyPostItem key={post.title} post={post} />)
           ) : (
-            <Typography>작성한 게시물이 없습니다.</Typography>
+            <Box textAlign="center" sx={{ p: 3 }}>
+              <Typography>작성한 게시물이 없습니다.</Typography>
+            </Box>
           )}
         </Stack>
       </Scrollbar>

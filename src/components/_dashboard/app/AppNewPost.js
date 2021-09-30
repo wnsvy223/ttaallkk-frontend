@@ -74,7 +74,7 @@ export default function AppNewPost() {
               <Table>
                 <TableBody>
                   {data.slice(0, 7).map((row) => (
-                    <TableRow hover key={row.id}>
+                    <TableRow hover key={row.id} sx={{ cursor: 'pointer' }}>
                       <TableData sx={{ maxWidth: 100 }}>
                         <TableCellTextView noWrap sx={{ ml: 1, color: 'info.main' }}>
                           {`#${row.id}`}
@@ -87,7 +87,7 @@ export default function AppNewPost() {
                         <Stack
                           direction="row"
                           alignItems="center"
-                          justifyContent="center"
+                          justifyContent="start"
                           spacing={1}
                         >
                           <Avatar
@@ -99,7 +99,7 @@ export default function AppNewPost() {
                         </Stack>
                       </TableData>
                       <TableData align="center">
-                        <TableCellTextView noWrap>
+                        <TableCellTextView noWrap sx={{ fontSize: 10, color: 'GrayText' }}>
                           <Moment fromNow>{row.createdAt}</Moment>
                         </TableCellTextView>
                       </TableData>

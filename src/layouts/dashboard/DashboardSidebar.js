@@ -56,7 +56,7 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
     <Scrollbar
       sx={{
         height: '100%',
-        backgroundColor: 'info.lighter',
+        backgroundColor: 'rgb(5, 30, 52)',
         '& .simplebar-content': { height: '100%', display: 'flex', flexDirection: 'column' }
       }}
     >

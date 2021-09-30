@@ -28,7 +28,11 @@ export default function Router() {
         { path: 'user', element: <User /> },
         { path: 'products', element: <Products /> },
         { path: 'blog', element: <Blog /> },
-        { path: 'search', element: <UserSearch /> }
+        { path: 'search', element: <UserSearch /> },
+        { path: 'community/free', element: <Products /> },
+        { path: 'community/talk', element: <Products /> },
+        { path: 'community/tip', element: <Products /> },
+        { path: 'community/ads', element: <Products /> }
       ]
     },
     {

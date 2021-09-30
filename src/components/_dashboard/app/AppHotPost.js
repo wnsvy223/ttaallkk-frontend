@@ -76,7 +76,7 @@ export default function AppHotPost() {
               <Table>
                 <TableBody>
                   {data.slice(0, 7).map((row) => (
-                    <TableRow hover key={row.postId}>
+                    <TableRow hover key={row.postId} sx={{ cursor: 'pointer' }}>
                       <TableData sx={{ maxWidth: 100 }}>
                         <Stack
                           direction="row"
@@ -97,7 +97,7 @@ export default function AppHotPost() {
                         <Stack
                           direction="row"
                           alignItems="center"
-                          justifyContent="center"
+                          justifyContent="start"
                           spacing={1}
                         >
                           <Avatar
@@ -109,7 +109,7 @@ export default function AppHotPost() {
                         </Stack>
                       </TableData>
                       <TableData align="center">
-                        <TableCellTextView noWrap>
+                        <TableCellTextView noWrap sx={{ fontSize: 10, color: 'GrayText' }}>
                           <Moment fromNow>{row.createdAt}</Moment>
                         </TableCellTextView>
                       </TableData>

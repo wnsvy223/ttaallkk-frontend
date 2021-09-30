@@ -77,7 +77,11 @@ const ERROR = {
   contrastText: '#fff'
 };
 const PURPLE = {
+  lighter: '#C180D5',
+  light: '#BA55D3',
   main: '#A335F1',
+  dark: '#943BA9',
+  darker: '#812A63',
   contrastText: '#fff'
 };
 

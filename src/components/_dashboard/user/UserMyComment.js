@@ -98,7 +98,9 @@ export default function UserMyComment() {
           {data?.length > 0 ? (
             data.map((comments) => <UserMyCommentItem key={comments.id} comments={comments} />)
           ) : (
-            <Typography>작성한 댓글이 없습니다.</Typography>
+            <Box textAlign="center" sx={{ p: 3 }}>
+              <Typography>작성한 댓글이 없습니다.</Typography>
+            </Box>
           )}
         </Stack>
       </Scrollbar>

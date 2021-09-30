@@ -30,7 +30,7 @@ AppMainCard.propTypes = {
 
 export default function AppMainCard({ title, color }) {
   return (
-    <RootStyle sx={{ minWidth: 200 }}>
+    <RootStyle sx={{ minWidth: 150 }}>
       <CardHeader sx={{ height: 40, backgroundColor: color }} />
       <CardBody>
         <Typography variant="subtitle1" sx={{ fontSize: 16, textAlign: 'center' }}>

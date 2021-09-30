@@ -22,8 +22,26 @@ const sidebarConfig = [
   },
   {
     title: '커뮤니티',
-    path: '/dashboard/products',
-    icon: getIcon(fileTextFill)
+    icon: getIcon(fileTextFill),
+    path: 'dashboard/community',
+    children: [
+      {
+        title: '자유게시판',
+        path: '/dashboard/community/free'
+      },
+      {
+        title: '대화 게시판',
+        path: '/dashboard/community/talk'
+      },
+      {
+        title: 'Tech & Tip',
+        path: '/dashboard/community/tip'
+      },
+      {
+        title: '홍보 게시판',
+        path: '/dashboard/community/ads'
+      }
+    ]
   },
   {
     title: '질문 / 응답',
@@ -32,7 +50,7 @@ const sidebarConfig = [
   },
   {
     title: '음성대화',
-    path: '/talk',
+    path: '/dashboard/talk',
     icon: getIcon(headPoneFill)
   }
 ];

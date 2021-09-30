@@ -120,7 +120,9 @@ export default function UserMyLike() {
           {data?.length > 0 ? (
             data.map((likes) => <UserMyLikeItem key={likes.id} likes={likes} />)
           ) : (
-            <Typography>좋아요를 누른 게시글이 없습니다.</Typography>
+            <Box textAlign="center" sx={{ p: 3 }}>
+              <Typography>좋아요를 누른 게시글이 없습니다.</Typography>
+            </Box>
           )}
         </Stack>
       </Scrollbar>
