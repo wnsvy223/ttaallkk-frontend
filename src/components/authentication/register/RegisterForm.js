@@ -43,7 +43,7 @@ export default function RegisterForm() {
   const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
 
   // 회원가입
-  const signUp = (account, setSubmiting) => {
+  const signUp = (account, setSubmitting) => {
     const body = {
       displayName: account.nickName,
       email: account.email,
@@ -52,7 +52,7 @@ export default function RegisterForm() {
     dispatch(signUpUser(body))
       .then((res) => {
         if (res) {
-          setSubmiting(false);
+          setSubmitting(false);
           navigate('/login', { replace: true });
           toast.success('회원가입 성공', {
             position: toast.POSITION.TOP_CENTER
@@ -62,7 +62,7 @@ export default function RegisterForm() {
       .catch((error) => {
         if (error.response) {
           console.error(error.response.data);
-          setSubmiting(false);
+          setSubmitting(false);
           toast.error(error.response.data.message, {
             position: toast.POSITION.TOP_CENTER
           });

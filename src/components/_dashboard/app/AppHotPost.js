@@ -21,7 +21,8 @@ import 'moment/locale/ko';
 
 // component
 import SimpleBarReact from 'simplebar-react';
-import ThumbUpAltOutlined from '@material-ui/icons/ThumbUpAltOutlined';
+import { Icon } from '@iconify/react';
+import heartFill from '@iconify/icons-eva/heart-fill';
 
 // hook
 import useRequest from '../../../hook/useRequest';
@@ -77,6 +78,11 @@ export default function AppHotPost() {
                 <TableBody>
                   {data.slice(0, 7).map((row) => (
                     <TableRow hover key={row.postId} sx={{ cursor: 'pointer' }}>
+                      <TableData align="center" sx={{ maxWidth: 300 }}>
+                        <TableCellTextView noWrap sx={{ color: 'success.dark' }}>
+                          {row.categoryName}
+                        </TableCellTextView>
+                      </TableData>
                       <TableData sx={{ maxWidth: 100 }}>
                         <Stack
                           direction="row"
@@ -84,7 +90,11 @@ export default function AppHotPost() {
                           justifyContent="center"
                           spacing={1}
                         >
-                          <ThumbUpAltOutlined sx={{ fontSize: 17, color: 'error.main' }} />
+                          <Box
+                            component={Icon}
+                            icon={heartFill}
+                            sx={{ minWidth: 20, minHeight: 20, color: 'error.main' }}
+                          />
                           <TableCellTextView noWrap sx={{ ml: 1, color: 'text.primary' }}>
                             {numToKorean(row.likeCnt, FormatOptions.MIXED)}
                           </TableCellTextView>

@@ -13,6 +13,8 @@ import User from './pages/User';
 import NotFound from './pages/Page404';
 import UserSearch from './pages/UserSearch';
 import Profile from './pages/Profile';
+import Board from './pages/Board';
+import Editor from './pages/Editor';
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -29,10 +31,11 @@ export default function Router() {
         { path: 'products', element: <Products /> },
         { path: 'blog', element: <Blog /> },
         { path: 'search', element: <UserSearch /> },
-        { path: 'community/free', element: <Products /> },
-        { path: 'community/talk', element: <Products /> },
-        { path: 'community/tip', element: <Products /> },
-        { path: 'community/ads', element: <Products /> }
+        { path: 'community/free', element: <Board title="자유게시판" category={1} /> },
+        { path: 'community/talk', element: <Board title="대화게시판" category={2} /> },
+        { path: 'community/tip', element: <Board title="Tech&Tip" category={3} /> },
+        { path: 'community/ads', element: <Board title="홍보게시판" category={4} /> },
+        { path: 'community/create', element: <Editor /> }
       ]
     },
     {

@@ -8,14 +8,16 @@ import { Menu, Button, MenuItem, Typography } from '@material-ui/core';
 // ----------------------------------------------------------------------
 
 const SORT_BY_OPTIONS = [
-  { value: 'featured', label: 'Featured' },
-  { value: 'newest', label: 'Newest' },
-  { value: 'priceDesc', label: 'Price: High-Low' },
-  { value: 'priceAsc', label: 'Price: Low-High' }
+  { value: 'timestmap', label: '최신순' },
+  { value: 'comments', label: '댓글순' },
+  { value: 'likes', label: '추천순' },
+  { value: 'views', label: '조회순' }
 ];
 
 export default function ShopProductSort() {
   const [open, setOpen] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedLabel, setSelectedLabel] = useState(SORT_BY_OPTIONS[0].label);
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -23,6 +25,16 @@ export default function ShopProductSort() {
 
   const handleClose = () => {
     setOpen(null);
+  };
+
+  const handleLabel = (label) => {
+    setSelectedLabel(label);
+  };
+
+  const handleMenuItemClick = (event, index) => {
+    setSelectedIndex(index);
+    handleLabel(SORT_BY_OPTIONS[index].label);
+    handleClose();
   };
 
   return (
@@ -33,9 +45,9 @@ export default function ShopProductSort() {
         onClick={handleOpen}
         endIcon={<Icon icon={open ? chevronUpFill : chevronDownFill} />}
       >
-        Sort By:&nbsp;
+        정렬&nbsp;:&nbsp;
         <Typography component="span" variant="subtitle2" sx={{ color: 'text.secondary' }}>
-          Newest
+          {selectedLabel}
         </Typography>
       </Button>
       <Menu
@@ -46,11 +58,11 @@ export default function ShopProductSort() {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        {SORT_BY_OPTIONS.map((option) => (
+        {SORT_BY_OPTIONS.map((option, index) => (
           <MenuItem
             key={option.value}
-            selected={option.value === 'newest'}
-            onClick={handleClose}
+            selected={index === selectedIndex}
+            onClick={(event) => handleMenuItemClick(event, index)}
             sx={{ typography: 'body2' }}
           >
             {option.label}

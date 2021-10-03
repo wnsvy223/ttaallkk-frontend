@@ -80,6 +80,11 @@ export default function AppNewPost() {
                           {`#${row.id}`}
                         </TableCellTextView>
                       </TableData>
+                      <TableData sx={{ maxWidth: 100 }}>
+                        <TableCellTextView noWrap sx={{ ml: 1, color: 'success.dark' }}>
+                          {row.categoryName}
+                        </TableCellTextView>
+                      </TableData>
                       <TableData align="center" sx={{ maxWidth: 300 }}>
                         <TableCellTextView noWrap>{row.title}</TableCellTextView>
                       </TableData>

@@ -51,7 +51,7 @@ export default function LoginForm() {
   };
 
   // 로그인
-  const signIn = (account, setSubmiting) => {
+  const signIn = (account, setSubmitting) => {
     const body = {
       email: account.email,
       password: account.password
@@ -62,7 +62,7 @@ export default function LoginForm() {
           if (account.remember) {
             storage.set('user', res);
           }
-          setSubmiting(false);
+          setSubmitting(false);
           navigate('/dashboard', { replace: true });
           toast.success('로그인 성공', {
             position: toast.POSITION.TOP_CENTER
@@ -72,7 +72,7 @@ export default function LoginForm() {
       .catch((error) => {
         if (error.response) {
           console.error(error.response.data);
-          setSubmiting(false);
+          setSubmitting(false);
           toast.error(error.response.data.message, {
             position: toast.POSITION.TOP_CENTER
           });
