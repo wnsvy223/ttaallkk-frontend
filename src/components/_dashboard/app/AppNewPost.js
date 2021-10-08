@@ -116,7 +116,7 @@ export default function AppNewPost() {
           </TableContainer>
         ) : (
           <Box textAlign="center" sx={{ p: 3 }}>
-            <Typography>주간 인기글이 없습니다.</Typography>
+            <Typography>최신 글이 없습니다.</Typography>
           </Box>
         )}
       </Box>

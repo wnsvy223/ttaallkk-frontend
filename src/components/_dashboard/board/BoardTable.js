@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
 import Moment from 'react-moment';
 import 'moment/locale/ko';
 import { numToKorean, FormatOptions } from 'num-to-korean';
@@ -14,9 +13,7 @@ import {
   TableHead,
   TableBody,
   TableRow,
-  TableCell,
-  CircularProgress,
-  Pagination
+  TableCell
 } from '@material-ui/core';
 import { styled } from '@material-ui/core/styles';
 import { Icon } from '@iconify/react';
@@ -25,65 +22,28 @@ import heartFill from '@iconify/icons-eva/heart-fill';
 import messageCircleFill from '@iconify/icons-eva/message-circle-fill';
 // component
 import SimpleBarReact from 'simplebar-react';
-// api
-import useRequest from '../../../hook/useRequest';
-import { request } from '../../../api/axios/axios';
 
 // ----------------------------------------------------------------------
 BoardTable.propTypes = {
-  category: PropTypes.number.isRequired
+  post: PropTypes.array.isRequired
 };
 
 const TableData = styled(TableCell)(() => ({
   padding: 12
 }));
 
-const PostPagination = styled(Pagination)(({ theme }) => ({
-  margin: theme.spacing(4),
-  justifyContent: 'center',
-  display: 'flex'
-}));
-
-export default function BoardTable({ category }) {
-  const [page, setPage] = useState(1);
-
-  const url = `/api/post?page=${page - 1}&category=${category}`;
-  const fetcher = () => request.get(url).then((res) => res.data);
-  const { data, isLoading, isError } = useRequest(url, fetcher);
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  if (isError)
-    return (
-      <Card>
-        <Box textAlign="center" sx={{ p: 3 }}>
-          <Typography>오류가 발생하였습니다.</Typography>
-        </Box>
-      </Card>
-    );
-
-  if (isLoading)
-    return (
-      <Card>
-        <Box textAlign="center" sx={{ p: 3 }}>
-          <CircularProgress />
-        </Box>
-      </Card>
-    );
-
+export default function BoardTable({ post }) {
   return (
     <Card>
       <Box sx={{ p: 1, pb: 1 }}>
-        {data?.content?.length > 0 ? (
+        {post.length > 0 ? (
           <TableContainer sx={{ minHeight: 350, p: 2 }}>
             <SimpleBarReact>
               <Table>
                 <TableHead>
                   <TableRow>
                     <TableCell align="center">번호</TableCell>
-                    <TableCell align="center"> 제목 </TableCell>
+                    <TableCell align="center">제목</TableCell>
                     <TableCell align="center">작성자</TableCell>
                     <TableCell align="center">댓글</TableCell>
                     <TableCell align="center">조회수</TableCell>
@@ -92,9 +52,9 @@ export default function BoardTable({ category }) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {data.content.map((row) => (
+                  {post.map((row) => (
                     <TableRow hover key={row.id} sx={{ cursor: 'pointer' }}>
-                      <TableData align="left" sx={{ maxWidth: 300 }}>
+                      <TableData align="left" sx={{ minWidth: 60, maxWidth: 100 }}>
                         <Typography sx={{ ml: 1, fontSize: 12, color: 'info.main' }} noWrap>
                           {`#${row.id}`}
                         </Typography>
@@ -121,7 +81,7 @@ export default function BoardTable({ category }) {
                           </Typography>
                         </Stack>
                       </TableData>
-                      <TableData sx={{ maxWidth: 100 }}>
+                      <TableData sx={{ minWidth: 80, maxWidth: 100 }}>
                         <Stack
                           direction="row"
                           alignItems="center"
@@ -138,7 +98,7 @@ export default function BoardTable({ category }) {
                           </Typography>
                         </Stack>
                       </TableData>
-                      <TableData sx={{ maxWidth: 100 }}>
+                      <TableData sx={{ minWidth: 80, maxWidth: 100 }}>
                         <Stack
                           direction="row"
                           alignItems="center"
@@ -155,7 +115,7 @@ export default function BoardTable({ category }) {
                           </Typography>
                         </Stack>
                       </TableData>
-                      <TableData sx={{ maxWidth: 100 }}>
+                      <TableData sx={{ minWidth: 80, maxWidth: 100 }}>
                         <Stack
                           direction="row"
                           alignItems="center"
@@ -172,7 +132,7 @@ export default function BoardTable({ category }) {
                           </Typography>
                         </Stack>
                       </TableData>
-                      <TableData align="center">
+                      <TableData align="center" sx={{ minWidth: 80, maxWidth: 100 }}>
                         <Typography noWrap sx={{ fontSize: 10, color: 'GrayText' }}>
                           <Moment fromNow>{row.createdAt}</Moment>
                         </Typography>
@@ -189,15 +149,6 @@ export default function BoardTable({ category }) {
           </Box>
         )}
       </Box>
-      <PostPagination
-        component="div"
-        shape="circular"
-        count={data.totalPages}
-        size="middle"
-        page={page}
-        color="info"
-        onChange={handleChangePage}
-      />
     </Card>
   );
 }
