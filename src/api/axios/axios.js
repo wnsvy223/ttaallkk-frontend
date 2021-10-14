@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { cacheAdapterEnhancer } from 'axios-extensions';
+// import { cacheAdapterEnhancer } from 'axios-extensions';
 import storage from '../../utils/storage';
 
 let isRefreshing = false;
@@ -21,8 +21,8 @@ export const request = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
   withCredentials: true, // 시큐어 쿠키를 전송받기 위한 설정.
   Accept: 'application/json',
-  headers: { 'Cache-Control': 'no-cache' },
-  adapter: cacheAdapterEnhancer(axios.defaults.adapter) // axios 캐시 확장모듈 설정
+  headers: { 'Cache-Control': 'no-cache' }
+  // adapter: cacheAdapterEnhancer(axios.defaults.adapter) // axios 캐시 확장모듈 설정
 });
 
 // 요청 인터셉터

@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 import Moment from 'react-moment';
 import 'moment/locale/ko';
 import { numToKorean, FormatOptions } from 'num-to-korean';
@@ -25,18 +26,42 @@ import SimpleBarReact from 'simplebar-react';
 
 // ----------------------------------------------------------------------
 BoardTable.propTypes = {
-  post: PropTypes.array.isRequired
+  post: PropTypes.object.isRequired,
+  category: PropTypes.object.isRequired
 };
 
 const TableData = styled(TableCell)(() => ({
   padding: 12
 }));
 
-export default function BoardTable({ post }) {
+export default function BoardTable({ category, post }) {
+  const navigate = useNavigate();
+
+  /**
+   * 테이블의 게시글 클릭
+   * @param {컴포넌트 이벤트} event
+   * @param {게시글 아이디} postId
+   * navigate로 이동하면서 url에는 프론트에서 계산된 게시글 번호로 표시하고
+   */
+  const handleRowClick = (event, postId) => {
+    event.preventDefault();
+    navigate(`/dashboard/community/${category?.name}/${postId}`);
+  };
+
+  /**
+   * 게시글 번호 부여
+   * (backend api로부터 조회된 페이징 데이터의 값으로 게시글 순차 번호를 부여 -> 최신글의 번호가 총 게시글 갯수)
+   * @param {게시글 페이징 데이터} data
+   * @param {map 인덱스 번호} index
+   * @returns 게시글 번호
+   */
+  const rownum = (data, index) =>
+    data?.totalElements - data?.number * data?.pageable.pageSize - index;
+
   return (
     <Card>
       <Box sx={{ p: 1, pb: 1 }}>
-        {post.length > 0 ? (
+        {post?.content.length > 0 ? (
           <TableContainer sx={{ minHeight: 350, p: 2 }}>
             <SimpleBarReact>
               <Table>
@@ -52,11 +77,16 @@ export default function BoardTable({ post }) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {post.map((row) => (
-                    <TableRow hover key={row.id} sx={{ cursor: 'pointer' }}>
+                  {post?.content.map((row, index) => (
+                    <TableRow
+                      hover
+                      key={row.id}
+                      sx={{ cursor: 'pointer' }}
+                      onClick={(event) => handleRowClick(event, row.id)}
+                    >
                       <TableData align="left" sx={{ minWidth: 60, maxWidth: 100 }}>
                         <Typography sx={{ ml: 1, fontSize: 12, color: 'info.main' }} noWrap>
-                          {`#${row.id}`}
+                          {rownum(post, index)}
                         </Typography>
                       </TableData>
                       <TableData align="left" sx={{ minWidth: 400 }}>

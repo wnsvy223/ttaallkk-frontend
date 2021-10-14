@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Container,
   Typography,
@@ -48,8 +49,10 @@ const EditBlock = styled.div`
 `;
 
 export default function PostEditor() {
+  const navigate = useNavigate();
+  const { state } = useLocation();
   const user = useSelector((store) => store.auth.user);
-  const [category, setCategory] = useState('');
+  const [category, setCategory] = useState(state?.category); // 해당 카테고리 게시판에서 에디터 랜더링 시 초기 카테고리 선택값은 해당 게시판
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [selectError, setSelectError] = useState(false);
 
@@ -80,7 +83,7 @@ export default function PostEditor() {
   };
 
   const handleCancel = () => {
-    window.history.back();
+    navigate(-1);
   };
 
   const createPost = (body, setSubmitting) => {
@@ -88,7 +91,7 @@ export default function PostEditor() {
       .post(`/api/post`, body)
       .then((res) => {
         if (res?.data?.status === 200) {
-          window.history.back();
+          navigate(-1);
           setSubmitting(false);
         }
       })
@@ -116,18 +119,21 @@ export default function PostEditor() {
         <Typography variant="h4" sx={{ mb: 5 }}>
           글 작성
         </Typography>
-        <Card sx={{ height: '90%', p: 2 }}>
+        <Card sx={{ height: '90%', p: { xs: 2, md: 8 } }}>
           <FormikProvider value={formik}>
             <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
               <Stack spacing={3}>
                 <FormControl fullWidth color="purple" error={selectError} size="small">
-                  <InputLabel id="category-select-label">카테고리</InputLabel>
+                  <InputLabel id="category-select-label" sx={{ fontSize: 13 }}>
+                    카테고리
+                  </InputLabel>
                   <Select
                     labelId="category-select-label"
                     id="category"
                     name="category"
                     value={category}
                     label="카테고리"
+                    sx={{ fontSize: 13 }}
                     onChange={handleSelect}
                     onClose={handleSelectClose}
                   >
@@ -148,6 +154,12 @@ export default function PostEditor() {
                   {...getFieldProps('title')}
                   error={Boolean(touched.title && errors.title)}
                   helperText={touched.title && errors.title}
+                  InputProps={{
+                    style: { fontSize: '13px' }
+                  }}
+                  InputLabelProps={{
+                    style: { fontSize: '13px' }
+                  }}
                 />
                 <EditBlock>
                   <Editor

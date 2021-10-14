@@ -72,7 +72,7 @@ function UserMyPostItem({ post }) {
           <Box
             component={Icon}
             icon={messageCircleFill}
-            sx={{ minWidth: 20, minHeight: 20, color: 'primary.main' }}
+            sx={{ width: 20, height: 20, color: 'primary.main' }}
           />
           <Typography variant="subtitle2" sx={{ ml: 0.5, fontSize: '15px', color: 'text.primary' }}>
             {numToKorean(commentCnt, FormatOptions.MIXED)}
@@ -102,11 +102,7 @@ function UserMyPostItem({ post }) {
             pr: 2
           }}
         >
-          <Box
-            component={Icon}
-            icon={heartFill}
-            sx={{ minWidth: 20, minHeight: 20, color: 'red' }}
-          />
+          <Box component={Icon} icon={heartFill} sx={{ width: 20, height: 20, color: 'red' }} />
           <Typography variant="subtitle2" sx={{ ml: 0.5, fontSize: '15px', color: 'text.primary' }}>
             {numToKorean(likeCnt, FormatOptions.MIXED)}
           </Typography>
@@ -145,7 +141,7 @@ export default function UserMyPost() {
       <Scrollbar>
         <Stack spacing={3} sx={{ p: 3 }}>
           {data?.length > 0 ? (
-            data.map((post) => <UserMyPostItem key={post.title} post={post} />)
+            data.map((post) => <UserMyPostItem key={post.id} post={post} />)
           ) : (
             <Box textAlign="center" sx={{ p: 3 }}>
               <Typography>작성한 게시물이 없습니다.</Typography>
