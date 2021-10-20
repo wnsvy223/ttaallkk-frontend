@@ -1,35 +1,62 @@
-import PropTypes from 'prop-types';
-import { useState } from 'react';
+// import PropTypes from 'prop-types';
+import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+// material-ui
 import { Typography, Stack, IconButton } from '@material-ui/core';
 import ThumbUpAltOutlined from '@material-ui/icons/ThumbUpAltOutlined';
 import ThumbUpAlt from '@material-ui/icons/ThumbUpAlt';
 import ThumbDownAltOutlined from '@material-ui/icons/ThumbDownAltOutlined';
 import ThumbDownAlt from '@material-ui/icons/ThumbDownAlt';
+// api
+import { request } from '../../../api/axios/axios';
+import useRequest from '../../../hook/useRequest';
 
-BoardPostLike.propTypes = {
-  postData: PropTypes.object.isRequired
-};
+export default function BoardPostLike() {
+  const params = useParams();
+  const user = useSelector((store) => store.auth.user);
+  const url = `/api/post/${params?.postId}`;
+  const fetcher = () => request.get(url).then((res) => res.data);
+  const { data } = useRequest(url, fetcher);
 
-export default function BoardPostLike({ postData }) {
-  const [isLike, setIsLike] = useState(postData.isAlreadyLike);
-  const [isNotLike, setIsNotLike] = useState(postData.isAlreadyNotLike);
+  const [isLike, setIsLike] = useState(false);
+  const [isNotLike, setIsNotLike] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+  const [notLikeCount, setNotLikeCount] = useState(0);
+
+  useEffect(() => {
+    setIsLike(data?.isAlreadyLike);
+    setLikeCount(data?.likeCnt);
+  }, [data?.isAlreadyLike, data?.likeCnt]);
 
   const handleLike = () => {
     if (isLike === true) {
-      setIsLike(false);
+      setLikeCount((prev) => prev - 1);
     } else {
-      setIsLike(true);
-      setIsNotLike(false);
+      setLikeCount((prev) => prev + 1);
     }
+    requsetUpdateLike(params?.postId);
   };
 
   const handleNotLike = () => {
+    setIsNotLike((prev) => !prev);
     if (isNotLike === true) {
-      setIsNotLike(false);
+      setNotLikeCount((prev) => prev - 1);
     } else {
-      setIsNotLike(true);
-      setIsLike(false);
+      setNotLikeCount((prev) => prev + 1);
     }
+  };
+
+  const requsetUpdateLike = (postId) => {
+    const url = `/api/like`;
+    const body = {
+      postId,
+      likeMemberUid: user?.uid
+    };
+    request.post(url, body).then((res) => {
+      console.log(JSON.stringify(res.data));
+      setIsLike(true);
+    });
   };
 
   return (
@@ -42,9 +69,7 @@ export default function BoardPostLike({ postData }) {
             <ThumbUpAltOutlined sx={{ fontSize: 20 }} />
           )}
         </IconButton>
-        <Typography sx={{ fontSize: 13, textAlign: 'center' }}>
-          {postData.likeCnt ? postData.likeCnt : 0}
-        </Typography>
+        <Typography sx={{ fontSize: 13, textAlign: 'center' }}>{likeCount}</Typography>
       </Stack>
       <Stack>
         <IconButton color="secondary" aria-label="add not like" onClick={handleNotLike}>
@@ -54,9 +79,7 @@ export default function BoardPostLike({ postData }) {
             <ThumbDownAltOutlined sx={{ fontSize: 20 }} />
           )}
         </IconButton>
-        <Typography sx={{ fontSize: 13, textAlign: 'center' }}>
-          {postData.notLikeCnt ? postData.notLikeCnt : 0}
-        </Typography>
+        <Typography sx={{ fontSize: 13, textAlign: 'center' }}>{notLikeCount}</Typography>
       </Stack>
     </Stack>
   );

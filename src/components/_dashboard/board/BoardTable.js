@@ -41,7 +41,7 @@ export default function BoardTable({ category, post }) {
    * 테이블의 게시글 클릭
    * @param {컴포넌트 이벤트} event
    * @param {게시글 아이디} postId
-   * navigate로 이동하면서 url에는 프론트에서 계산된 게시글 번호로 표시하고
+   * navigate로 이동하면서 카테고리 이름과 클릭한 게시글의 아이디값으로 히스토리 추가
    */
   const handleRowClick = (event, postId) => {
     event.preventDefault();

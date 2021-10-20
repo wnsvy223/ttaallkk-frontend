@@ -15,7 +15,7 @@ import UserSearch from './pages/UserSearch';
 import Profile from './pages/Profile';
 import Board from './pages/Board';
 import Editor from './pages/Editor';
-import BoardContent from './pages/BoardContent';
+import Post from './pages/Post';
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -49,7 +49,7 @@ export default function Router() {
           element: <Board title="홍보게시판" category={{ id: 4, name: 'ads' }} />
         },
         { path: 'community/create', element: <Editor /> },
-        { path: 'community/:category/:postId', element: <BoardContent /> }
+        { path: 'community/:category/:postId', element: <Post /> }
       ]
     },
     {

@@ -1,5 +1,6 @@
 /* eslint-disable react/no-danger */
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 import { styled } from '@material-ui/core/styles';
 import {
   Typography,
@@ -58,10 +59,13 @@ const ControlButton = styled(Button)(() => ({
   '&:hover': {
     backgroundColor: '#2E2851',
     color: '#fff'
-  }
+  },
+  boxShadow: '0px 2px 2px 0px rgba(152, 150, 181, 1)'
 }));
 
 export default function BoardContentCard({ postData }) {
+  const user = useSelector((store) => store.auth.user);
+
   return (
     <PostContentCard>
       <Grid container sx={{ p: 1 }}>
@@ -165,16 +169,20 @@ export default function BoardContentCard({ postData }) {
         />
       </CardContent>
       <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
-        <BoardPostLike postData={postData} />
+        <BoardPostLike />
       </CardActions>
       <Divider />
-      <Box sx={{ p: 2, display: 'flex', justifyContent: { xs: 'center', md: 'end' } }}>
-        <ControlButton variant="contained" sx={{ mr: 1 }}>
-          수정
-        </ControlButton>
-        <ControlButton variant="contained" sx={{ ml: 1 }}>
-          삭제
-        </ControlButton>
+      <Box sx={{ height: 70 }}>
+        {postData.uid === user?.uid && (
+          <Box sx={{ p: 2, display: 'flex', justifyContent: { xs: 'center', md: 'end' } }}>
+            <ControlButton variant="contained" sx={{ mr: 1 }}>
+              수정
+            </ControlButton>
+            <ControlButton variant="contained" sx={{ ml: 1 }}>
+              삭제
+            </ControlButton>
+          </Box>
+        )}
       </Box>
     </PostContentCard>
   );

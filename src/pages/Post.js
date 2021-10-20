@@ -19,7 +19,7 @@ const ContentMessageBox = styled(Card)(() => ({
   margin: 15
 }));
 
-export default function BoardContent() {
+export default function Post() {
   const params = useParams();
   const url = `/api/post/${params?.postId}`; // Url에서 파싱된 게시글아이디 파라미터 값으로 조회
   const fetcher = () => request.get(url).then((res) => res.data);

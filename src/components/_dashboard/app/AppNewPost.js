@@ -14,7 +14,7 @@ import {
   CircularProgress
 } from '@material-ui/core';
 import { styled } from '@material-ui/core/styles';
-
+import { useNavigate } from 'react-router-dom';
 import Moment from 'react-moment';
 import 'moment/locale/ko';
 
@@ -40,9 +40,15 @@ const TableCellTextView = styled(Typography)(() => ({
 }));
 
 export default function AppNewPost() {
+  const navigate = useNavigate();
   const url = `/api/post/recent`;
   const fetcher = () => request.get(url).then((res) => res.data);
   const { data, isLoading, isError } = useRequest(url, fetcher);
+
+  const handleRowClick = (event, post) => {
+    event.preventDefault();
+    navigate(`/dashboard/community/${post?.categoryName}/${post?.id}`);
+  };
 
   if (isError)
     return (
@@ -74,7 +80,12 @@ export default function AppNewPost() {
               <Table>
                 <TableBody>
                   {data.slice(0, 7).map((row) => (
-                    <TableRow hover key={row.id} sx={{ cursor: 'pointer' }}>
+                    <TableRow
+                      hover
+                      key={row.id}
+                      sx={{ cursor: 'pointer' }}
+                      onClick={(event) => handleRowClick(event, row)}
+                    >
                       <TableData sx={{ maxWidth: 100 }}>
                         <TableCellTextView noWrap sx={{ ml: 1, color: 'info.main' }}>
                           {`#${row.id}`}

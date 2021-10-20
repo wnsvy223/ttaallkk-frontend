@@ -14,7 +14,7 @@ import {
   CircularProgress
 } from '@material-ui/core';
 import { styled } from '@material-ui/core/styles';
-
+import { useNavigate } from 'react-router-dom';
 import { numToKorean, FormatOptions } from 'num-to-korean';
 import Moment from 'react-moment';
 import 'moment/locale/ko';
@@ -43,9 +43,15 @@ const TableCellTextView = styled(Typography)(() => ({
 }));
 
 export default function AppHotPost() {
+  const navigate = useNavigate();
   const url = `/api/post/weekly`;
   const fetcher = () => request.get(url).then((res) => res.data);
   const { data, isLoading, isError } = useRequest(url, fetcher);
+
+  const handleRowClick = (event, post) => {
+    event.preventDefault();
+    navigate(`/dashboard/community/${post?.categoryName}/${post?.id}`);
+  };
 
   if (isError)
     return (
@@ -77,7 +83,12 @@ export default function AppHotPost() {
               <Table>
                 <TableBody>
                   {data.slice(0, 7).map((row) => (
-                    <TableRow hover key={row.postId} sx={{ cursor: 'pointer' }}>
+                    <TableRow
+                      hover
+                      key={row.id}
+                      sx={{ cursor: 'pointer' }}
+                      onClick={(event) => handleRowClick(event, row)}
+                    >
                       <TableData align="center" sx={{ maxWidth: 300 }}>
                         <TableCellTextView noWrap sx={{ color: 'success.dark' }}>
                           {row.categoryName}
