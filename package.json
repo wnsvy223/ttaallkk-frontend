@@ -39,7 +39,8 @@
   "reactSnap": {
     "include": [
       "/",
-      "/dashboard/home",
+      "/login",
+      "/register",
       "/dashboard/user",
       "/dashboard/products",
       "/dashboard/blog",
@@ -48,7 +49,8 @@
       "/dashboard/community/talk",
       "/dashboard/community/tip",
       "/dashboard/community/ads",
-      "/dashboard/community/create"
+      "/dashboard/community/create",
+      "/404"
     ],
     "puppeteerArgs": [
       "--no-sandbox",
