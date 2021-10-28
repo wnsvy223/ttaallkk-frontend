@@ -34,19 +34,25 @@ export default function Router() {
         { path: 'search', element: <UserSearch /> },
         {
           path: 'community/free',
-          element: <Board title="자유게시판" category={{ id: 1, name: 'free' }} />
+          element: (
+            <Board title="자유게시판" category={{ id: 1, name: 'free', categoryTag: 'free' }} />
+          )
         },
         {
           path: 'community/talk',
-          element: <Board title="대화게시판" category={{ id: 2, name: 'talk' }} />
+          element: (
+            <Board title="대화게시판" category={{ id: 2, name: 'talk', categoryTag: 'talk' }} />
+          )
         },
         {
           path: 'community/tip',
-          element: <Board title="Tech&Tip" category={{ id: 3, name: 'tip' }} />
+          element: <Board title="Tech&Tip" category={{ id: 3, name: 'tip', categoryTag: 'tip' }} />
         },
         {
           path: 'community/ads',
-          element: <Board title="홍보게시판" category={{ id: 4, name: 'ads' }} />
+          element: (
+            <Board title="홍보게시판" category={{ id: 4, name: 'ads', categoryTag: 'ads' }} />
+          )
         },
         { path: 'community/create', element: <Editor /> },
         { path: 'community/:category/:postId', element: <Post /> }

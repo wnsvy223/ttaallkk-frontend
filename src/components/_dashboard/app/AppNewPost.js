@@ -47,7 +47,7 @@ export default function AppNewPost() {
 
   const handleRowClick = (event, post) => {
     event.preventDefault();
-    navigate(`/dashboard/community/${post?.categoryName}/${post?.id}`);
+    navigate(`/dashboard/community/${post?.categoryTag}/${post?.id}`);
   };
 
   if (isError)

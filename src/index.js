@@ -1,7 +1,7 @@
 // scroll bar
 import 'simplebar/src/simplebar.css';
 
-import ReactDOM from 'react-dom';
+import { hydrate, render } from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 
@@ -18,17 +18,30 @@ import App from './App';
 // ----------------------------------------------------------------------
 
 const createStoreWithMiddleware = applyMiddleware(promiseMiddlerware, reduxThunk)(createStore);
-
-ReactDOM.render(
-  <Provider store={createStoreWithMiddleware(reducer)}>
-    <HelmetProvider>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </HelmetProvider>
-  </Provider>,
-  document.getElementById('root')
-);
+const rootElement = document.getElementById('root');
+if (rootElement.hasChildNodes()) {
+  hydrate(
+    <Provider store={createStoreWithMiddleware(reducer)}>
+      <HelmetProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </HelmetProvider>
+    </Provider>,
+    rootElement
+  );
+} else {
+  render(
+    <Provider store={createStoreWithMiddleware(reducer)}>
+      <HelmetProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </HelmetProvider>
+    </Provider>,
+    rootElement
+  );
+}
 
 // If you want to enable client cache, register instead.
 serviceWorker.unregister();

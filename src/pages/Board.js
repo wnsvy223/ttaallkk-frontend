@@ -66,9 +66,9 @@ export default function Board({ title, category }) {
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
     if (keyword) {
-      navigate(`/dashboard/community/${category?.name}?search=${keyword}&page=${newPage}`);
+      navigate(`/dashboard/community/${category?.categoryTag}?search=${keyword}&page=${newPage}`);
     } else {
-      navigate(`/dashboard/community/${category?.name}?page=${newPage}`);
+      navigate(`/dashboard/community/${category?.categoryTag}?page=${newPage}`);
     }
   };
 
@@ -79,7 +79,7 @@ export default function Board({ title, category }) {
    */
   const handleSearchPost = (searchValue) => {
     setKeyword(searchValue);
-    navigate(`/dashboard/community/${category?.name}?search=${searchValue}`);
+    navigate(`/dashboard/community/${category?.categoryTag}?search=${searchValue}`);
   };
 
   // 게시판 페이징 히스토리 상태 관리 함수(페이징 쿼리스트링 유무에 따라 상태 변경)
