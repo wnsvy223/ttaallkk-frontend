@@ -169,7 +169,7 @@ export default function BoardContentCard({ postData }) {
         />
       </CardContent>
       <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
-        <BoardPostLike />
+        <BoardPostLike postData={postData} />
       </CardActions>
       <Divider />
       <Box sx={{ height: 70 }}>
