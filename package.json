@@ -39,6 +39,8 @@
   "reactSnap": {
     "include": [
       "/",
+      "/login",
+      "/register",
       "/dashboard/home",
       "/dashboard/user",
       "/dashboard/products",
