@@ -1,9 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { Container, Typography, Card, Box, CircularProgress } from '@material-ui/core';
+import { Container, Typography, Card, Box, CircularProgress, Chip } from '@material-ui/core';
+import { Icon } from '@iconify/react';
+import messageCircleOutline from '@iconify/icons-eva/message-circle-outline';
+
 // components
 import Page from '../components/Page';
 import BoardContentCard from '../components/_dashboard/board/BoardContentCard';
+import BoardCommentCreateEditor from '../components/_dashboard/board/BoardCommentCreateEditor';
+import BoardCommentList from '../components/_dashboard/board/BoardCommentList';
+
 // api
 import { request } from '../api/axios/axios';
 // ----------------------------------------------------------------------
@@ -18,7 +24,7 @@ export default function Post() {
   const [show, setShow] = useState(false); // 데이터 패칭 이후에 랜더링을 위한 상태값
 
   // 게시글 데이터 조회
-  const fetchLike = useCallback(async () => {
+  const fetchPost = useCallback(async () => {
     try {
       const res = await request.get(url);
       if (res) {
@@ -34,8 +40,8 @@ export default function Post() {
 
   useEffect(() => {
     setIsLoading(true);
-    fetchLike();
-  }, [fetchLike]);
+    fetchPost();
+  }, [fetchPost]);
 
   if (isLoading)
     return (
@@ -76,7 +82,24 @@ export default function Post() {
           게시글
         </Typography>
       </Container>
-      {show && data && <BoardContentCard postData={data} />}
+      {show && data && (
+        <Box>
+          <BoardContentCard postData={data} />
+          <BoardCommentCreateEditor commentId={0} isRootComment />
+          <Chip
+            icon={
+              <Box
+                component={Icon}
+                icon={messageCircleOutline}
+                sx={{ minWidth: 20, minHeight: 20 }}
+              />
+            }
+            label={`${data?.commentCnt}개의 댓글`}
+            sx={{ ml: 4, mt: 4 }}
+          />
+          <BoardCommentList />
+        </Box>
+      )}
     </Page>
   );
 }

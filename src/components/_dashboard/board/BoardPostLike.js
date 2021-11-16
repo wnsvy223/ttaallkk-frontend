@@ -29,12 +29,17 @@ export default function BoardPostLike({ postData }) {
   useEffect(() => {
     setIsLike(postData?.isAlreadyLike);
     setLikeCount(postData?.likeCnt);
-    setIsNotLike(postData?.isAlreadyUnLike);
-    setNotLikeCount(postData?.unLikeCnt);
-  }, [postData?.isAlreadyLike, postData?.isAlreadyUnLike, postData?.likeCnt, postData?.unLikeCnt]);
+    setIsNotLike(postData?.isAlreadyDisLike);
+    setNotLikeCount(postData?.disLikeCnt);
+  }, [
+    postData?.isAlreadyLike,
+    postData?.isAlreadyDisLike,
+    postData?.likeCnt,
+    postData?.disLikeCnt
+  ]);
 
   // 좋아요 or 싫어요 등록 및 취소 요청
-  const requsetUpdateLike = (postId, url) => {
+  const requsetUpdateLikeDisLike = (postId, url) => {
     const body = {
       postId,
       uid: user?.uid
@@ -68,7 +73,7 @@ export default function BoardPostLike({ postData }) {
     } else {
       setLikeCount((prev) => prev + 1);
     }
-    requsetUpdateLike(params?.postId, `/api/like`);
+    requsetUpdateLikeDisLike(params?.postId, `/api/like`);
   };
 
   // 싫어요 상태 변경 함수
@@ -85,7 +90,7 @@ export default function BoardPostLike({ postData }) {
     } else {
       setNotLikeCount((prev) => prev + 1);
     }
-    requsetUpdateLike(params?.postId, `/api/unlike`);
+    requsetUpdateLikeDisLike(params?.postId, `/api/dislike`);
   };
 
   return (

@@ -1,3 +1,5 @@
+// recoil
+import { RecoilRoot } from 'recoil';
 // routes
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -11,10 +13,12 @@ import ScrollToTop from './components/ScrollToTop';
 
 export default function App() {
   return (
-    <ThemeConfig>
-      <ToastContainer theme="colored" hideProgressBar style={{ fontSize: '12px' }} />
-      <ScrollToTop />
-      <Router />
-    </ThemeConfig>
+    <RecoilRoot>
+      <ThemeConfig>
+        <ToastContainer theme="colored" hideProgressBar style={{ fontSize: '12px' }} />
+        <ScrollToTop />
+        <Router />
+      </ThemeConfig>
+    </RecoilRoot>
   );
 }
