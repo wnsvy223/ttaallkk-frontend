@@ -192,7 +192,7 @@ export default function BoardCommentItem({ comment }) {
             <Box>
               <Stack direction="row" alignItems="center" justifyContent="start" spacing={2}>
                 <Typography sx={{ fontSize: 10, minWidth: 30 }}>{comment?.displayName}</Typography>
-                <Typography noWrap sx={{ fontSize: 5, color: 'GrayText' }}>
+                <Typography noWrap sx={{ fontSize: { xs: 10, md: 5 }, color: 'GrayText' }}>
                   <Moment fromNow>{comment?.createdAt}</Moment>
                 </Typography>
               </Stack>
