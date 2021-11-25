@@ -16,14 +16,17 @@ import tableMergedCell from '@toast-ui/editor-plugin-table-merged-cell';
 import uml from '@toast-ui/editor-plugin-uml';
 
 BoardEditor.propTypes = {
-  editorRef: PropTypes.object.isRequired
+  editorRef: PropTypes.object.isRequired,
+  height: PropTypes.string,
+  initialValue: PropTypes.string
 };
 
-export default function BoardEditor({ editorRef }) {
+export default function BoardEditor({ editorRef, height, initialValue }) {
   return (
     <Editor
       previewStyle="vertical"
-      height="300px"
+      initialValue={initialValue || ''}
+      height={height || '300px'}
       initialEditType="wysiwyg"
       useCommandShortcut
       usageStatistics={false}

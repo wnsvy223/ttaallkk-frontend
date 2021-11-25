@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
@@ -20,16 +20,13 @@ import { LoadingButton } from '@material-ui/lab';
 import edit2Outline from '@iconify/icons-eva/edit-2-outline';
 import closeOutline from '@iconify/icons-eva/close-outline';
 import styled from 'styled-components';
-import { Editor } from 'react-draft-wysiwyg';
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import { EditorState, convertToRaw } from 'draft-js';
-import draftToHtml from 'draftjs-to-html';
 import * as Yup from 'yup';
 import { useFormik, Form, FormikProvider } from 'formik';
 // api
 import { request } from '../api/axios/axios';
 // components
 import Page from '../components/Page';
+import BoardEditor from '../components/_dashboard/board/BoardEditor';
 
 // ----------------------------------------------------------------------
 
@@ -52,8 +49,8 @@ export default function PostEditor() {
   const navigate = useNavigate();
   const { state } = useLocation();
   const user = useSelector((store) => store.auth.user);
+  const editorRef = useRef();
   const [category, setCategory] = useState(state?.category); // 해당 카테고리 게시판에서 에디터 랜더링 시 초기 카테고리 선택값은 해당 게시판
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [selectError, setSelectError] = useState(false);
 
   const PostSchema = Yup.object().shape({
@@ -66,21 +63,19 @@ export default function PostEditor() {
     },
     validationSchema: PostSchema,
     onSubmit: (postData, { setSubmitting }) => {
+      const editorInstance = editorRef.current?.getInstance();
+      const markdown = editorInstance?.getMarkdown();
       const body = {
         writeUid: user.uid,
         categoryId: category,
         title: postData.title,
-        content: draftToHtml(convertToRaw(editorState.getCurrentContent()))
+        content: markdown
       };
       createPost(body, setSubmitting);
     }
   });
 
   const { errors, touched, isSubmitting, handleSubmit, getFieldProps } = formik;
-
-  const onEditorStateChange = (editorState) => {
-    setEditorState(editorState);
-  };
 
   const handleCancel = () => {
     navigate(-1);
@@ -162,31 +157,7 @@ export default function PostEditor() {
                   }}
                 />
                 <EditBlock>
-                  <Editor
-                    // 에디터와 툴바 모두에 적용되는 클래스
-                    wrapperClassName="wrapper-class"
-                    // 에디터 주변에 적용된 클래스
-                    editorClassName="editor"
-                    // 툴바 주위에 적용된 클래스
-                    toolbarClassName="toolbar-class"
-                    // 툴바 설정
-                    toolbar={{
-                      // inDropdown: 해당 항목과 관련된 항목을 드롭다운으로 나타낼것인지
-                      list: { inDropdown: true },
-                      textAlign: { inDropdown: true },
-                      link: { inDropdown: true },
-                      history: { inDropdown: false }
-                    }}
-                    placeholder="내용을 작성해주세요."
-                    // 한국어 설정
-                    localization={{
-                      locale: 'ko'
-                    }}
-                    // 초기값 설정
-                    editorState={editorState}
-                    // 에디터의 값이 변경될 때마다 onEditorStateChange 호출
-                    onEditorStateChange={onEditorStateChange}
-                  />
+                  <BoardEditor editorRef={editorRef} height="600px" />
                 </EditBlock>
                 <Box sx={{ display: 'flex', justifyContent: 'end', alignItems: 'end' }}>
                   <LoadingButton

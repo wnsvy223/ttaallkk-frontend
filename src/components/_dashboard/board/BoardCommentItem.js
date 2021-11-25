@@ -31,8 +31,8 @@ import 'moment/locale/ko';
 // toast
 import { toast } from 'react-toastify';
 
-// Markdown
-import Markdown from './MarkDown';
+// TOAST UI Viewer
+import { Viewer } from '@toast-ui/react-editor';
 
 // components
 import BoardCommentCreateEditor from './BoardCommentCreateEditor';
@@ -41,6 +41,9 @@ import AlertDialog from '../../common/AlertDialog';
 
 // api
 import { request } from '../../../api/axios/axios';
+
+// utils
+import decodeHtmlEntity from '../../../utils/decodeHtmlEntity';
 // ----------------------------------------------------------------------
 
 BoardCommentItem.propTypes = {
@@ -196,7 +199,7 @@ export default function BoardCommentItem({ comment }) {
                   <Moment fromNow>{comment?.createdAt}</Moment>
                 </Typography>
               </Stack>
-              <Markdown content={comment?.content} />
+              <Viewer initialValue={decodeHtmlEntity(comment?.content)} />
             </Box>
           </Stack>
         </Grid>
@@ -289,7 +292,11 @@ export default function BoardCommentItem({ comment }) {
         <BoardCommentCreateEditor commentId={comment?.id} isRootComment={false} />
       )}
       {updateCommentNum === comment?.id && displayUpdateEditor && (
-        <BoardCommentUpdateEditor commentId={comment?.id} onHideEditor={handleHideEditor} />
+        <BoardCommentUpdateEditor
+          commentId={comment?.id}
+          onHideEditor={handleHideEditor}
+          initialValue={comment?.content}
+        />
       )}
       {childrens.length > 0 &&
         displayChildren &&

@@ -23,7 +23,13 @@ import moment from 'moment';
 import 'moment/locale/ko';
 import { numToKorean, FormatOptions } from 'num-to-korean';
 
+// TOAST UI Viewer
+import { Viewer } from '@toast-ui/react-editor';
+
+// utils
 import decodeHtmlEntity from '../../../utils/decodeHtmlEntity';
+
+// components
 import BoardPostLike from './BoardPostLike';
 // ----------------------------------------------------------------------
 
@@ -162,11 +168,7 @@ export default function BoardContentCard({ postData }) {
         />
       )}
       <CardContent sx={{ minHeight: 200 }}>
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          dangerouslySetInnerHTML={{ __html: decodeHtmlEntity(postData.content) }}
-        />
+        <Viewer initialValue={decodeHtmlEntity(postData.content)} />
       </CardContent>
       <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
         <BoardPostLike postData={postData} />

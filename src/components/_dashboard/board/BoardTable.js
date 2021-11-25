@@ -14,27 +14,29 @@ import {
   TableHead,
   TableBody,
   TableRow,
-  TableCell
+  TableCell,
+  Badge
 } from '@material-ui/core';
 import { styled } from '@material-ui/core/styles';
 import { Icon } from '@iconify/react';
 import eyeFill from '@iconify/icons-eva/eye-fill';
 import heartFill from '@iconify/icons-eva/heart-fill';
-import messageCircleFill from '@iconify/icons-eva/message-circle-fill';
+
 // component
 import SimpleBarReact from 'simplebar-react';
 
 // ----------------------------------------------------------------------
 BoardTable.propTypes = {
   post: PropTypes.object.isRequired,
-  category: PropTypes.object.isRequired
+  category: PropTypes.object.isRequired,
+  color: PropTypes.string
 };
 
 const TableData = styled(TableCell)(() => ({
   padding: 12
 }));
 
-export default function BoardTable({ category, post }) {
+export default function BoardTable({ category, post, color }) {
   const navigate = useNavigate();
 
   /**
@@ -70,7 +72,6 @@ export default function BoardTable({ category, post }) {
                     <TableCell align="center">번호</TableCell>
                     <TableCell align="center">제목</TableCell>
                     <TableCell align="center">작성자</TableCell>
-                    <TableCell align="center">댓글</TableCell>
                     <TableCell align="center">조회수</TableCell>
                     <TableCell align="center">좋아요</TableCell>
                     <TableCell align="center">등록일</TableCell>
@@ -89,10 +90,15 @@ export default function BoardTable({ category, post }) {
                           {rownum(post, index)}
                         </Typography>
                       </TableData>
-                      <TableData align="left" sx={{ minWidth: 400 }}>
-                        <Typography noWrap variant="body2" sx={{ ml: 2, fontSize: 13 }}>
-                          {row.title}
-                        </Typography>
+                      <TableData align="left" sx={{ minWidth: 400, maxWidth: 500 }}>
+                        <Stack direction="row" alignItems="center" spacing={3}>
+                          <Typography noWrap variant="body2" sx={{ ml: 2, fontSize: 13 }}>
+                            {row.title}
+                          </Typography>
+                          <Box sx={{ pr: 2 }}>
+                            <Badge badgeContent={row.commentCnt} color={color} />
+                          </Box>
+                        </Stack>
                       </TableData>
                       <TableData align="center" sx={{ maxWidth: 150 }}>
                         <Stack
@@ -120,25 +126,8 @@ export default function BoardTable({ category, post }) {
                         >
                           <Box
                             component={Icon}
-                            icon={messageCircleFill}
-                            sx={{ minWidth: 20, minHeight: 20, color: 'primary.main' }}
-                          />
-                          <Typography noWrap sx={{ ml: 1, fontSize: 12, color: 'text.primary' }}>
-                            {numToKorean(row.commentCnt, FormatOptions.MIXED)}
-                          </Typography>
-                        </Stack>
-                      </TableData>
-                      <TableData sx={{ minWidth: 80, maxWidth: 100 }}>
-                        <Stack
-                          direction="row"
-                          alignItems="center"
-                          justifyContent="center"
-                          spacing={1}
-                        >
-                          <Box
-                            component={Icon}
                             icon={eyeFill}
-                            sx={{ minWidth: 20, minHeight: 20, color: 'info.main' }}
+                            sx={{ minWidth: 20, minHeight: 20, color: 'primary.main' }}
                           />
                           <Typography noWrap sx={{ ml: 1, fontSize: 12, color: 'text.primary' }}>
                             {numToKorean(row.views, FormatOptions.MIXED)}

@@ -7,4 +7,3 @@ export { default as BoardCommentUpdateEditor } from './BoardCommentUpdateEditor'
 export { default as BoardCommentList } from './BoardCommentList';
 export { default as BoardCommentItem } from './BoardCommentItem';
 export { default as BoardEditor } from './BoardEditor';
-export { default as MarkDown } from './MarkDown';

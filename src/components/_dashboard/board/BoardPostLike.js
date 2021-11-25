@@ -61,36 +61,48 @@ export default function BoardPostLike({ postData }) {
 
   // 좋아요 상태 변경 함수
   const handleLike = () => {
-    setIsLike((prev) => !prev); // 좋아요 변경(기존상태의 반대 상태로 변경)
-    // 싫어요가 있을 경우 싫어요 카운트 1감소 및 싫어요 해제
-    if (isNotLike) {
-      setIsNotLike((prev) => !prev);
-      setNotLikeCount((prev) => prev - 1);
-    }
-    // 좋아요가 있을 경우 좋아요 카운트 1감소 없을경우 좋아요 카운트 1증가
-    if (isLike) {
-      setLikeCount((prev) => prev - 1);
+    if (user) {
+      setIsLike((prev) => !prev); // 좋아요 변경(기존상태의 반대 상태로 변경)
+      // 싫어요가 있을 경우 싫어요 카운트 1감소 및 싫어요 해제
+      if (isNotLike) {
+        setIsNotLike((prev) => !prev);
+        setNotLikeCount((prev) => prev - 1);
+      }
+      // 좋아요가 있을 경우 좋아요 카운트 1감소 없을경우 좋아요 카운트 1증가
+      if (isLike) {
+        setLikeCount((prev) => prev - 1);
+      } else {
+        setLikeCount((prev) => prev + 1);
+      }
+      requsetUpdateLikeDisLike(params?.postId, `/api/like`);
     } else {
-      setLikeCount((prev) => prev + 1);
+      toast.error('로그인이 필요합니다.', {
+        position: toast.POSITION.BOTTOM_CENTER
+      });
     }
-    requsetUpdateLikeDisLike(params?.postId, `/api/like`);
   };
 
   // 싫어요 상태 변경 함수
   const handleNotLike = () => {
-    setIsNotLike((prev) => !prev); // 싫어오 변경(기존상태의 반대 상태로 변경)
-    // 좋아요가 있을 경우 싫어요 카운트 1감소 및 싫어요 해제
-    if (isLike) {
-      setIsLike((prev) => !prev);
-      setLikeCount((prev) => prev - 1);
-    }
-    // 싫어요가 있을 경우 좋아요 카운트 1감소 없을경우 좋아요 카운트 1증가
-    if (isNotLike) {
-      setNotLikeCount((prev) => prev - 1);
+    if (user) {
+      setIsNotLike((prev) => !prev); // 싫어오 변경(기존상태의 반대 상태로 변경)
+      // 좋아요가 있을 경우 싫어요 카운트 1감소 및 싫어요 해제
+      if (isLike) {
+        setIsLike((prev) => !prev);
+        setLikeCount((prev) => prev - 1);
+      }
+      // 싫어요가 있을 경우 좋아요 카운트 1감소 없을경우 좋아요 카운트 1증가
+      if (isNotLike) {
+        setNotLikeCount((prev) => prev - 1);
+      } else {
+        setNotLikeCount((prev) => prev + 1);
+      }
+      requsetUpdateLikeDisLike(params?.postId, `/api/dislike`);
     } else {
-      setNotLikeCount((prev) => prev + 1);
+      toast.error('로그인이 필요합니다.', {
+        position: toast.POSITION.BOTTOM_CENTER
+      });
     }
-    requsetUpdateLikeDisLike(params?.postId, `/api/dislike`);
   };
 
   return (

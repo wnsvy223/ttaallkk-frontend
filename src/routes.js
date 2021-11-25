@@ -1,9 +1,11 @@
 import { Navigate, useRoutes } from 'react-router-dom';
-// layouts
 import { useSelector } from 'react-redux';
+
+// layouts
 import DashboardLayout from './layouts/dashboard';
 import LogoOnlyLayout from './layouts/LogoOnlyLayout';
-//
+
+// pages
 import Login from './pages/Login';
 import Register from './pages/Register';
 import DashboardApp from './pages/DashboardApp';

@@ -154,7 +154,7 @@ export default function Board({ title, category }) {
             </Box>
           </Card>
         )}
-        {data && <BoardTable category={category} post={data} />}
+        {data && <BoardTable category={category} post={data} color={color} />}
         {data?.content.length > 0 && (
           <PostPagination
             component="div"

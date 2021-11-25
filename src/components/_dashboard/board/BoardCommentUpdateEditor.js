@@ -15,10 +15,14 @@ import BoardEditor from './BoardEditor';
 // api
 import { request } from '../../../api/axios/axios';
 
+// utils
+import decodeHtmlEntity from '../../../utils/decodeHtmlEntity';
 // ----------------------------------------------------------------------
+
 BoardCommentUpdateEditor.propTypes = {
   commentId: PropTypes.number.isRequired, // 댓글 아이디
-  onHideEditor: PropTypes.func.isRequired // 자식 컴포넌트인 에디터의 랜더링 제거를 위해 부모컴포넌트로 이벤트 전달
+  onHideEditor: PropTypes.func.isRequired, // 자식 컴포넌트인 에디터의 랜더링 제거를 위해 부모컴포넌트로 이벤트 전달
+  initialValue: PropTypes.string // 댓글 수정 전 내용 초기값
 };
 
 const EditorButtonBox = styled(Box)(({ theme }) => ({
@@ -33,7 +37,7 @@ const EditorButtonBox = styled(Box)(({ theme }) => ({
   }
 }));
 
-export default function BoardCommentUpdateEditor({ commentId, onHideEditor }) {
+export default function BoardCommentUpdateEditor({ commentId, onHideEditor, initialValue }) {
   const editorRef = useRef();
   const user = useSelector((store) => store.auth.user);
 
@@ -80,7 +84,7 @@ export default function BoardCommentUpdateEditor({ commentId, onHideEditor }) {
 
   return (
     <Box sx={{ pt: 2, pb: 2 }}>
-      <BoardEditor editorRef={editorRef} />
+      <BoardEditor editorRef={editorRef} initialValue={decodeHtmlEntity(initialValue)} />
       <EditorButtonBox>
         <Button onClick={handleUpdateComment} variant="contained" sx={{ mr: 1 }}>
           댓글 수정
