@@ -13,7 +13,7 @@ export const getPost = (postId) => async (dispatch) => {
     });
     return Promise.resolve(res.data);
   } catch (error) {
-    return Promise.reject(error.message);
+    return Promise.reject(error);
   }
 };
 
@@ -27,7 +27,7 @@ export const updatePost = (postId, body) => async (dispatch) => {
     });
     return Promise.resolve(res.data);
   } catch (error) {
-    return Promise.reject(error.message);
+    return Promise.reject(error);
   }
 };
 
@@ -41,6 +41,6 @@ export const deletePost = (postId) => async (dispatch) => {
     });
     return Promise.resolve(res.data);
   } catch (error) {
-    return Promise.reject(error.message);
+    return Promise.reject(error);
   }
 };

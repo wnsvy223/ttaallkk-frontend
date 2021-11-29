@@ -103,7 +103,6 @@ export default function BoardContentCard() {
 
   const user = useSelector((store) => store?.auth?.user);
   const postData = useSelector((store) => store?.post?.contents);
-  console.log(postData);
 
   const [openDialog, setOpenDialog] = useState(false);
   const [openEditor, setOpenEditor] = useState(false);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, Suspense } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Typography, Card, Box, CircularProgress, Chip } from '@material-ui/core';
@@ -21,17 +21,21 @@ export default function Post() {
 
   const data = useSelector((store) => store?.post?.contents); // 게시글 본문 데이터
   const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [show, setShow] = useState(false); // 데이터 패칭 이후에 랜더링을 위한 상태값
 
   // 게시글 본문 데이터 조회 및 상태값 디스패치
   const fetchPost = useCallback(async () => {
+    setIsLoading(true);
     dispatch(getPost(params?.postId))
       .then(() => {
         setShow(true);
+        setIsLoading(false);
       })
       .catch((error) => {
         console.log(error);
         setIsError(true);
+        setIsLoading(false);
       });
   }, [dispatch, params?.postId]);
 
@@ -39,37 +43,27 @@ export default function Post() {
     fetchPost();
   }, [fetchPost]);
 
-  if (isError)
-    return (
-      <Page title="Board: 게시글 | TTAALLKK">
-        <Container>
-          <Typography variant="h4" sx={{ mb: 5 }}>
-            게시글
-          </Typography>
-          <Card>
-            <Box textAlign="center" sx={{ p: 3 }}>
-              <Typography>오류가 발생하였습니다.</Typography>
-            </Box>
-          </Card>
-        </Container>
-      </Page>
-    );
-
   return (
     <Page title="Board: 게시글 | TTAALLKK">
       <Container>
         <Typography variant="h4" sx={{ mb: 5 }}>
           게시글
         </Typography>
-      </Container>
-      {show && data && (
-        <Suspense
-          fallback={
+        {isLoading && (
+          <Card>
             <Box textAlign="center" sx={{ p: 3 }}>
               <CircularProgress />
             </Box>
-          }
-        >
+          </Card>
+        )}
+        {isError && !isLoading && (
+          <Card>
+            <Box textAlign="center" sx={{ p: 3 }}>
+              <Typography>오류가 발생하였습니다.</Typography>
+            </Box>
+          </Card>
+        )}
+        {show && data && (
           <Box>
             <BoardContentCard />
             <BoardCommentCreateEditor commentId={0} isRootComment />
@@ -86,8 +80,8 @@ export default function Post() {
             />
             <BoardCommentList />
           </Box>
-        </Suspense>
-      )}
+        )}
+      </Container>
     </Page>
   );
 }
