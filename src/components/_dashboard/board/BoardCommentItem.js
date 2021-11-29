@@ -80,7 +80,7 @@ export default function BoardCommentItem({ comment }) {
   const open = Boolean(anchorEl);
 
   // AlertDialog
-  const [openDialog, setOpenDailog] = useState(false); // 댓글 삭제 확인 다이얼로그 상태값
+  const [openDialog, setOpenDialog] = useState(false); // 댓글 삭제 확인 다이얼로그 상태값
 
   // 메뉴 확장 아이콘 클릭 이벤트
   const handleMoreVertClick = (event) => {
@@ -96,7 +96,7 @@ export default function BoardCommentItem({ comment }) {
         setDisplayUpdateEditor(true);
         break;
       case 1:
-        setOpenDailog(true);
+        setOpenDialog(true);
         break;
       case 2:
         // Todo : 댓글 신고기능
@@ -140,7 +140,7 @@ export default function BoardCommentItem({ comment }) {
 
   // 댓글 삭제 다이얼로그 닫기 이벤트
   const handleDialogClose = () => {
-    setOpenDailog(false);
+    setOpenDialog(false);
   };
 
   // 댓글 삭제 다이얼로그 확인 이벤트
@@ -154,7 +154,7 @@ export default function BoardCommentItem({ comment }) {
       const res = await request.delete(`/api/comment/${commentId}`);
       if (res) {
         console.log(JSON.stringify(res.data));
-        toast.error('댓글 삭제 성공', {
+        toast.success('댓글 삭제 성공', {
           position: toast.POSITION.BOTTOM_CENTER
         });
       }

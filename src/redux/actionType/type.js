@@ -7,3 +7,6 @@ export const UPDATE_PROFILE = 'UPDATE_PROFILE';
 export const SET_MESSAGE = 'SET_MESSAGE';
 export const CLEAR_MESSAGE = 'CLEAR_MESSAGE';
 export const SEARCH_USER = 'SEARCH_USER';
+export const GET_POST = 'GET_POST';
+export const UPDATE_POST = 'UPDATE_POST';
+export const DELETE_POST = 'DELETE_POST';
