@@ -76,7 +76,7 @@ export default function Post() {
                 />
               }
               label={`${data?.commentCnt}개의 댓글`}
-              sx={{ ml: 4, mt: 4 }}
+              sx={{ ml: 2, mt: 2 }}
             />
             <BoardCommentList />
           </Box>

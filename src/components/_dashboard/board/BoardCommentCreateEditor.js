@@ -26,6 +26,10 @@ BoardCommentCreateEditor.propTypes = {
   isRootComment: PropTypes.bool.isRequired // isRootComment ? 최상위 댓글 : 대댓글
 };
 
+const CommentEditorWrapper = styled(Box)(() => ({
+  padding: '25px 15px'
+}));
+
 const CommentEditorButton = styled(Button)(() => ({
   backgroundColor: '#605A89',
   color: '#fff',
@@ -39,8 +43,7 @@ const CommentEditorButton = styled(Button)(() => ({
 const EditorButtonBox = styled(Box)(({ theme }) => ({
   display: 'flex',
   justifyContent: 'flex-end',
-  alignItems: 'flex-end',
-  padding: '10px',
+  padding: '15px',
   // Material Ui의 미디어 쿼리기능인 breakpoints를 이용하여 모바일화면의 경우 버튼 가운데정렬
   [theme.breakpoints.down('sm')]: {
     justifyContent: 'center',
@@ -121,7 +124,7 @@ export default function BoardCommentCreateEditor({ commentId, isRootComment }) {
   }, [isRootComment]);
 
   return (
-    <Box sx={{ p: 4 }}>
+    <CommentEditorWrapper>
       {displayEditHelper && isRootComment && (
         <TextField
           variant="outlined"
@@ -136,33 +139,33 @@ export default function BoardCommentCreateEditor({ commentId, isRootComment }) {
           <BoardEditor editorRef={editorRef} />
           <EditorButtonBox>
             {isRootComment ? (
-              <CommentEditorButton
-                onClick={handleCreateComment}
-                type="submit"
-                variant="contained"
-                color="purple"
-                sx={{ mr: 1 }}
-              >
-                등록
-              </CommentEditorButton>
+              <Box>
+                <CommentEditorButton
+                  onClick={handleCreateComment}
+                  type="submit"
+                  variant="contained"
+                  color="purple"
+                  sx={{ mr: 1 }}
+                >
+                  등록
+                </CommentEditorButton>
+                <CommentEditorButton
+                  onClick={handleCancel}
+                  variant="contained"
+                  color="purple"
+                  sx={{ ml: 1 }}
+                >
+                  취소
+                </CommentEditorButton>
+              </Box>
             ) : (
               <Button onClick={handleCreateComment} type="submit" variant="contained">
                 답글 등록
               </Button>
             )}
-            {isRootComment && (
-              <CommentEditorButton
-                onClick={handleCancel}
-                variant="contained"
-                color="purple"
-                sx={{ ml: 1 }}
-              >
-                취소
-              </CommentEditorButton>
-            )}
           </EditorButtonBox>
         </Box>
       )}
-    </Box>
+    </CommentEditorWrapper>
   );
 }

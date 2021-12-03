@@ -83,9 +83,9 @@ export default function BoardCommentList() {
   }, [newComment, resetNewComment]);
 
   return (
-    <Box sx={{ pl: 4, pr: 4, pt: 2, minHeight: 300 }}>
-      {comments.map((comment, index) => (
-        <Fade key={index} in={comments.length > 0}>
+    <Box sx={{ p: 2, minHeight: 300 }}>
+      {comments.map((comment) => (
+        <Fade key={comment?.id} in={comments.length > 0}>
           <div ref={setLastElement}>
             <BoardCommentItem comment={comment} />
           </div>

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
@@ -17,7 +18,7 @@ import edit2Outline from '@iconify/icons-eva/edit-2-outline';
 
 // components
 import Page from '../components/Page';
-import { ProductSort } from '../components/_dashboard/products';
+import { SortableMenu } from '../components/common';
 import { BoardTable, BoardPostSearch } from '../components/_dashboard/board';
 
 // api
@@ -39,21 +40,23 @@ const PostPagination = styled(Pagination)(({ theme }) => ({
 export default function Board({ title, category }) {
   const [page, setPage] = useState(1);
   const [keyword, setKeyword] = useState('');
+  const [sort, setSort] = useState('createdAt');
   const [color, setColor] = useState('info');
   const navigate = useNavigate();
   const location = useLocation();
-  const query = queryString.parse(location.search);
+  const query = queryString.parse(location.search); // 쿼리스트링을 JSON형태로 파싱해서 키값으로 접근가능
 
   useEffect(() => {
     handlePageState(query?.page);
     handleSearchState(query?.search);
+    handleSortState(query?.sort);
     handleCategoryColor(category?.id);
-  }, [category.id, query.page, query.search]);
+  }, [category?.id, query?.page, query?.search, query?.sort]);
 
   // 키워드 상태값이 존재하면 검색 api url로 요청
   const url = keyword
-    ? `/api/post/search?keyword=${keyword}&category=${category?.id}&page=${page - 1}`
-    : `/api/post?category=${category?.id}&page=${page - 1}`;
+    ? `/api/post/search?keyword=${keyword}&category=${category?.id}&page=${page - 1}&sort=${sort}`
+    : `/api/post?category=${category?.id}&page=${page - 1}&sort=${sort}`;
   const fetcher = () => request.get(url).then((res) => res.data);
   const { data, isLoading, isError } = useRequest(url, fetcher);
 
@@ -82,6 +85,19 @@ export default function Board({ title, category }) {
     navigate(`/dashboard/community/${category?.categoryTag}?search=${searchValue}`);
   };
 
+  /**
+   * 정렬 상태 변경 함수
+   * @param {*} orderBy 
+   */
+  const handleSortPost = (orderBy) => {
+    setSort(orderBy);
+    if (keyword) {
+      navigate(`/dashboard/community/${category?.categoryTag}?search=${keyword}&sort=${orderBy}`);
+    } else {
+      navigate(`/dashboard/community/${category?.categoryTag}?&sort=${orderBy}`);
+    }
+  };
+
   // 게시판 페이징 히스토리 상태 관리 함수(페이징 쿼리스트링 유무에 따라 상태 변경)
   const handlePageState = (page) => {
     if (page) {
@@ -99,6 +115,15 @@ export default function Board({ title, category }) {
       setKeyword('');
     }
   };
+
+  // 게시글 정렬 히스토리 상태관리 함수(정렬 쿼리스트링 유무에 따라 상태 변경)
+  const handleSortState = (sort) => {
+    if (sort) {
+      setSort(sort);
+    } else {
+      setSort('createdAt');
+    }
+  }
 
   // 게시판 카테고리별 컬러 설정 함수
   const handleCategoryColor = (categoryId) => {
@@ -137,7 +162,7 @@ export default function Board({ title, category }) {
           >
             새 글 쓰기
           </Button>
-          <ProductSort />
+          <SortableMenu onSortItem={handleSortPost} />
         </Box>
         <BoardPostSearch category={category} onSearchPost={handleSearchPost} color={color} />
         {isLoading && (

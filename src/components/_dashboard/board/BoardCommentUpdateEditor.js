@@ -25,11 +25,14 @@ BoardCommentUpdateEditor.propTypes = {
   initialValue: PropTypes.string // 댓글 수정 전 내용 초기값
 };
 
-const EditorButtonBox = styled(Box)(({ theme }) => ({
+const EditorWrapper = styled(Box)(() => ({
+  padding: '25px 15px'
+}));
+
+const ButtonWrapper = styled(Box)(({ theme }) => ({
   display: 'flex',
   justifyContent: 'flex-end',
-  alignItems: 'flex-end',
-  padding: '10px',
+  padding: '20px 10px',
   // Material Ui의 미디어 쿼리기능인 breakpoints를 이용하여 모바일 화면의 경우 버튼 가운데정렬
   [theme.breakpoints.down('sm')]: {
     justifyContent: 'center',
@@ -67,13 +70,18 @@ export default function BoardCommentUpdateEditor({ commentId, onHideEditor, init
       const res = await request.put(`/api/comment/${commentId}`, data);
       if (res) {
         console.log(JSON.stringify(res.data));
-        toast.error('댓글 수정 성공', {
+        toast.success('댓글 수정 성공', {
           position: toast.POSITION.BOTTOM_CENTER
         });
         onHideEditor(false);
       }
     } catch (error) {
-      console.log(error.response);
+      if (error.response) {
+        console.error(error.response.data);
+        toast.error(error.response.data.message, {
+          position: toast.POSITION.BOTTOM_CENTER
+        });
+      }
     }
   };
 
@@ -83,16 +91,16 @@ export default function BoardCommentUpdateEditor({ commentId, onHideEditor, init
   };
 
   return (
-    <Box sx={{ pt: 2, pb: 2 }}>
+    <EditorWrapper>
       <BoardEditor editorRef={editorRef} initialValue={decodeHtmlEntity(initialValue)} />
-      <EditorButtonBox>
+      <ButtonWrapper>
         <Button onClick={handleUpdateComment} variant="contained" sx={{ mr: 1 }}>
           댓글 수정
         </Button>
         <Button onClick={handleCancel} variant="contained" sx={{ ml: 1 }}>
           취소
         </Button>
-      </EditorButtonBox>
-    </Box>
+      </ButtonWrapper>
+    </EditorWrapper>
   );
 }

@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { Container, Stack, Typography } from '@material-ui/core';
 // components
 import Page from '../components/Page';
+import { SortableMenu } from '../components/common';
 import {
-  ProductSort,
   ProductList,
   ProductCartWidget,
   ProductFilterSidebar
@@ -68,7 +68,7 @@ export default function EcommerceShop() {
               onOpenFilter={handleOpenFilter}
               onCloseFilter={handleCloseFilter}
             />
-            <ProductSort />
+            <SortableMenu />
           </Stack>
         </Stack>
 

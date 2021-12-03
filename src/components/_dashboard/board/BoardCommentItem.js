@@ -159,7 +159,12 @@ export default function BoardCommentItem({ comment }) {
         });
       }
     } catch (error) {
-      console.log(error.response);
+      if (error.response) {
+        console.error(error.response.data);
+        toast.error(error.response.data.message, {
+          position: toast.POSITION.BOTTOM_CENTER
+        });
+      }
     }
   };
 
@@ -300,9 +305,9 @@ export default function BoardCommentItem({ comment }) {
       )}
       {childrens.length > 0 &&
         displayChildren &&
-        childrens.map((item, index) => (
-          <Fade key={index} in={displayChildren}>
-            <Box sx={{ ml: 5 }}>
+        childrens.map((item) => (
+          <Fade key={item?.id} in={displayChildren}>
+            <Box sx={{ pl: 5 }}>
               <BoardCommentItem comment={item} />
             </Box>
           </Fade>

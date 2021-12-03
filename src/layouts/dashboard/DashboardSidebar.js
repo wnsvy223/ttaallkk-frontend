@@ -70,7 +70,9 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
         <Link underline="none" component={RouterLink} to="/user/profile">
           <AccountStyle>
             {isLoggedIn ? (
-              <Avatar src={user?.profileUrl} alt="profileUrl" />
+              <Avatar src={user?.profileUrl} alt="profileUrl" sx={{ fontSize: 15 }}>
+                {user?.displayName.charAt(0)}
+              </Avatar>
             ) : (
               <Avatar src="/static/mock-images/avatars/avatar_default.jpg" alt="profileUrl" />
             )}

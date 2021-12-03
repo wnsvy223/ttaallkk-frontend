@@ -43,7 +43,7 @@ import { updatePost, deletePost } from '../../../redux/actions/postAction';
 // ----------------------------------------------------------------------
 
 const PostContentCard = styled(Card)(({ theme }) => ({
-  margin: theme.spacing(4),
+  margin: theme.spacing(2),
   borderRadius: 3
 }));
 
@@ -77,7 +77,6 @@ const ControlButton = styled(Button)(() => ({
 const ControlBox = styled(Box)(({ theme }) => ({
   display: 'flex',
   justifyContent: 'flex-end',
-  alignItems: 'flex-end',
   padding: '15px',
   [theme.breakpoints.down('sm')]: {
     justifyContent: 'center',
@@ -88,7 +87,6 @@ const ControlBox = styled(Box)(({ theme }) => ({
 const EditorButtonBox = styled(Box)(({ theme }) => ({
   display: 'flex',
   justifyContent: 'flex-end',
-  alignItems: 'flex-end',
   [theme.breakpoints.down('sm')]: {
     justifyContent: 'center',
     alignItems: 'center'
@@ -298,11 +296,11 @@ export default function BoardContentCard() {
           <CardContent sx={{ minHeight: 400 }}>
             <Viewer initialValue={decodeHtmlEntity(postData.content)} />
           </CardContent>
-          <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
+          <CardActions sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
             <BoardPostLike postData={postData} />
           </CardActions>
           <Divider />
-          {postData.uid === user?.uid && (
+          {postData.uid === user?.uid ? (
             <ControlBox>
               <ControlButton variant="contained" sx={{ mr: 1 }} onClick={handleUpdatePostEditor}>
                 수정
@@ -311,6 +309,8 @@ export default function BoardContentCard() {
                 삭제
               </ControlButton>
             </ControlBox>
+          ) : (
+            <ControlBox sx={{ height: 60 }} />
           )}
         </Box>
       )}
