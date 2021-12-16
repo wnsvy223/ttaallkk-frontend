@@ -6,7 +6,6 @@ import PropTypes from 'prop-types';
 // Material UI
 import {
   Box,
-  Avatar,
   Button,
   Typography,
   Stack,
@@ -38,6 +37,7 @@ import { Viewer } from '@toast-ui/react-editor';
 import BoardCommentCreateEditor from './BoardCommentCreateEditor';
 import BoardCommentUpdateEditor from './BoardCommentUpdateEditor';
 import AlertDialog from '../../common/AlertDialog';
+import LetterAvatar from '../../common/LetterAvatar';
 
 // api
 import { request } from '../../../api/axios/axios';
@@ -192,10 +192,9 @@ export default function BoardCommentItem({ comment }) {
       <Grid container>
         <Grid item xs={10} md={10}>
           <Stack direction="row" alignItems="center" justifyContent="start" spacing={2}>
-            <Avatar
-              alt={comment?.displayName}
+            <LetterAvatar
               src={comment?.profileUrl}
-              sx={{ width: 25, height: 25 }}
+              sx={{ width: 26, height: 26, name: comment?.displayName, fontSize: 12 }}
             />
             <Box>
               <Stack direction="row" alignItems="center" justifyContent="start" spacing={2}>

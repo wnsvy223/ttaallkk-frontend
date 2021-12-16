@@ -4,7 +4,6 @@ import {
   Card,
   Table,
   Stack,
-  Avatar,
   Button,
   TableRow,
   TableBody,
@@ -16,24 +15,24 @@ import {
   Paper,
   Pagination
 } from '@material-ui/core';
-// components
-import { useDispatch } from 'react-redux';
-import { toast, Zoom } from 'react-toastify';
 import { styled } from '@material-ui/core/styles';
 import SimpleBarReact from 'simplebar-react';
+import { toast, Zoom } from 'react-toastify';
+
+// reux
+import { useDispatch } from 'react-redux';
+
+// hook
+import usePagination from '../hook/usePagination';
+
+// components
 import Page from '../components/Page';
 import Label from '../components/Label';
 import SearchNotFound from '../components/SearchNotFound';
 import { UserSearchToolbar } from '../components/_dashboard/user';
-//
+import LetterAvatar from '../components/common/LetterAvatar';
 import { searchUser } from '../redux/actions/userSearchAction';
-import usePagination from '../hook/usePagination';
 // ----------------------------------------------------------------------
-
-const SmallAvatar = styled(Avatar)(() => ({
-  width: '25px',
-  height: '25px'
-}));
 
 const UserSearchPagination = styled(Pagination)(({ theme }) => ({
   margin: theme.spacing(2),
@@ -57,8 +56,9 @@ export default function UserSearch() {
     if (filterName) {
       dispatch(searchUser(filterName))
         .then((res) => {
-          setSearchUsers(res);
+          setSearchUsers(res?.content);
           setIsSearch(true);
+          console.log(JSON.stringify(res));
         })
         .catch((e) => {
           console.log(`검색 오류 : ${JSON.stringify(e)}`);
@@ -123,7 +123,15 @@ export default function UserSearch() {
                       <TableRow hover key={uid} tabIndex={-1}>
                         <TableCell component="th" scope="row" padding="none">
                           <Stack direction="row" alignItems="center" spacing={2} margin="15px">
-                            <SmallAvatar alt={displayName} src={profileUrl} />
+                            <LetterAvatar
+                              src={profileUrl}
+                              sx={{
+                                width: 26,
+                                height: 26,
+                                name: displayName,
+                                fontSize: 12
+                              }}
+                            />
                             <Typography variant="subtitle2" noWrap>
                               {displayName}
                             </Typography>

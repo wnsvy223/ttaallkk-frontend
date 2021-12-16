@@ -9,7 +9,6 @@ import {
   Card,
   Box,
   Table,
-  Avatar,
   TableContainer,
   TableHead,
   TableBody,
@@ -24,6 +23,7 @@ import heartFill from '@iconify/icons-eva/heart-fill';
 
 // component
 import SimpleBarReact from 'simplebar-react';
+import LetterAvatar from '../../common/LetterAvatar';
 
 // ----------------------------------------------------------------------
 BoardTable.propTypes = {
@@ -107,10 +107,9 @@ export default function BoardTable({ category, post, color }) {
                           justifyContent="start"
                           spacing={1}
                         >
-                          <Avatar
-                            alt={row.displayName}
+                          <LetterAvatar
                             src={row.profileUrl}
-                            sx={{ width: 23, height: 23 }}
+                            sx={{ width: 23, height: 23, name: row.displayName, fontSize: 10 }}
                           />
                           <Typography noWrap sx={{ fontSize: 12 }}>
                             {row.displayName}

@@ -5,6 +5,7 @@ import { styled } from '@material-ui/core/styles';
 //
 import DashboardNavbar from './DashboardNavbar';
 import DashboardSidebar from './DashboardSidebar';
+import DashboardSideSheet from './DashboardSideSheet';
 
 // ----------------------------------------------------------------------
 
@@ -34,14 +35,16 @@ const MainStyle = styled('div')(({ theme }) => ({
 
 export default function DashboardLayout() {
   const [open, setOpen] = useState(false);
+  const [openSheet, setOpenSheet] = useState(false);
 
   return (
     <RootStyle>
-      <DashboardNavbar onOpenSidebar={() => setOpen(true)} />
+      <DashboardNavbar onOpenSidebar={() => setOpen(true)} onOpenSheet={() => setOpenSheet(true)} />
       <DashboardSidebar isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} />
       <MainStyle>
         <Outlet />
       </MainStyle>
+      <DashboardSideSheet isOpenSheet={openSheet} onCloseSheet={() => setOpenSheet(false)} />
     </RootStyle>
   );
 }

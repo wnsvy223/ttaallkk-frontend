@@ -5,7 +5,6 @@ import { styled } from '@material-ui/core/styles';
 import {
   Typography,
   Box,
-  Avatar,
   Grid,
   Stack,
   Button,
@@ -37,6 +36,7 @@ import decodeHtmlEntity from '../../../utils/decodeHtmlEntity';
 import BoardPostLike from './BoardPostLike';
 import BoardEditor from './BoardEditor';
 import AlertDialog from '../../common/AlertDialog';
+import LetterAvatar from '../../common/LetterAvatar';
 
 // redux
 import { updatePost, deletePost } from '../../../redux/actions/postAction';
@@ -200,7 +200,7 @@ export default function BoardContentCard() {
                 spacing={1}
                 alignItems="center"
                 sx={{
-                  height: 50,
+                  height: '100%',
                   ml: { xs: 0, md: 2 },
                   justifyContent: { xs: 'center', md: 'start' }
                 }}
@@ -274,10 +274,9 @@ export default function BoardContentCard() {
               spacing={1}
               sx={{ maxWidth: '50%' }}
             >
-              <Avatar
-                alt={postData.displayName}
+              <LetterAvatar
                 src={postData.profileUrl}
-                sx={{ width: 26, height: 26 }}
+                sx={{ width: 26, height: 26, name: postData.displayName, fontSize: 12 }}
               />
               <Typography noWrap sx={{ fontSize: 12 }}>
                 {postData.displayName}

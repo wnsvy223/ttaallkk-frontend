@@ -66,6 +66,7 @@
     "framer-motion": "^4.1.17",
     "highlight.js": "^11.3.1",
     "history": "^5.0.0",
+    "inko": "^1.1.1",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "num-to-korean": "^0.4.3",

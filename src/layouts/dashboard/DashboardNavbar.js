@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { Icon } from '@iconify/react';
 import menu2Fill from '@iconify/icons-eva/menu-2-fill';
+import HeadphoneFill from '@iconify/icons-eva/headphones-fill';
 // material
 import { alpha, styled } from '@material-ui/core/styles';
 import { Box, Stack, AppBar, Toolbar, IconButton } from '@material-ui/core';
@@ -9,7 +10,6 @@ import { MHidden } from '../../components/@material-extend';
 //
 import Searchbar from './Searchbar';
 import AccountPopover from './AccountPopover';
-import LanguagePopover from './LanguagePopover';
 import NotificationsPopover from './NotificationsPopover';
 
 // ----------------------------------------------------------------------
@@ -38,11 +38,24 @@ const ToolbarStyle = styled(Toolbar)(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-DashboardNavbar.propTypes = {
-  onOpenSidebar: PropTypes.func
+ConferencePopover.propTypes = {
+  onPopoverClick: PropTypes.func
 };
 
-export default function DashboardNavbar({ onOpenSidebar }) {
+function ConferencePopover({ onPopoverClick }) {
+  return (
+    <IconButton onClick={onPopoverClick}>
+      <Icon icon={HeadphoneFill} />
+    </IconButton>
+  );
+}
+
+DashboardNavbar.propTypes = {
+  onOpenSidebar: PropTypes.func,
+  onOpenSheet: PropTypes.func
+};
+
+export default function DashboardNavbar({ onOpenSidebar, onOpenSheet }) {
   return (
     <RootStyle>
       <ToolbarStyle>
@@ -56,7 +69,7 @@ export default function DashboardNavbar({ onOpenSidebar }) {
         <Box sx={{ flexGrow: 1 }} />
 
         <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1.5 }}>
-          <LanguagePopover />
+          <ConferencePopover onPopoverClick={onOpenSheet} />
           <NotificationsPopover />
           <AccountPopover />
         </Stack>

@@ -4,7 +4,6 @@ import {
   CardHeader,
   Box,
   Table,
-  Avatar,
   TableContainer,
   TableBody,
   TableRow,
@@ -23,6 +22,7 @@ import 'moment/locale/ko';
 import SimpleBarReact from 'simplebar-react';
 import { Icon } from '@iconify/react';
 import heartFill from '@iconify/icons-eva/heart-fill';
+import LetterAvatar from '../../common/LetterAvatar';
 
 // hook
 import useRequest from '../../../hook/useRequest';
@@ -121,10 +121,9 @@ export default function AppHotPost() {
                           justifyContent="start"
                           spacing={1}
                         >
-                          <Avatar
-                            alt={row.displayName}
+                          <LetterAvatar
                             src={row.profileUrl}
-                            sx={{ width: 23, height: 23 }}
+                            sx={{ width: 23, height: 23, name: row.displayName, fontSize: 11 }}
                           />
                           <TableCellTextView noWrap>{row.displayName}</TableCellTextView>
                         </Stack>

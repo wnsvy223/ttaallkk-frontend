@@ -94,7 +94,7 @@ export default function Board({ title, category }) {
     if (keyword) {
       navigate(`/dashboard/community/${category?.categoryTag}?search=${keyword}&sort=${orderBy}`);
     } else {
-      navigate(`/dashboard/community/${category?.categoryTag}?&sort=${orderBy}`);
+      navigate(`/dashboard/community/${category?.categoryTag}?sort=${orderBy}`);
     }
   };
 
