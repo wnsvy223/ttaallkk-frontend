@@ -16,8 +16,8 @@ const sidebarConfig = [
     icon: getIcon(homeFill)
   },
   {
-    title: '친구',
-    path: '/dashboard/user',
+    title: '친구 찾기',
+    path: '/dashboard/search',
     icon: getIcon(peopleFill)
   },
   {

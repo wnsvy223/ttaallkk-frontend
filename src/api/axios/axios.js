@@ -72,7 +72,6 @@ request.interceptors.response.use(
           .then(({ data }) => {
             request.defaults.headers.common.Authorization = `Bearer ${data.accessToken}`;
             originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
-            storage.update('user', 'accessToken', data.accessToken);
             processQueue(null, data.accessToken);
             resolve(request(originalRequest));
           })

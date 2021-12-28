@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 // material
 import { styled, useTheme } from '@material-ui/core/styles';
@@ -19,7 +19,7 @@ import { Icon } from '@iconify/react';
 import closeFill from '@iconify/icons-eva/close-circle-fill';
 
 const DRAWER_WIDTH = 300;
-const DRAWER_WIDTH_MOBILE = 360;
+const DRAWER_WIDTH_MOBILE = '100%'; // 모바일 화면에서는 Full Width
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',

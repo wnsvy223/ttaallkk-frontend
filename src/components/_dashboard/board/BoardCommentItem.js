@@ -194,7 +194,7 @@ export default function BoardCommentItem({ comment }) {
           <Stack direction="row" alignItems="center" justifyContent="start" spacing={2}>
             <LetterAvatar
               src={comment?.profileUrl}
-              sx={{ width: 26, height: 26, name: comment?.displayName, fontSize: 12 }}
+              sx={{ width: 26, height: 26, name: comment?.displayName, fontSize: 11 }}
             />
             <Box>
               <Stack direction="row" alignItems="center" justifyContent="start" spacing={2}>

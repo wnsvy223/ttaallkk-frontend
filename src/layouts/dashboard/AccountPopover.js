@@ -7,13 +7,20 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 // material
 import { alpha } from '@material-ui/core/styles';
 import { Button, Box, Divider, MenuItem, Typography, Avatar, IconButton } from '@material-ui/core';
-// components
+
+// toast
+import { toast } from 'react-toastify';
+
+// redux
 import { useSelector, useDispatch } from 'react-redux';
+import { logOut } from '../../redux/actions/userAction';
+
+// components
 import MenuPopover from '../../components/MenuPopover';
-//
+
+// utils
 import storage from '../../utils/storage';
 import decodeHTMLEntities from '../../utils/decodeHtmlEntity';
-import { LOG_OUT } from '../../redux/actionType/type';
 // ----------------------------------------------------------------------
 
 const MENU_OPTIONS = [
@@ -25,7 +32,7 @@ const MENU_OPTIONS = [
   {
     label: '친구',
     icon: peopleFill,
-    linkTo: '/dashboard/user'
+    linkTo: '/user/friend'
   },
   {
     label: '설정',
@@ -53,8 +60,22 @@ export default function AccountPopover() {
 
   const navigate = useNavigate();
   const handleSignOut = () => {
-    dispatch({ type: LOG_OUT }); // LOG_OUT액션을 dispatch하여 스토어에 저장된 상태값 초기화
-    storage.remove('user'); // 스토리지에서 유저 정보 제거
+    if (isLoggedIn) {
+      dispatch(logOut())
+        .then((res) => {
+          if (res) {
+            toast.success('로그아웃 성공', {
+              position: toast.POSITION.TOP_CENTER
+            });
+            storage.remove('user'); // 스토리지에서 유저 정보 제거
+          }
+        })
+        .catch((error) => {
+          if (error.response) {
+            console.error(error.response);
+          }
+        });
+    }
     navigate('/login'); // 로그인 페이지로 이동
   };
 

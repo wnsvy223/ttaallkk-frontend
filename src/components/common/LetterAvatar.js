@@ -49,5 +49,8 @@ function stringAvatar(props) {
 }
 
 export default function BackgroundLetterAvatars({ sx, src }) {
+  if (src) {
+    return <Avatar sx={sx} src={src} />;
+  }
   return <Avatar {...stringAvatar(sx)} src={src} />;
 }

@@ -3,6 +3,7 @@ import {
   SIGNIN_FAILURE,
   SIGNUP_SUCCESS,
   SIGNUP_FAILURE,
+  LOG_OUT_SUCCESS,
   UPDATE_PROFILE
 } from '../actionType/type';
 import { request } from '../../api/axios/axios';
@@ -11,7 +12,7 @@ import { setMessage } from './messageAction';
 const url = '/api/user';
 
 // 로그인
-export const signInUser = (req) => async (dispatch) => {
+export const logIn = (req) => async (dispatch) => {
   try {
     const res = await request.post(`${url}/login`, req);
     dispatch({
@@ -24,6 +25,21 @@ export const signInUser = (req) => async (dispatch) => {
     dispatch({
       type: SIGNIN_FAILURE
     });
+    dispatch(setMessage(error.message));
+    return Promise.reject(error);
+  }
+};
+
+// 로그아웃
+export const logOut = () => async (dispatch) => {
+  try {
+    const res = await request.post(`${url}/logout`);
+    dispatch({
+      type: LOG_OUT_SUCCESS
+    });
+    dispatch(setMessage(res.data.message));
+    return Promise.resolve(res.data);
+  } catch (error) {
     dispatch(setMessage(error.message));
     return Promise.reject(error);
   }

@@ -3,7 +3,7 @@ import {
   SIGNIN_FAILURE,
   SIGNUP_SUCCESS,
   SIGNUP_FAILURE,
-  LOG_OUT,
+  LOG_OUT_SUCCESS,
   UPDATE_PROFILE
 } from '../actionType/type';
 import storage from '../../utils/storage';
@@ -37,7 +37,7 @@ export default function auth(state = initialState, action) {
         isLoggedIn: false,
         user: null
       };
-    case LOG_OUT:
+    case LOG_OUT_SUCCESS:
       return {
         ...state,
         isLoggedIn: false,

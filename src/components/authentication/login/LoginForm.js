@@ -18,7 +18,7 @@ import {
 import { LoadingButton } from '@material-ui/lab';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import { signInUser } from '../../../redux/actions/userAction';
+import { logIn } from '../../../redux/actions/userAction';
 import storage from '../../../utils/storage';
 // ----------------------------------------------------------------------
 
@@ -56,7 +56,7 @@ export default function LoginForm() {
       email: account.email,
       password: account.password
     };
-    dispatch(signInUser(body))
+    dispatch(logIn(body))
       .then((res) => {
         if (res) {
           if (account.remember) {

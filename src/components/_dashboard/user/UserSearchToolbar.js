@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from '@iconify/react';
 import searchFill from '@iconify/icons-eva/search-fill';
@@ -33,17 +34,21 @@ const SearchStyle = styled(OutlinedInput)(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 UserSearchToolbar.propTypes = {
-  filterName: PropTypes.string,
-  onFilterName: PropTypes.func,
   onSearchUser: PropTypes.func
 };
 
-export default function UserSearchToolbar({ filterName, onFilterName, onSearchUser }) {
+export default function UserSearchToolbar({ onSearchUser }) {
+  const [searchValue, setSearchValue] = useState('');
+
+  const handleSearch = () => {
+    onSearchUser(searchValue);
+  };
+
   return (
     <RootStyle>
       <SearchStyle
-        value={filterName}
-        onChange={onFilterName}
+        value={searchValue}
+        onChange={(e) => setSearchValue(e.target.value)}
         placeholder="이메일 또는 닉네임을 입력하세요"
         startAdornment={
           <InputAdornment position="start">
@@ -51,7 +56,7 @@ export default function UserSearchToolbar({ filterName, onFilterName, onSearchUs
           </InputAdornment>
         }
       />
-      <Button variant="contained" onClick={onSearchUser}>
+      <Button variant="contained" onClick={handleSearch}>
         검색
       </Button>
     </RootStyle>

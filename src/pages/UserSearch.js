@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 // material
 import {
   Card,
@@ -12,18 +12,13 @@ import {
   Container,
   Typography,
   TableContainer,
-  Paper,
-  Pagination
+  Paper
 } from '@material-ui/core';
-import { styled } from '@material-ui/core/styles';
 import SimpleBarReact from 'simplebar-react';
 import { toast, Zoom } from 'react-toastify';
 
 // reux
 import { useDispatch } from 'react-redux';
-
-// hook
-import usePagination from '../hook/usePagination';
 
 // components
 import Page from '../components/Page';
@@ -32,37 +27,35 @@ import SearchNotFound from '../components/SearchNotFound';
 import { UserSearchToolbar } from '../components/_dashboard/user';
 import LetterAvatar from '../components/common/LetterAvatar';
 import { searchUser } from '../redux/actions/userSearchAction';
+import { addFriend } from '../redux/actions/friendAction';
 // ----------------------------------------------------------------------
 
-const UserSearchPagination = styled(Pagination)(({ theme }) => ({
-  margin: theme.spacing(2),
-  justifyContent: 'center',
-  display: 'flex'
-}));
-
-// ----------------------------------------------------------------------
 export default function UserSearch() {
-  const rowsPerPage = 5;
-  const [page, setPage] = useState(1);
+  const dispatch = useDispatch();
+
+  const [page, setPage] = useState(0);
   const [filterName, setFilterName] = useState('');
   const [searchUsers, setSearchUsers] = useState([]);
   const [isSearch, setIsSearch] = useState(false);
+  const [isLast, setIsLast] = useState(false);
 
-  const count = Math.ceil(searchUsers.length / rowsPerPage);
-  const pagingData = usePagination(searchUsers, rowsPerPage);
-  const dispatch = useDispatch();
+  const isUserNotFound = searchUsers.length === 0;
 
-  const handleSearch = () => {
-    if (filterName) {
-      dispatch(searchUser(filterName))
-        .then((res) => {
-          setSearchUsers(res?.content);
-          setIsSearch(true);
-          console.log(JSON.stringify(res));
-        })
-        .catch((e) => {
-          console.log(`검색 오류 : ${JSON.stringify(e)}`);
-        });
+  // 더 찾기
+  const handleLoadMore = () => {
+    setPage((prev) => prev + 1);
+  };
+
+  // 유저 검색 : UserSearchToolbar 컴포넌트에서 넘어온 키워드 값으로 검색어 상태 변수 변경
+  const handleSearch = (keyword) => {
+    if (keyword) {
+      setFilterName(keyword);
+      if (keyword !== filterName) {
+        setPage(0);
+        setSearchUsers([]);
+        setIsSearch(false);
+        setIsLast(false);
+      }
     } else {
       toast.error('이메일 또는 닉네임을 입력하세요', {
         position: toast.POSITION.BOTTOM_CENTER,
@@ -72,16 +65,44 @@ export default function UserSearch() {
       });
     }
   };
-  const handleFilterByName = (event) => {
-    setFilterName(event.target.value);
+
+  // 유저 검색 api 호출
+  const fetchSearchUser = useCallback(() => {
+    dispatch(searchUser(filterName, page))
+      .then((res) => {
+        setSearchUsers((prev) => [...prev, ...res?.content]);
+        setIsLast(res?.last);
+        setIsSearch(true);
+      })
+      .catch((error) => {
+        console.log(`검색 오류 : ${JSON.stringify(error)}`);
+      });
+  }, [dispatch, filterName, page]);
+
+  // 친구 추가 요청
+  const handleAddFriend = (uid) => {
+    const body = {
+      toUserUid: uid
+    };
+    dispatch(addFriend(body))
+      .then((res) => {
+        console.log(JSON.stringify(res));
+      })
+      .catch((error) => {
+        if (error.response) {
+          console.error(error.response.data);
+          toast.error(error.response.data.message, {
+            position: toast.POSITION.TOP_CENTER
+          });
+        }
+      });
   };
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-    pagingData.jump(newPage);
-  };
-
-  const isUserNotFound = searchUsers.length === 0;
+  useEffect(() => {
+    if (filterName) {
+      fetchSearchUser();
+    }
+  }, [fetchSearchUser, filterName]);
 
   return (
     <Page title="Search | TTAALLKK">
@@ -93,11 +114,7 @@ export default function UserSearch() {
         </Stack>
 
         <Card>
-          <UserSearchToolbar
-            filterName={filterName}
-            onFilterName={handleFilterByName}
-            onSearchUser={handleSearch}
-          />
+          <UserSearchToolbar onSearchUser={handleSearch} />
 
           <TableContainer>
             <SimpleBarReact>
@@ -107,29 +124,31 @@ export default function UserSearch() {
                     <TableRow>
                       <TableCell align="center">닉네임</TableCell>
                       <TableCell align="center">이메일</TableCell>
-                      <TableCell align="center">Role</TableCell>
-                      <TableCell align="center">친구</TableCell>
-                      <TableCell align="center">접속상태</TableCell>
                       <TableCell />
                     </TableRow>
                   </TableHead>
                 )}
 
                 <TableBody>
-                  {pagingData.currentData().map((row) => {
+                  {searchUsers.map((row) => {
                     const { uid, email, displayName, profileUrl } = row;
 
                     return (
                       <TableRow hover key={uid} tabIndex={-1}>
                         <TableCell component="th" scope="row" padding="none">
-                          <Stack direction="row" alignItems="center" spacing={2} margin="15px">
+                          <Stack
+                            direction="row"
+                            alignItems="center"
+                            spacing={2}
+                            sx={{ m: 2, pl: 1 }}
+                          >
                             <LetterAvatar
                               src={profileUrl}
                               sx={{
                                 width: 26,
                                 height: 26,
                                 name: displayName,
-                                fontSize: 12
+                                fontSize: 11
                               }}
                             />
                             <Typography variant="subtitle2" noWrap>
@@ -137,16 +156,18 @@ export default function UserSearch() {
                             </Typography>
                           </Stack>
                         </TableCell>
-                        <TableCell align="center">{email}</TableCell>
-                        <TableCell align="center">Role</TableCell>
-                        <TableCell align="center">Yes</TableCell>
                         <TableCell align="center">
-                          <Label variant="ghost" color="success">
-                            Active
+                          <Label variant="outlined" color="default" sx={{ fontSize: 13 }}>
+                            {email}
                           </Label>
                         </TableCell>
-                        <TableCell align="right">
-                          <Button color="warning" variant="contained" size="small">
+                        <TableCell align="center">
+                          <Button
+                            color="warning"
+                            variant="contained"
+                            size="small"
+                            onClick={() => handleAddFriend(uid)}
+                          >
                             추가
                           </Button>
                         </TableCell>
@@ -154,7 +175,7 @@ export default function UserSearch() {
                     );
                   })}
                 </TableBody>
-                {isUserNotFound && (
+                {isUserNotFound ? (
                   <TableBody>
                     <TableRow>
                       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
@@ -173,22 +194,24 @@ export default function UserSearch() {
                       </TableCell>
                     </TableRow>
                   </TableBody>
+                ) : (
+                  <TableBody>
+                    <TableRow>
+                      {isLast ? (
+                        <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                          더 이상 검색결과가 없습니다.
+                        </TableCell>
+                      ) : (
+                        <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                          <Button onClick={handleLoadMore}>더 찾기</Button>
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  </TableBody>
                 )}
               </Table>
             </SimpleBarReact>
           </TableContainer>
-
-          {searchUsers.length > 0 && (
-            <UserSearchPagination
-              component="div"
-              shape="circular"
-              count={count}
-              size="large"
-              page={page}
-              color="primary"
-              onChange={handleChangePage}
-            />
-          )}
         </Card>
       </Container>
     </Page>

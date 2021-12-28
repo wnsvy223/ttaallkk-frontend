@@ -276,7 +276,7 @@ export default function BoardContentCard() {
             >
               <LetterAvatar
                 src={postData.profileUrl}
-                sx={{ width: 26, height: 26, name: postData.displayName, fontSize: 12 }}
+                sx={{ width: 26, height: 26, name: postData.displayName, fontSize: 11 }}
               />
               <Typography noWrap sx={{ fontSize: 12 }}>
                 {postData.displayName}

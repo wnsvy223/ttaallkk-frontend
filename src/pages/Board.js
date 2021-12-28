@@ -48,10 +48,19 @@ export default function Board({ title, category }) {
 
   useEffect(() => {
     handlePageState(query?.page);
+  }, [query?.page]);
+
+  useEffect(() => {
     handleSearchState(query?.search);
+  }, [query?.search]);
+
+  useEffect(() => {
     handleSortState(query?.sort);
+  }, [query?.sort]);
+
+  useEffect(() => {
     handleCategoryColor(category?.id);
-  }, [category?.id, query?.page, query?.search, query?.sort]);
+  }, [category?.id]);
 
   // 키워드 상태값이 존재하면 검색 api url로 요청
   const url = keyword

@@ -11,13 +11,14 @@ import Register from './pages/Register';
 import DashboardApp from './pages/DashboardApp';
 import Products from './pages/Products';
 import Blog from './pages/Blog';
-import User from './pages/User';
+// import User from './pages/User';
 import NotFound from './pages/Page404';
 import UserSearch from './pages/UserSearch';
 import Profile from './pages/Profile';
 import Board from './pages/Board';
 import Editor from './pages/Editor';
 import Post from './pages/Post';
+import Friend from './pages/Friend';
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -30,8 +31,7 @@ export default function Router() {
       children: [
         { path: '/', element: <Navigate to="/dashboard/home" replace /> },
         { path: 'home', element: <DashboardApp /> },
-        { path: 'user', element: <User /> },
-        { path: 'products', element: <Products /> },
+        { path: 'talk', element: <Products /> },
         { path: 'blog', element: <Blog /> },
         { path: 'search', element: <UserSearch /> },
         {
@@ -66,7 +66,11 @@ export default function Router() {
       children: [
         {
           path: '/profile',
-          element: isLoggedIn ? <Profile /> : <Navigate to="/dashboard/home" replace />
+          element: isLoggedIn ? <Profile /> : <Navigate to="/login" replace />
+        },
+        {
+          path: '/friend',
+          element: isLoggedIn ? <Friend /> : <Navigate to="/login" replace />
         }
       ]
     },
