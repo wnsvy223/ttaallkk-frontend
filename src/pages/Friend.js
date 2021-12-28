@@ -111,6 +111,9 @@ export default function Friend() {
             <TabPanel value={value} index={1}>
               <FriendListForIdleStatus />
             </TabPanel>
+            <TabPanel value={value} index={2}>
+              <Box sx={{ height: 450 }} />
+            </TabPanel>
           </Box>
         </Box>
       </Container>

@@ -174,7 +174,7 @@ export default function FriendListItem({ friend }) {
             <Grid container alignItems="center">
               <Grid item xs={2} sx={{ filter: active ? 'brightness(1)' : 'brightness(0.5)' }}>
                 <LetterAvatar
-                  src={friend?.profileUrl}
+                  src={friend?.toUser?.profileUrl}
                   sx={{ width: 26, height: 26, name: friend?.toUser?.displayName, fontSize: 11 }}
                 />
               </Grid>
@@ -224,7 +224,7 @@ export default function FriendListItem({ friend }) {
             <Grid container alignItems="center">
               <Grid item xs={2} sx={{ filter: active ? 'brightness(1)' : 'brightness(0.5)' }}>
                 <LetterAvatar
-                  src={friend?.profileUrl}
+                  src={friend?.fromUser?.profileUrl}
                   sx={{ width: 26, height: 26, name: friend?.fromUser?.displayName, fontSize: 11 }}
                 />
               </Grid>
@@ -244,7 +244,7 @@ export default function FriendListItem({ friend }) {
                     return (
                       <Grid item xs={3} textAlign="center">
                         <Stack
-                          direction="row"
+                          direction={{ xs: 'column', md: 'row' }}
                           alignItems="center"
                           justifyContent="center"
                           spacing={2}
