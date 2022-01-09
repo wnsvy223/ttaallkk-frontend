@@ -85,6 +85,15 @@ const PURPLE = {
   contrastText: '#fff'
 };
 
+const ULTRAMARINE = {
+  lighter: '#257fb3',
+  light: '#125e8a',
+  main: '#053c5c',
+  dark: '#012e47',
+  darker: '#00263b',
+  contrastText: '#fff'
+};
+
 const GRADIENTS = {
   primary: createGradient(PRIMARY.light, PRIMARY.main),
   info: createGradient(INFO.light, INFO.main),
@@ -102,6 +111,7 @@ const palette = {
   warning: { ...WARNING },
   error: { ...ERROR },
   purple: { ...PURPLE },
+  ultramarine: { ...ULTRAMARINE },
   grey: GREY,
   gradients: GRADIENTS,
   divider: GREY[500_24],

@@ -9,5 +9,11 @@ Logo.propTypes = {
 };
 
 export default function Logo({ sx }) {
-  return <Box component="img" src="/static/logo.svg" sx={{ width: 40, height: 40, ...sx }} />;
+  return (
+    <Box
+      component="img"
+      src="/favicon/apple-touch-icon.png"
+      sx={{ width: 38, height: 38, ...sx }}
+    />
+  );
 }

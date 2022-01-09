@@ -87,6 +87,9 @@ export default function UserSearch() {
     dispatch(addFriend(body))
       .then((res) => {
         console.log(JSON.stringify(res));
+        toast.info(`${res?.displayName} 님에게 친구요청을 보냈습니다.`, {
+          position: toast.POSITION.TOP_CENTER
+        });
       })
       .catch((error) => {
         if (error.response) {

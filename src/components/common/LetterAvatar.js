@@ -39,9 +39,7 @@ function stringAvatar(props) {
   const color = inko.en2ko(props.name);
   return {
     sx: {
-      width: props.width,
-      height: props.height,
-      fontSize: props.fontSize,
+      ...props,
       bgcolor: stringToColor(color)
     },
     children: props.name.charAt(0)

@@ -60,11 +60,14 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
         '& .simplebar-content': { height: '100%', display: 'flex', flexDirection: 'column' }
       }}
     >
-      <Box sx={{ px: 2.5, py: 3 }}>
+      <Stack direction="row" alignItems="center" justifyContent="center" spacing={2} sx={{ py: 4 }}>
         <Box component={RouterLink} to="/" sx={{ display: 'inline-flex' }}>
           <Logo />
         </Box>
-      </Box>
+        <Typography variant="subtitle" sx={{ color: 'white' }}>
+          TTAALLKK
+        </Typography>
+      </Stack>
 
       <Box sx={{ mb: 5, mx: 2.5 }}>
         <Link underline="none" component={RouterLink} to="/user/profile">
@@ -92,7 +95,7 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
 
       <Box sx={{ flexGrow: 1 }} />
 
-      <Box sx={{ px: 2.5, pb: 3, mt: 10 }}>
+      <Box sx={{ px: 2.5, pt: 20, pb: 5 }}>
         <Stack
           alignItems="center"
           spacing={3}
@@ -104,21 +107,6 @@ export default function DashboardSidebar({ isOpenSidebar, onCloseSidebar }) {
             bgcolor: 'grey.200'
           }}
         >
-          <Box
-            component="img"
-            src="/static/logo.svg"
-            sx={{ width: 100, position: 'absolute', top: -50 }}
-          />
-
-          <Box sx={{ textAlign: 'center' }}>
-            <Typography gutterBottom variant="h6">
-              CopyRight©
-            </Typography>
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              All rights reserved by wnsvy223@gmail.com
-            </Typography>
-          </Box>
-
           <Button fullWidth target="_blank" variant="contained">
             Contact Us
           </Button>

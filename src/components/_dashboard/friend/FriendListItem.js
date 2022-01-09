@@ -203,7 +203,7 @@ export default function FriendListItem({ friend }) {
                     return (
                       <Grid item xs={3} textAlign="center">
                         <Label variant="ghost" color="success">
-                          친구입니다
+                          친구
                         </Label>
                       </Grid>
                     );

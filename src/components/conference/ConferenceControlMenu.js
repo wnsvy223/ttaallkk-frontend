@@ -1,0 +1,103 @@
+import { useEffect } from 'react';
+
+// material ui
+import { styled } from '@material-ui/core/styles';
+import { Stack, Card, Box, Button, IconButton } from '@material-ui/core';
+import { Icon } from '@iconify/react';
+import micOutline from '@iconify/icons-eva/mic-outline';
+import micOffOutline from '@iconify/icons-eva/mic-off-outline';
+import personAddOutline from '@iconify/icons-eva/person-add-outline';
+import MessageCircleOutline from '@iconify/icons-eva/message-circle-outline';
+
+// recoil
+import { useSetRecoilState, useRecoilState } from 'recoil';
+import { conferenceState, muteState } from '../../recoil/atom';
+
+// api
+import connection from '../../api/rtcmulticonnection/RTCMultiConnection';
+
+const QuitButton = styled(Button)({
+  padding: 10,
+  backgroundColor: 'rgb(5, 60, 92)',
+  '&:hover': {
+    backgroundColor: 'rgb(5, 50, 72)'
+  }
+});
+
+export default function ConferenceControlMenu() {
+  const setConference = useSetRecoilState(conferenceState); // 음성대화진행 유무 상태값
+  const [isMute, setIsMute] = useRecoilState(muteState); // 음성대화 음소거 유무 상태값
+
+  const handleLocalMute = () => {
+    setIsMute((prev) => !prev);
+  };
+
+  const handleInviteUser = () => {
+    // TODO: 대화 상대 초대
+  };
+
+  const handleOpenChat = () => {
+    // TODO: 채팅창 열기
+  };
+
+  // 대화 종료
+  const handleQuitConference = () => {
+    connection.isInitiator = false; // 대화종료 시 방장구분값 false로 초기화
+    connection.closeSocket();
+    // 소켓 닫음(소켓에 연결된 유저가 없을 경우 방 사라짐. 소켓에 연결된 유저 한명이라도 있을 경우 방 재접속 가능).
+    connection.attachStreams.forEach((stream) => {
+      stream.stop(); // 미디어 스트림 제거
+    });
+    connection.getAllParticipants().forEach((pid) => {
+      connection.disconnectWith(pid);
+    });
+    setConference(false);
+    setIsMute(false);
+  };
+
+  /**
+   * mute / unmute 상태 변경
+   * stream.mute 호출 시 연결된 유저들에게 로컬유저의 오디오 스트림이 전달되지 않음
+   * extra 값은 대화방 초기 진입 시 mute or unmute상태 구분을 위해 설정
+   */
+  useEffect(() => {
+    if (isMute) {
+      connection.attachStreams.forEach((stream) => {
+        stream.mute('audio');
+        connection.extra.isMute = true;
+        connection.updateExtraData();
+      });
+    } else {
+      connection.attachStreams.forEach((stream) => {
+        stream.unmute('audio');
+        connection.extra.isMute = false;
+        connection.updateExtraData();
+      });
+    }
+  }, [isMute]);
+
+  return (
+    <Card sx={{ backgroundColor: '#dedee4' }}>
+      <Stack sx={{ p: 2 }} spacing={2}>
+        <Stack direction="row" spacing={2} alignItems="center" justifyContent="center">
+          <IconButton aria-label="mute" color="ultramarine" onClick={handleLocalMute}>
+            <Box
+              component={Icon}
+              icon={isMute ? micOffOutline : micOutline}
+              sx={{ width: 23, heigh: 23 }}
+            />
+          </IconButton>
+          <IconButton aria-label="mute" color="ultramarine" onClick={handleInviteUser}>
+            <Box component={Icon} icon={personAddOutline} sx={{ width: 23, heigh: 23 }} />
+          </IconButton>
+          <IconButton aria-label="mute" color="ultramarine" onClick={handleOpenChat}>
+            <Box component={Icon} icon={MessageCircleOutline} sx={{ width: 23, heigh: 23 }} />
+          </IconButton>
+        </Stack>
+        <QuitButton variant="contained" onClick={handleQuitConference}>
+          대화 종료
+        </QuitButton>
+      </Stack>
+    </Card>
+  );
+}

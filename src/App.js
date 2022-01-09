@@ -15,16 +15,25 @@ import Router from './routes';
 
 // components
 import ScrollToTop from './components/ScrollToTop';
+
+// rtcmulticonnection context
+import { ConnectionProvider } from './api/context/ConnectionContext';
+import { MessageProvider } from './api/context/MessageContext';
+
 // ----------------------------------------------------------------------
 
 export default function App() {
   return (
     <RecoilRoot>
-      <ThemeConfig>
-        <ToastContainer theme="colored" hideProgressBar style={{ fontSize: '12px' }} />
-        <ScrollToTop />
-        <Router />
-      </ThemeConfig>
+      <ConnectionProvider>
+        <MessageProvider>
+          <ThemeConfig>
+            <ToastContainer theme="colored" hideProgressBar style={{ fontSize: '12px' }} />
+            <ScrollToTop />
+            <Router />
+          </ThemeConfig>
+        </MessageProvider>
+      </ConnectionProvider>
     </RecoilRoot>
   );
 }

@@ -9,3 +9,13 @@ export const childrenCommentState = atom({
   key: 'childrenCommentState',
   default: {}
 });
+
+export const conferenceState = atom({
+  key: 'conferenceState',
+  default: false
+});
+
+export const muteState = atom({
+  key: 'muteState',
+  default: false
+});

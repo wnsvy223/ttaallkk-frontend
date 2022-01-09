@@ -19,17 +19,23 @@ const ListItemStyle = styled((props) => <ListItemButton disableGutters {...props
     paddingLeft: theme.spacing(5),
     paddingRight: theme.spacing(2.5),
     color: theme.palette.text.secondary,
+    borderRadius: 15,
+    margin: '5px 15px',
     '&:before': {
       top: 0,
-      right: 0,
+      right: -8,
       width: 3,
       bottom: 0,
+      marginTop: 3,
+      marginBottom: 3,
       content: "''",
       display: 'none',
       position: 'absolute',
-      borderTopLeftRadius: 4,
-      borderBottomLeftRadius: 4,
-      backgroundColor: theme.palette.primary.main
+      borderTopLeftRadius: 5,
+      borderTopRightRadius: 5,
+      borderBottomLeftRadius: 5,
+      borderBottomRightRadius: 5,
+      backgroundColor: theme.palette.info.main
     }
   })
 );
@@ -62,7 +68,7 @@ function NavItem({ item, active }) {
   const activeRootStyle = {
     color: 'background.paper',
     fontWeight: 'fontWeightMedium',
-    bgcolor: alpha(theme.palette.primary.main, theme.palette.action.selectedOpacity),
+    bgcolor: alpha(theme.palette.info.lighter, theme.palette.action.selectedOpacity),
     '&:before': { display: 'block' }
   };
 
@@ -120,7 +126,7 @@ function NavItem({ item, active }) {
                         transition: (theme) => theme.transitions.create('transform'),
                         ...(isActiveSub && {
                           transform: 'scale(2)',
-                          bgcolor: 'primary.main'
+                          bgcolor: 'info.main'
                         })
                       }}
                     />

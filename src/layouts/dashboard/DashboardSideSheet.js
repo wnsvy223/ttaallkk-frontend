@@ -2,23 +2,19 @@ import React from 'react';
 import PropTypes from 'prop-types';
 // material
 import { styled, useTheme } from '@material-ui/core/styles';
-import {
-  useMediaQuery,
-  Drawer,
-  Divider,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  IconButton,
-  Box
-} from '@material-ui/core';
-import InboxIcon from '@material-ui/icons/InboxOutlined';
-import MailIcon from '@material-ui/icons/MailOutline';
+import { useMediaQuery, Drawer, IconButton, Box } from '@material-ui/core';
 import { Icon } from '@iconify/react';
 import closeFill from '@iconify/icons-eva/close-circle-fill';
 
-const DRAWER_WIDTH = 300;
+// recoil
+import { useRecoilValue } from 'recoil';
+import { conferenceState } from '../../recoil/atom';
+
+// component
+import ConferenceForm from '../../components/conference/ConferenceForm';
+import ConferenceRoom from '../../components/conference/ConferenceRoom';
+
+const DRAWER_WIDTH = '30%';
 const DRAWER_WIDTH_MOBILE = '100%'; // 모바일 화면에서는 Full Width
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -39,6 +35,7 @@ export default function DashboardSideSheet({ isOpenSheet, onCloseSheet }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const WIDTH = isMobile ? DRAWER_WIDTH_MOBILE : DRAWER_WIDTH;
+  const isOnAir = useRecoilValue(conferenceState); // 음성대화 진행유무 전역 상태값
 
   return (
     <Drawer
@@ -66,24 +63,7 @@ export default function DashboardSideSheet({ isOpenSheet, onCloseSheet }) {
           />
         </IconButton>
       </DrawerHeader>
-      <Divider />
-      <List>
-        {['1', '2', '3', '4'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        {['1', '2', '3'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
+      {isOnAir ? <ConferenceRoom /> : <ConferenceForm />}
     </Drawer>
   );
 }

@@ -1,16 +1,21 @@
+import { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from '@iconify/react';
 import menu2Fill from '@iconify/icons-eva/menu-2-fill';
 import HeadphoneFill from '@iconify/icons-eva/headphones-fill';
+
 // material
 import { alpha, styled } from '@material-ui/core/styles';
-import { Box, Stack, AppBar, Toolbar, IconButton } from '@material-ui/core';
+import { Box, Stack, AppBar, Toolbar, IconButton, Badge } from '@material-ui/core';
+
 // components
 import { MHidden } from '../../components/@material-extend';
-//
 import Searchbar from './Searchbar';
 import AccountPopover from './AccountPopover';
 import NotificationsPopover from './NotificationsPopover';
+
+// context
+import { MessageContext } from '../../api/context/MessageContext';
 
 // ----------------------------------------------------------------------
 
@@ -36,6 +41,25 @@ const ToolbarStyle = styled(Toolbar)(({ theme }) => ({
   }
 }));
 
+const StyledBadge = styled(Badge)(({ theme }) => ({
+  '& .MuiBadge-badge': {
+    backgroundColor: '#44b700',
+    color: '#44b700',
+    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+    '&::after': {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      borderRadius: '50%',
+      animation: 'ripple 1.2s infinite ease-in-out',
+      border: '1px solid currentColor',
+      content: '""'
+    }
+  }
+}));
+
 // ----------------------------------------------------------------------
 
 ConferencePopover.propTypes = {
@@ -43,9 +67,21 @@ ConferencePopover.propTypes = {
 };
 
 function ConferencePopover({ onPopoverClick }) {
+  const { speak } = useContext(MessageContext);
+
   return (
     <IconButton onClick={onPopoverClick}>
-      <Icon icon={HeadphoneFill} />
+      {speak?.isSpeak ? (
+        <StyledBadge
+          overlap="circular"
+          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          variant="dot"
+        >
+          <Icon icon={HeadphoneFill} />
+        </StyledBadge>
+      ) : (
+        <Icon icon={HeadphoneFill} />
+      )}
     </IconButton>
   );
 }
