@@ -34,13 +34,23 @@ const MainStyle = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function DashboardLayout() {
-  const [open, setOpen] = useState(false);
-  const [openSheet, setOpenSheet] = useState(false);
+  const [open, setOpen] = useState(false); // 좌측 사이드바 open 상태
+  const [openSheet, setOpenSheet] = useState(false); // 우측 사이드바 open 상태
+  const [mini, setMini] = useState(false); // 좌측 사이드바 Mini Drawer 상태
 
   return (
     <RootStyle>
-      <DashboardNavbar onOpenSidebar={() => setOpen(true)} onOpenSheet={() => setOpenSheet(true)} />
-      <DashboardSidebar isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} />
+      <DashboardNavbar
+        onOpenSidebar={() => setOpen(true)}
+        onOpenSheet={() => setOpenSheet(true)}
+        mini={mini}
+        onSetMiniSidebar={() => setMini((prev) => !prev)}
+      />
+      <DashboardSidebar
+        isOpenSidebar={open}
+        onCloseSidebar={() => setOpen(false)}
+        isMiniSidebar={mini}
+      />
       <MainStyle>
         <Outlet />
       </MainStyle>

@@ -6,7 +6,15 @@ import chevronRightFill from '@iconify/icons-eva/chevron-right-fill';
 import chevronDownFill from '@iconify/icons-eva/chevron-down-fill';
 // material
 import { alpha, useTheme, styled } from '@material-ui/core/styles';
-import { Box, List, Collapse, ListItemText, ListItemIcon, ListItemButton } from '@material-ui/core';
+import {
+  Box,
+  List,
+  Collapse,
+  ListItemText,
+  ListItemIcon,
+  ListItemButton,
+  Typography
+} from '@material-ui/core';
 
 // ----------------------------------------------------------------------
 
@@ -16,7 +24,7 @@ const ListItemStyle = styled((props) => <ListItemButton disableGutters {...props
     height: 48,
     position: 'relative',
     textTransform: 'capitalize',
-    paddingLeft: theme.spacing(3),
+    paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
     color: theme.palette.text.secondary,
     borderRadius: 15,
@@ -52,10 +60,11 @@ const ListItemIconStyle = styled(ListItemIcon)({
 
 NavItem.propTypes = {
   item: PropTypes.object,
-  active: PropTypes.func
+  active: PropTypes.func,
+  isMiniDrawer: PropTypes.bool
 };
 
-function NavItem({ item, active }) {
+function NavItem({ item, active, isMiniDrawer }) {
   const theme = useTheme();
   const isActiveRoot = active(item.path);
   const { title, path, icon, info, children } = item;
@@ -77,17 +86,31 @@ function NavItem({ item, active }) {
     fontWeight: 'fontWeightMedium'
   };
 
+  const miniDrawerStyle = {
+    display: 'flex',
+    flexDirection: isMiniDrawer ? 'column' : 'row',
+    fontSize: isMiniDrawer ? 10 : 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: '10px'
+  };
+
   if (children) {
     return (
       <>
         <ListItemStyle
           onClick={handleOpen}
           sx={{
-            ...(isActiveRoot && activeRootStyle)
+            ...(isActiveRoot && activeRootStyle),
+            ...(isMiniDrawer && miniDrawerStyle)
           }}
         >
-          <ListItemIconStyle>{icon && icon}</ListItemIconStyle>
-          <ListItemText disableTypography primary={title} />
+          <ListItemIconStyle
+            sx={{ ml: isMiniDrawer ? 2 : 0, mt: isMiniDrawer ? 1 : 0, mb: isMiniDrawer ? 0.5 : 0 }}
+          >
+            {icon && icon}
+          </ListItemIconStyle>
+          <ListItemText disableTypography primary={title} sx={{ mb: isMiniDrawer ? 1 : 0 }} />
           {info && info}
           <Box
             component={Icon}
@@ -109,6 +132,7 @@ function NavItem({ item, active }) {
                   to={path}
                   sx={{
                     ...(isActiveSub && activeSubStyle),
+                    ...(isMiniDrawer && miniDrawerStyle),
                     backgroundColor: 'rgba(71, 98, 130, 0.2)'
                   }}
                 >
@@ -123,6 +147,7 @@ function NavItem({ item, active }) {
                         alignItems: 'center',
                         justifyContent: 'center',
                         bgcolor: 'text.disabled',
+                        mr: 1,
                         transition: (theme) => theme.transitions.create('transform'),
                         ...(isActiveSub && {
                           transform: 'scale(2)',
@@ -131,7 +156,7 @@ function NavItem({ item, active }) {
                       }}
                     />
                   </ListItemIconStyle>
-                  <ListItemText disableTypography primary={title} sx={{ fontSize: 12 }} />
+                  <ListItemText disableTypography primary={title} />
                 </ListItemStyle>
               );
             })}
@@ -146,30 +171,46 @@ function NavItem({ item, active }) {
       component={RouterLink}
       to={path}
       sx={{
-        ...(isActiveRoot && activeRootStyle)
+        ...(isActiveRoot && activeRootStyle),
+        ...(isMiniDrawer && miniDrawerStyle)
       }}
     >
-      <ListItemIconStyle>{icon && icon}</ListItemIconStyle>
-      <ListItemText disableTypography primary={title} />
+      <ListItemIconStyle
+        sx={{ ml: isMiniDrawer ? 2 : 0, mt: isMiniDrawer ? 1 : 0, mb: isMiniDrawer ? 0.5 : 0 }}
+      >
+        {icon && icon}
+      </ListItemIconStyle>
+      <ListItemText disableTypography primary={title} sx={{ mb: isMiniDrawer ? 1 : 0 }} />
       {info && info}
     </ListItemStyle>
   );
 }
 
 NavSection.propTypes = {
-  navConfig: PropTypes.array
+  navConfig: PropTypes.array,
+  isMiniDrawer: PropTypes.bool
 };
 
-export default function NavSection({ navConfig, ...other }) {
+export default function NavSection({ navConfig, isMiniDrawer, ...other }) {
   const { pathname } = useLocation();
   const match = (path) => (path ? !!matchPath({ path, end: false }, pathname) : false); // 요청 경로와 현재 경로 일치할시 active
 
   return (
     <Box {...other}>
       <List disablePadding>
-        {navConfig.map((item) => (
-          <NavItem key={item.title} item={item} active={match} />
-        ))}
+        {navConfig.map((item) =>
+          item?.type === 'title' ? (
+            !isMiniDrawer && (
+              <Box sx={{ height: 40, display: 'flex', alignItems: 'end', justifyContent: 'start' }}>
+                <Typography variant="subtitle2" sx={{ color: '#ffffff', fontSize: 12, pl: 4 }}>
+                  {item.title}
+                </Typography>
+              </Box>
+            )
+          ) : (
+            <NavItem key={item.title} item={item} active={match} isMiniDrawer={isMiniDrawer} />
+          )
+        )}
       </List>
     </Box>
   );
