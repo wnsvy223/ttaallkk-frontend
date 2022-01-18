@@ -15,6 +15,11 @@ export const conferenceState = atom({
   default: false
 });
 
+export const conferenceLoadingState = atom({
+  key: 'conferenceLoadingState',
+  default: false
+});
+
 export const muteState = atom({
   key: 'muteState',
   default: false

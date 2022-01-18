@@ -1,10 +1,9 @@
 import { useEffect, useContext, useRef } from 'react';
 
 // material ui
-import { styled } from '@material-ui/core/styles';
-import { Stack, Box, Typography, Card } from '@material-ui/core';
+import { Stack, Box, Typography } from '@material-ui/core';
 
-//
+// simplebar-react
 import SimpleBarReact from 'simplebar-react';
 
 // api
@@ -57,10 +56,10 @@ export default function ConferenceRoom() {
   }, []);
 
   return (
-    <Stack sx={{ p: 2 }} spacing={3}>
+    <Stack sx={{ p: 2, height: '90%' }} spacing={3}>
       <ConferenceControlMenu />
       <Typography variant="h6">대화방 참가자 ({participants?.length})</Typography>
-      <SimpleBarReact style={{ maxHeight: '70%' }}>
+      <SimpleBarReact style={{ height: '70%' }}>
         {participants.map((event) => (
           <Box
             key={event?.userid}

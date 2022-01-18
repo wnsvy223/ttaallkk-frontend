@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 
 // material ui
 import { styled } from '@material-ui/core/styles';
-import { Stack, Card, Box, Button, IconButton } from '@material-ui/core';
+import { Stack, Box, Button, IconButton } from '@material-ui/core';
 import { Icon } from '@iconify/react';
 import micOutline from '@iconify/icons-eva/mic-outline';
 import micOffOutline from '@iconify/icons-eva/mic-off-outline';
@@ -77,7 +77,7 @@ export default function ConferenceControlMenu() {
   }, [isMute]);
 
   return (
-    <Card sx={{ backgroundColor: '#dedee4' }}>
+    <Box sx={{ backgroundColor: '#dedee4', borderRadius: 2 }}>
       <Stack sx={{ p: 2 }} spacing={2}>
         <Stack direction="row" spacing={2} alignItems="center" justifyContent="center">
           <IconButton aria-label="mute" color="ultramarine" onClick={handleLocalMute}>
@@ -98,6 +98,6 @@ export default function ConferenceControlMenu() {
           대화 종료
         </QuitButton>
       </Stack>
-    </Card>
+    </Box>
   );
 }

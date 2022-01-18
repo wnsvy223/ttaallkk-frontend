@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 
 // recoil
 import { useSetRecoilState } from 'recoil';
-import { conferenceState } from '../../recoil/atom';
+import { conferenceState, conferenceLoadingState } from '../../recoil/atom';
 
 // api
 import connection from '../../api/rtcmulticonnection/RTCMultiConnection';
@@ -32,6 +32,7 @@ export default function ConferenceForm() {
   const [password, setPassword] = useState('');
   const [isPublicRoom, setIsPublicRoom] = useState(false);
   const setConference = useSetRecoilState(conferenceState); // 음성대화진행 유무 상태값
+  const setConferenceLoading = useSetRecoilState(conferenceLoadingState); // 음성대화 로딩 상태값
 
   const handleOpenRoom = () => {
     if (roomname === '') {
@@ -47,6 +48,7 @@ export default function ConferenceForm() {
         position: toast.POSITION.TOP_CENTER
       });
     } else {
+      setConferenceLoading(true);
       openConference();
     }
   };
@@ -71,6 +73,7 @@ export default function ConferenceForm() {
           if (isRoomOpened && !error) {
             console.log(`방 생성 완료(공개방) : ${roomName}`);
             setConference(true);
+            setConferenceLoading(false);
           } else {
             console.log(`방 생성 오류(공개방) : ${error}`);
             handleDisconnectConference();
@@ -84,6 +87,7 @@ export default function ConferenceForm() {
           if (isRoomOpened && !error) {
             console.log(`방 생성 완료(비공개방) : ${roomName}`);
             setConference(true);
+            setConferenceLoading(false);
           } else {
             console.log(`방 생성 오류(비공개방) : ${error}`);
             handleDisconnectConference();
@@ -108,6 +112,7 @@ export default function ConferenceForm() {
       });
     } else {
       joinConference();
+      setConferenceLoading(true);
     }
   };
 
@@ -147,6 +152,7 @@ export default function ConferenceForm() {
               } else {
                 console.log('참가 성공(공개방)');
                 setConference(true);
+                setConferenceLoading(false);
               }
             });
           }
@@ -176,6 +182,7 @@ export default function ConferenceForm() {
             } else {
               console.log('참가성공(비공개방)');
               setConference(true);
+              setConferenceLoading(false);
             }
           });
         }
@@ -220,6 +227,7 @@ export default function ConferenceForm() {
       connection.disconnectWith(pid);
     });
     setConference(false);
+    setConferenceLoading(false);
   };
 
   return (

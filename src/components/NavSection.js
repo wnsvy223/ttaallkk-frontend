@@ -58,6 +58,20 @@ const ListItemIconStyle = styled(ListItemIcon)({
 
 // ----------------------------------------------------------------------
 
+NavTitle.propTypes = {
+  item: PropTypes.object
+};
+
+function NavTitle({ item }) {
+  return (
+    <Box sx={{ height: 40, display: 'flex', alignItems: 'end', justifyContent: 'start' }}>
+      <Typography variant="subtitle2" sx={{ color: '#ffffff', fontSize: 12, pl: 4 }}>
+        {item.title}
+      </Typography>
+    </Box>
+  );
+}
+
 NavItem.propTypes = {
   item: PropTypes.object,
   active: PropTypes.func,
@@ -200,13 +214,7 @@ export default function NavSection({ navConfig, isMiniDrawer, ...other }) {
       <List disablePadding>
         {navConfig.map((item) =>
           item?.type === 'title' ? (
-            !isMiniDrawer && (
-              <Box sx={{ height: 40, display: 'flex', alignItems: 'end', justifyContent: 'start' }}>
-                <Typography variant="subtitle2" sx={{ color: '#ffffff', fontSize: 12, pl: 4 }}>
-                  {item.title}
-                </Typography>
-              </Box>
-            )
+            !isMiniDrawer && <NavTitle key={item.title} item={item} />
           ) : (
             <NavItem key={item.title} item={item} active={match} isMiniDrawer={isMiniDrawer} />
           )

@@ -2,13 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 // material
 import { styled, useTheme } from '@material-ui/core/styles';
-import { useMediaQuery, Drawer, IconButton, Box } from '@material-ui/core';
+import { useMediaQuery, Drawer, IconButton, Box, CircularProgress } from '@material-ui/core';
 import { Icon } from '@iconify/react';
 import closeFill from '@iconify/icons-eva/close-circle-fill';
 
 // recoil
 import { useRecoilValue } from 'recoil';
-import { conferenceState } from '../../recoil/atom';
+import { conferenceState, conferenceLoadingState } from '../../recoil/atom';
 
 // component
 import ConferenceForm from '../../components/conference/ConferenceForm';
@@ -26,6 +26,13 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'end'
 }));
 
+const ProgressWrapper = styled(Box)({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  height: '80%'
+});
+
 DashboardSideSheet.propTypes = {
   isOpenSheet: PropTypes.bool,
   onCloseSheet: PropTypes.func
@@ -36,6 +43,7 @@ export default function DashboardSideSheet({ isOpenSheet, onCloseSheet }) {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const WIDTH = isMobile ? DRAWER_WIDTH_MOBILE : DRAWER_WIDTH;
   const isOnAir = useRecoilValue(conferenceState); // 음성대화 진행유무 전역 상태값
+  const isLoadingConference = useRecoilValue(conferenceLoadingState);
 
   return (
     <Drawer
@@ -63,7 +71,13 @@ export default function DashboardSideSheet({ isOpenSheet, onCloseSheet }) {
           />
         </IconButton>
       </DrawerHeader>
-      {isOnAir ? <ConferenceRoom /> : <ConferenceForm />}
+      {!isOnAir && isLoadingConference && (
+        <ProgressWrapper>
+          <CircularProgress color="info" />
+        </ProgressWrapper>
+      )}
+      {!isOnAir && !isLoadingConference && <ConferenceForm />}
+      {isOnAir && !isLoadingConference && <ConferenceRoom />}
     </Drawer>
   );
 }
