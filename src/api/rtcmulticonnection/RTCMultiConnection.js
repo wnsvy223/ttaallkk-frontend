@@ -1,4 +1,5 @@
-import RTCMultiConnection from 'rtcmulticonnection';
+import RTCMultiConnection from '../../lib/RTCMultiConnection'; // 기존 RTCMultiConnection 오픈 소스 코드 개선 및 커스터마이징(ES6 이전의 모듈이기 때문에 eslintignore파일에 추가하여 사용)
+import { defaultMaxParticipantsAllowed } from '../../utils/constant';
 
 const connection = new RTCMultiConnection();
 
@@ -12,6 +13,7 @@ connection.autoCreateMediaElement = false; // 미디어 엘리먼트 자동생�
 connection.enableFileSharing = true; // 파일 공유 세팅
 connection.chunkSize = 60 * 1000; // ChunkSize
 connection.autoSaveToDisk = false; // to make sure file-saver dialog is not invoked.
+connection.maxParticipantsAllowed = defaultMaxParticipantsAllowed; // limit participants allowed
 
 // Set video directions and media types
 connection.session = {
@@ -79,5 +81,24 @@ connection.iceServers.push({
   username: 'webrtc@live.com',
   credential: 'muazkh'
 });
+
+// 음성대화 연결 해제
+export const handleDisconnectRTC = () => {
+  connection.isInitiator = false; // 대화종료 시 방장구분값 false로 초기화
+  connection.attachStreams.forEach((stream) => {
+    stream.stop(); // 미디어 스트림 제거
+  });
+  connection.getAllParticipants().forEach((pid) => {
+    connection.disconnectWith(pid); // 연결된 참가자들과 연결해제
+  });
+  connection.getSocket((socket) => {
+    socket.emit('leave-room'); // 대화종료 소켓 이벤트 서버로 전달
+  });
+};
+
+// 대화 참가 가능 인원수 제어
+export const handleMaxParticipantsAllowed = (participants) => {
+  connection.maxParticipantsAllowed = participants;
+};
 
 export default connection;

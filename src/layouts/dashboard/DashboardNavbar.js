@@ -6,6 +6,10 @@ import menu2Fill from '@iconify/icons-eva/menu-2-fill';
 import { alpha, styled } from '@material-ui/core/styles';
 import { Box, Stack, AppBar, Toolbar, IconButton } from '@material-ui/core';
 
+// recoil
+import { useRecoilValue } from 'recoil';
+import { conferenceState } from '../../recoil/atom';
+
 // components
 import { MHidden } from '../../components/@material-extend';
 import Searchbar from './Searchbar';
@@ -62,6 +66,8 @@ DashboardNavbar.propTypes = {
 };
 
 export default function DashboardNavbar({ onOpenSidebar, onOpenSheet, mini, onSetMiniSidebar }) {
+  const isOnAir = useRecoilValue(conferenceState);
+
   return (
     <RootStyle mini={mini}>
       <ToolbarStyle>
@@ -81,7 +87,7 @@ export default function DashboardNavbar({ onOpenSidebar, onOpenSheet, mini, onSe
         <Box sx={{ flexGrow: 1 }} />
 
         <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1.5 }}>
-          <ConferencePopover onPopoverClick={onOpenSheet} />
+          {isOnAir && <ConferencePopover onPopoverClick={onOpenSheet} />}
           <NotificationsPopover />
           <AccountPopover />
         </Stack>

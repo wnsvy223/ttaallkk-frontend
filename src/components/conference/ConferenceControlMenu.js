@@ -14,7 +14,7 @@ import { useSetRecoilState, useRecoilState } from 'recoil';
 import { conferenceState, muteState } from '../../recoil/atom';
 
 // api
-import connection from '../../api/rtcmulticonnection/RTCMultiConnection';
+import connection, { handleDisconnectRTC } from '../../api/rtcmulticonnection/RTCMultiConnection';
 
 const QuitButton = styled(Button)({
   padding: 10,
@@ -42,15 +42,7 @@ export default function ConferenceControlMenu() {
 
   // 대화 종료
   const handleQuitConference = () => {
-    connection.isInitiator = false; // 대화종료 시 방장구분값 false로 초기화
-    connection.closeSocket();
-    // 소켓 닫음(소켓에 연결된 유저가 없을 경우 방 사라짐. 소켓에 연결된 유저 한명이라도 있을 경우 방 재접속 가능).
-    connection.attachStreams.forEach((stream) => {
-      stream.stop(); // 미디어 스트림 제거
-    });
-    connection.getAllParticipants().forEach((pid) => {
-      connection.disconnectWith(pid);
-    });
+    handleDisconnectRTC();
     setConference(false);
     setIsMute(false);
   };

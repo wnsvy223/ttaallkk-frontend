@@ -10,6 +10,11 @@ export const childrenCommentState = atom({
   default: {}
 });
 
+export const commentCountState = atom({
+  key: 'commentCount',
+  default: 0
+});
+
 export const conferenceState = atom({
   key: 'conferenceState',
   default: false

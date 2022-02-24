@@ -11,7 +11,6 @@ import { useRecoilValue } from 'recoil';
 import { conferenceState, conferenceLoadingState } from '../../recoil/atom';
 
 // component
-import ConferenceForm from '../../components/conference/ConferenceForm';
 import ConferenceRoom from '../../components/conference/ConferenceRoom';
 
 const DRAWER_WIDTH = '30%';
@@ -76,7 +75,6 @@ export default function DashboardSideSheet({ isOpenSheet, onCloseSheet }) {
           <CircularProgress color="info" />
         </ProgressWrapper>
       )}
-      {!isOnAir && !isLoadingConference && <ConferenceForm />}
       {isOnAir && !isLoadingConference && <ConferenceRoom />}
     </Drawer>
   );

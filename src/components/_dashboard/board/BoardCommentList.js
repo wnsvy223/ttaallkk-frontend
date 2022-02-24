@@ -76,18 +76,19 @@ export default function BoardCommentList() {
   // recoil에 새로 추가될 최상위 댓글의 상태값을 저장한 뒤 댓글 목록 컴포넌트에서
   // 해당 상태를 구독하여 댓글 작성 시 기존 댓글 상태 배열에 값을 추가하여 랜더링
   useEffect(() => {
-    if (newComment && newComment.id) {
+    if (newComment && newComment.id && isLast) {
       setComments((prev) => [...prev, newComment]);
       resetNewComment();
     }
-  }, [newComment, resetNewComment]);
+    return () => resetNewComment();
+  }, [newComment, isLast, resetNewComment]);
 
   return (
     <Box sx={{ p: 2, minHeight: 300 }}>
       {comments.map((comment) => (
         <Fade key={comment?.id} in={comments.length > 0}>
           <div ref={setLastElement}>
-            <BoardCommentItem comment={comment} />
+            <BoardCommentItem comment={comment} isRootComment />
           </div>
         </Fade>
       ))}

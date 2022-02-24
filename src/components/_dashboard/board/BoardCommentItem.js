@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -33,6 +33,14 @@ import { toast } from 'react-toastify';
 // TOAST UI Viewer
 import { Viewer } from '@toast-ui/react-editor';
 
+// iconify
+import arrowRightBottomBold from '@iconify/icons-mdi/arrow-right-bottom-bold';
+import { Icon } from '@iconify/react';
+
+// recoil
+import { useRecoilValue, useResetRecoilState } from 'recoil';
+import { childrenCommentState } from '../../../recoil/atom';
+
 // components
 import BoardCommentCreateEditor from './BoardCommentCreateEditor';
 import BoardCommentUpdateEditor from './BoardCommentUpdateEditor';
@@ -47,7 +55,8 @@ import decodeHtmlEntity from '../../../utils/decodeHtmlEntity';
 // ----------------------------------------------------------------------
 
 BoardCommentItem.propTypes = {
-  comment: PropTypes.object.isRequired
+  comment: PropTypes.object.isRequired,
+  isRootComment: PropTypes.bool.isRequired
 };
 
 const ITEM_HEIGHT = 48;
@@ -62,18 +71,30 @@ const MoreMenuItem = styled(MenuItem)(() => ({
   justifyContent: 'center'
 }));
 
-export default function BoardCommentItem({ comment }) {
+const Dot = styled('span')(() => ({
+  width: '3px',
+  height: '3px',
+  backgroundColor: '#949494',
+  borderRadius: '50%',
+  display: 'inline-block'
+}));
+
+export default function BoardCommentItem({ comment, isRootComment }) {
   const params = useParams();
   const user = useSelector((store) => store?.auth?.user);
 
   const [page, setPage] = useState(0); // 대댓글 페이지
   const [childrens, setChildrens] = useState([]); // 대댓글 데이터 상태값
+  const [childrenCount, setChildrenCount] = useState(0); // 대댓글 카운트
   const [displayChildren, setDisplayChildren] = useState(false); // 최상위 댓글의 하위 대댓글 목록 랜더링 유무 상태값
   const [isChildrenLast, setIsChildrenLast] = useState(false); // 마지막 대댓글읹지 유무 상태값
   const [displayEditor, setDisplayEditor] = useState(false); // 대댓글 생성용 에디터 랜더링 유무 상태값
   const [createCommentNum, setCreateCommentNum] = useState(0); // 대댓글 작성할 댓글의 아이디 상태값(해당 댓글 아래 에디터 랜더링)
   const [displayUpdateEditor, setDisplayUpdateEditor] = useState(false); // 대댓글 수정용 에디터 랜더링 유무 상태값
   const [updateCommentNum, setUpdateCommentNum] = useState(0); // 수정할 댓글, 대댓글 아이디 상태값
+
+  const newChildren = useRecoilValue(childrenCommentState); // 새로 추가되는 대댓글 recoil상태값
+  const resetNewChildren = useResetRecoilState(childrenCommentState); // 대댓글 recoil 상태값 리셋
 
   // MoreVert Icon Button
   const [anchorEl, setAnchorEl] = useState(null);
@@ -187,85 +208,121 @@ export default function BoardCommentItem({ comment }) {
     [comment?.id, params?.postId]
   );
 
+  // prop로 전달받은 대댓글 카운트값 초기 설정
+  useEffect(() => {
+    if (comment?.childrenCnt) {
+      setChildrenCount(comment?.childrenCnt);
+    }
+  }, [comment?.childrenCnt]);
+
+  // 대댓글 작성 시 대댓글 작성 요청된 부모 댓글 컴포넌트의 children 값만 업데이트하여 랜더링(대댓글 recoil상태값 변경 시 실행)
+  useEffect(() => {
+    if (newChildren && comment?.id === newChildren?.parent && isChildrenLast) {
+      setChildrens((prev) => [...prev, newChildren]); // 대댓글 데이터 추가
+      resetNewChildren(); // 대댓글 recoil 상태값 리셋
+    }
+    setDisplayEditor(false); // 에디터 숨김
+    return () => resetNewChildren();
+  }, [comment?.id, isChildrenLast, newChildren, resetNewChildren]);
+
+  // 대댓글 작성 시 대댓글 카운트 증가(대댓글 recoil상태값 변경 시 실행)
+  useEffect(() => {
+    if (newChildren && comment?.id === newChildren?.parent) {
+      setChildrenCount((prev) => prev + 1); // 대댓글 카운트 증가
+    }
+  }, [comment?.id, newChildren]);
+
   return (
-    <Box key={comment?.id} sx={{ mb: 2, mt: 2 }}>
-      <Grid container>
-        <Grid item xs={10} md={10}>
-          <Stack direction="row" alignItems="center" justifyContent="start" spacing={2}>
-            <LetterAvatar
-              src={comment?.profileUrl}
-              sx={{ width: 26, height: 26, name: comment?.displayName, fontSize: 11 }}
-            />
+    <Box sx={{ mb: 1 }}>
+      <Stack direction="row">
+        {!isRootComment && (
+          <Box
+            component={Icon}
+            icon={arrowRightBottomBold}
+            sx={{ width: 15, height: 15, color: 'text.secondary', mt: 2, mr: 1 }}
+          />
+        )}
+        <Grid container>
+          <Grid item xs={10} md={10}>
+            <Stack direction="row" alignItems="center" justifyContent="start" spacing={2}>
+              <LetterAvatar
+                src={comment?.profileUrl}
+                sx={{ width: 26, height: 26, name: comment?.displayName, fontSize: 11 }}
+              />
+              <Box sx={{ pt: 1.5 }}>
+                <Stack direction="row" alignItems="center" justifyContent="start" spacing={1}>
+                  <Typography sx={{ fontSize: 10, minWidth: 30 }}>
+                    {comment?.displayName}
+                  </Typography>
+                  <Dot />
+                  <Typography noWrap sx={{ fontSize: { xs: 10, md: 5 }, color: 'GrayText' }}>
+                    <Moment fromNow>{comment?.createdAt}</Moment>
+                  </Typography>
+                </Stack>
+                <Viewer initialValue={decodeHtmlEntity(comment?.content)} />
+              </Box>
+            </Stack>
+          </Grid>
+          <Grid
+            item
+            xs={2}
+            md={2}
+            sx={{ display: 'flex', justifyContent: 'end', alignItems: 'center' }}
+          >
             <Box>
-              <Stack direction="row" alignItems="center" justifyContent="start" spacing={2}>
-                <Typography sx={{ fontSize: 10, minWidth: 30 }}>{comment?.displayName}</Typography>
-                <Typography noWrap sx={{ fontSize: { xs: 10, md: 5 }, color: 'GrayText' }}>
-                  <Moment fromNow>{comment?.createdAt}</Moment>
-                </Typography>
-              </Stack>
-              <Viewer initialValue={decodeHtmlEntity(comment?.content)} />
-            </Box>
-          </Stack>
-        </Grid>
-        <Grid
-          item
-          xs={2}
-          md={2}
-          sx={{ display: 'flex', justifyContent: 'end', alignItems: 'center' }}
-        >
-          <Box>
-            <IconButton
-              aria-label="more"
-              id="long-button"
-              aria-controls="long-menu"
-              aria-expanded={open ? 'true' : undefined}
-              aria-haspopup="true"
-              onClick={handleMoreVertClick}
-            >
-              <MoreVert />
-            </IconButton>
-            <Menu
-              id="long-menu"
-              MenuListProps={{
-                'aria-labelledby': 'long-button'
-              }}
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleMoreVertClose}
-              PaperProps={{
-                style: {
-                  maxHeight: ITEM_HEIGHT * 4.5,
-                  width: '15ch'
-                }
-              }}
-            >
-              {user?.uid === comment.uid ? (
-                options.map((option, index) => (
+              <IconButton
+                aria-label="more"
+                id="long-button"
+                aria-controls="long-menu"
+                aria-expanded={open ? 'true' : undefined}
+                aria-haspopup="true"
+                onClick={handleMoreVertClick}
+              >
+                <MoreVert />
+              </IconButton>
+              <Menu
+                id="long-menu"
+                MenuListProps={{
+                  'aria-labelledby': 'long-button'
+                }}
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleMoreVertClose}
+                PaperProps={{
+                  style: {
+                    maxHeight: ITEM_HEIGHT * 4.5,
+                    width: '15ch'
+                  }
+                }}
+              >
+                {user?.uid === comment.uid ? (
+                  options.map((option, index) => (
+                    <MoreMenuItem
+                      key={index}
+                      selected={option === 'Pyxis'}
+                      onClick={() => {
+                        handleMoreVertClose(comment?.id, index);
+                      }}
+                    >
+                      <ListItemIcon>{option.icon}</ListItemIcon>
+                      <ListItemText sx={{ textAlign: 'center' }}>{option.title}</ListItemText>
+                    </MoreMenuItem>
+                  ))
+                ) : (
                   <MoreMenuItem
-                    key={index}
-                    selected={option === 'Pyxis'}
                     onClick={() => {
-                      handleMoreVertClose(comment?.id, index);
+                      handleMoreVertClose(comment?.id, 2);
                     }}
                   >
-                    <ListItemIcon>{option.icon}</ListItemIcon>
-                    <ListItemText sx={{ textAlign: 'center' }}>{option.title}</ListItemText>
+                    <ListItemIcon>{options[2]?.icon}</ListItemIcon>
+                    <ListItemText sx={{ textAlign: 'center' }}>{options[2]?.title}</ListItemText>
                   </MoreMenuItem>
-                ))
-              ) : (
-                <MoreMenuItem
-                  onClick={() => {
-                    handleMoreVertClose(comment?.id, 2);
-                  }}
-                >
-                  <ListItemIcon>{options[2]?.icon}</ListItemIcon>
-                  <ListItemText sx={{ textAlign: 'center' }}>{options[2]?.title}</ListItemText>
-                </MoreMenuItem>
-              )}
-            </Menu>
-          </Box>
+                )}
+              </Menu>
+            </Box>
+          </Grid>
         </Grid>
-      </Grid>
+      </Stack>
       <Stack direction="row" alignItems="center" justifyContent="start" spacing={2}>
         {displayEditor ? (
           <Button size="small" variant="contained" onClick={handleCancel}>
@@ -281,14 +338,14 @@ export default function BoardCommentItem({ comment }) {
             답글 쓰기
           </Button>
         )}
-        {comment?.childrenCnt > 0 &&
+        {childrenCount > 0 &&
           (displayChildren ? (
             <Button size="small" variant="contained" onClick={handleDisplayChildren}>
               답글 접기
             </Button>
           ) : (
             <Button size="small" onClick={handleDisplayChildren}>
-              {`${comment?.childrenCnt}개의 답글 보기`}
+              {`${childrenCount}개의 답글 보기`}
             </Button>
           ))}
       </Stack>
@@ -307,7 +364,7 @@ export default function BoardCommentItem({ comment }) {
         childrens.map((item) => (
           <Fade key={item?.id} in={displayChildren}>
             <Box sx={{ pl: 5 }}>
-              <BoardCommentItem comment={item} />
+              <BoardCommentItem comment={item} isRootComment={false} />
             </Box>
           </Fade>
         ))}

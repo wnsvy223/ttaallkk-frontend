@@ -59,6 +59,7 @@ export default function FriendListForIdleStatus() {
     if (!isLast) {
       fetchFriends();
     }
+    return () => setLoading(false);
   }, [fetchFriends, isLast]);
 
   useEffect(() => {

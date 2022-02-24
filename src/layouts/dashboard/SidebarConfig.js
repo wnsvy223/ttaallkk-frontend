@@ -73,7 +73,7 @@ const sidebarConfig = [
   },
   {
     title: '사이트 설정',
-    path: '/user/friend',
+    path: '/setting',
     icon: getIcon(settingFill)
   }
 ];

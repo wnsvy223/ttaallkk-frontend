@@ -19,6 +19,9 @@ import Board from './pages/Board';
 import Editor from './pages/Editor';
 import Post from './pages/Post';
 import Friend from './pages/Friend';
+import Conference from './pages/Conference/Conference';
+import ConferencePublic from './pages/Conference/ConferencePublic';
+import ConferencePrivate from './pages/Conference/ConferencePrivate';
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -34,6 +37,9 @@ export default function Router() {
         { path: 'talk', element: <Products /> },
         { path: 'blog', element: <Blog /> },
         { path: 'search', element: <UserSearch /> },
+        { path: 'conference', element: <Conference /> },
+        { path: 'conference/public', element: <ConferencePublic /> },
+        { path: 'conference/private', element: <ConferencePrivate /> },
         {
           path: 'community/free',
           element: (

@@ -59,6 +59,7 @@ export default function FriendList() {
     if (!isLast) {
       fetchFriends();
     }
+    return () => setLoading(false);
   }, [fetchFriends, isLast]);
 
   useEffect(() => {

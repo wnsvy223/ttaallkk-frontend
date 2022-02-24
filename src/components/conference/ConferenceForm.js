@@ -1,8 +1,10 @@
 import { useState } from 'react';
 
+import PropTypes from 'prop-types';
+
 // material ui
 import { styled } from '@material-ui/core/styles';
-import { Stack, TextField, Button, Checkbox, FormGroup, FormControlLabel } from '@material-ui/core';
+import { Stack, TextField, Box, Button } from '@material-ui/core';
 
 // toast
 import { toast } from 'react-toastify';
@@ -15,7 +17,25 @@ import { useSetRecoilState } from 'recoil';
 import { conferenceState, conferenceLoadingState } from '../../recoil/atom';
 
 // api
-import connection from '../../api/rtcmulticonnection/RTCMultiConnection';
+import connection, {
+  handleDisconnectRTC,
+  handleMaxParticipantsAllowed
+} from '../../api/rtcmulticonnection/RTCMultiConnection';
+
+// utils
+import { publicRoomIdentifier } from '../../utils/constant';
+
+// components
+import ConferenceParticipantsSlider from './ConferecParticipantsSlider';
+
+ConferenceForm.propTypes = {
+  isPublicRoom: PropTypes.bool
+};
+
+const ConferenceFormBox = styled(Box)({
+  display: 'flex',
+  justifyContent: 'center'
+});
 
 const ConferenceButton = styled(Button)({
   backgroundColor: 'rgb(5, 60, 92)',
@@ -24,13 +44,13 @@ const ConferenceButton = styled(Button)({
   }
 });
 
-export default function ConferenceForm() {
+export default function ConferenceForm({ isPublicRoom }) {
   const user = useSelector((store) => store.auth.user);
 
   const [username, setUserName] = useState('');
   const [roomname, setRoomName] = useState('');
   const [password, setPassword] = useState('');
-  const [isPublicRoom, setIsPublicRoom] = useState(false);
+
   const setConference = useSetRecoilState(conferenceState); // 음성대화진행 유무 상태값
   const setConferenceLoading = useSetRecoilState(conferenceLoadingState); // 음성대화 로딩 상태값
 
@@ -68,7 +88,7 @@ export default function ConferenceForm() {
       } else if (isPublicRoom) {
         // 공개방
         connection.password = null; // 공개방은 비밀번호값 설정X
-        connection.publicRoomIdentifier = 'publicRoomIdentifier'; // 공개방을 구분하기 위한 세팅값
+        connection.publicRoomIdentifier = publicRoomIdentifier; // 공개방을 구분하기 위한 세팅값
         connection.open(roomname, (isRoomOpened, roomName, error) => {
           if (isRoomOpened && !error) {
             console.log(`방 생성 완료(공개방) : ${roomName}`);
@@ -131,7 +151,6 @@ export default function ConferenceForm() {
             toast.error(`${roomid} 방은 비밀번호가 설정된 방입니다. 비밀번호를 입력하세요.`, {
               position: toast.POSITION.TOP_CENTER
             });
-            handleDisconnectConference();
           } else {
             connection.join(roomname, (isRoomJoined, roomName, error) => {
               if (error) {
@@ -209,82 +228,70 @@ export default function ConferenceForm() {
     setPassword(password);
   };
 
-  // 공개방 체크박스 제어함수
-  const handleChangeCheckBox = () => {
-    setIsPublicRoom(!isPublicRoom);
-    setPassword('');
-  };
-
   // 음성대화 연결해제 제어함수
   const handleDisconnectConference = () => {
-    connection.isInitiator = false; // 대화종료 시 방장구분값 false로 초기화
-    connection.closeSocket();
-    // 소켓 닫음(소켓에 연결된 유저가 없을 경우 방 사라짐. 소켓에 연결된 유저 한명이라도 있을 경우 방 재접속 가능).
-    connection.attachStreams.forEach((stream) => {
-      stream.stop(); // 미디어 스트림 제거
-    });
-    connection.getAllParticipants().forEach((pid) => {
-      connection.disconnectWith(pid);
-    });
+    handleDisconnectRTC();
     setConference(false);
     setConferenceLoading(false);
   };
 
+  // 인원수 제한 슬라이더 제어함수
+  const onSetSliderValue = (participants) => {
+    handleMaxParticipantsAllowed(participants);
+  };
+
   return (
-    <Stack sx={{ p: 2 }} spacing={2} alignItems="center">
-      {!user && (
+    <ConferenceFormBox>
+      <Stack sx={{ p: 2 }} spacing={2} justifyContent="center">
+        {!user && (
+          <TextField
+            label="닉네임"
+            type="text"
+            variant="outlined"
+            fullWidth
+            size="small"
+            onChange={(e) => handleChangeUserName(e.target.value)}
+            value={username}
+            color="ultramarine"
+            inputProps={{ style: { textAlign: 'center' } }}
+          />
+        )}
+
         <TextField
-          label="닉네임"
+          label="방 제목"
           type="text"
           variant="outlined"
           fullWidth
           size="small"
-          onChange={(e) => handleChangeUserName(e.target.value)}
-          value={username}
+          onChange={(e) => handleChangeRoomName(e.target.value)}
+          value={roomname}
           color="ultramarine"
           inputProps={{ style: { textAlign: 'center' } }}
         />
-      )}
-
-      <TextField
-        label="방 제목"
-        type="text"
-        variant="outlined"
-        fullWidth
-        size="small"
-        onChange={(e) => handleChangeRoomName(e.target.value)}
-        value={roomname}
-        color="ultramarine"
-        inputProps={{ style: { textAlign: 'center' } }}
-      />
-      <TextField
-        label={isPublicRoom ? '공개방입니다' : '비밀번호'}
-        type="password"
-        variant="outlined"
-        fullWidth
-        size="small"
-        onChange={(e) => handleChangePassword(e.target.value)}
-        value={password}
-        color="ultramarine"
-        disabled={isPublicRoom}
-        inputProps={{ style: { textAlign: 'center' } }}
-      />
-      <FormGroup>
-        <FormControlLabel
-          control={
-            <Checkbox checked={isPublicRoom} onChange={handleChangeCheckBox} color="ultramarine" />
-          }
-          label="공개방"
-        />
-      </FormGroup>
-      <Stack direction="row" spacing={2}>
-        <ConferenceButton variant="contained" onClick={handleOpenRoom}>
-          방 생성
-        </ConferenceButton>
-        <ConferenceButton variant="contained" onClick={handleJoinRoom}>
-          방 참가
-        </ConferenceButton>
+        {!isPublicRoom && (
+          <TextField
+            label="비밀번호"
+            type="password"
+            variant="outlined"
+            fullWidth
+            size="small"
+            onChange={(e) => handleChangePassword(e.target.value)}
+            value={password}
+            color="ultramarine"
+            disabled={isPublicRoom}
+            inputProps={{ style: { textAlign: 'center' } }}
+          />
+        )}
+        <ConferenceParticipantsSlider onSetSliderValue={onSetSliderValue} />
+        <Stack direction="row" spacing={2} justifyContent="center">
+          <ConferenceButton variant="contained" onClick={handleOpenRoom}>
+            생성
+          </ConferenceButton>
+          <ConferenceButton variant="contained" onClick={handleJoinRoom}>
+            참가
+          </ConferenceButton>
+        </Stack>
       </Stack>
-    </Stack>
+    </ConferenceFormBox>
   );
 }

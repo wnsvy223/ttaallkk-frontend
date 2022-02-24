@@ -1,8 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 // material
 import { styled } from '@material-ui/core/styles';
-//
+
+// recoil
+import { useRecoilValue } from 'recoil';
+import { conferenceState } from '../../recoil/atom';
+
+// components
 import DashboardNavbar from './DashboardNavbar';
 import DashboardSidebar from './DashboardSidebar';
 import DashboardSideSheet from './DashboardSideSheet';
@@ -37,6 +42,18 @@ export default function DashboardLayout() {
   const [open, setOpen] = useState(false); // 좌측 사이드바 open 상태
   const [openSheet, setOpenSheet] = useState(false); // 우측 사이드바 open 상태
   const [mini, setMini] = useState(false); // 좌측 사이드바 Mini Drawer 상태
+
+  const isOnAir = useRecoilValue(conferenceState); // 음성대화 전역 상태값
+
+  // 음성대화 진행중일 경우에 따라 우측 사이드바 음성대화 인터페이스 조건부 랜더링
+  useEffect(() => {
+    if (isOnAir) {
+      setOpenSheet(true);
+    } else {
+      setOpenSheet(false);
+    }
+    return () => setOpenSheet(false);
+  }, [isOnAir]);
 
   return (
     <RootStyle>

@@ -5,6 +5,10 @@ import { Container, Typography, Card, Box, CircularProgress, Chip } from '@mater
 import { Icon } from '@iconify/react';
 import messageCircleOutline from '@iconify/icons-eva/message-circle-outline';
 
+// recoil
+import { useResetRecoilState, useRecoilState } from 'recoil';
+import { commentCountState } from '../recoil/atom';
+
 // components
 import Page from '../components/Page';
 import BoardContentCard from '../components/_dashboard/board/BoardContentCard';
@@ -24,6 +28,9 @@ export default function Post() {
   const [isLoading, setIsLoading] = useState(false);
   const [show, setShow] = useState(false); // 데이터 패칭 이후에 랜더링을 위한 상태값
 
+  const [commentCount, setCommentCount] = useRecoilState(commentCountState); // 전체 댓글 갯수 전역 상태값
+  const resetCommentCount = useResetRecoilState(commentCountState); // 전체 댓글 갯수 전역 상태값 리셋
+
   // 게시글 본문 데이터 조회 및 상태값 디스패치
   const fetchPost = useCallback(async () => {
     setIsLoading(true);
@@ -42,6 +49,13 @@ export default function Post() {
   useEffect(() => {
     fetchPost();
   }, [fetchPost]);
+
+  useEffect(() => {
+    if (data?.commentCnt) {
+      setCommentCount(data?.commentCnt); // api 데이터 패치로 받아온 전체 댓글 갯수 세팅
+    }
+    return () => resetCommentCount(); // 랜더링 사라질 시 전체 댓글 전역상태값 리셋
+  }, [data?.commentCnt, resetCommentCount, setCommentCount]);
 
   return (
     <Page title="Board: 게시글 | TTAALLKK">
@@ -75,7 +89,7 @@ export default function Post() {
                   sx={{ minWidth: 20, minHeight: 20 }}
                 />
               }
-              label={`${data?.commentCnt}개의 댓글`}
+              label={`${commentCount}개의 댓글`}
               sx={{ ml: 2, mt: 2 }}
             />
             <BoardCommentList />

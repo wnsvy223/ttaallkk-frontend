@@ -12,7 +12,7 @@ import { toast } from 'react-toastify';
 
 // recoil
 import { useSetRecoilState } from 'recoil';
-import { commentState, childrenCommentState } from '../../../recoil/atom';
+import { commentState, childrenCommentState, commentCountState } from '../../../recoil/atom';
 
 // component
 import BoardEditor from './BoardEditor';
@@ -61,6 +61,7 @@ export default function BoardCommentCreateEditor({ commentId, isRootComment }) {
 
   const setRootCommentsRecoil = useSetRecoilState(commentState); // 최상위 댓글 recoil 스토어 상태 변경
   const setChildrenCommentsRecoil = useSetRecoilState(childrenCommentState); // 대댓글 rocoil 스토어 상태 변경
+  const setCommentCountRecoil = useSetRecoilState(commentCountState); // 전체 댓글 갯수 rocoil 스토어 상태 변경
 
   // 댓글 작성
   const handleCreateComment = (e) => {
@@ -91,7 +92,6 @@ export default function BoardCommentCreateEditor({ commentId, isRootComment }) {
         toast.success('댓글 작성 성공', {
           position: toast.POSITION.BOTTOM_CENTER
         });
-        setDisplayEditor(false);
         if (isRootComment) {
           setDisplayEditHelper(true);
           setRootCommentsRecoil(res.data);
@@ -99,6 +99,8 @@ export default function BoardCommentCreateEditor({ commentId, isRootComment }) {
           setDisplayEditHelper(false);
           setChildrenCommentsRecoil(res.data);
         }
+        setCommentCountRecoil((prev) => prev + 1);
+        setDisplayEditor(false);
       })
       .catch((error) => {
         console.log(error);

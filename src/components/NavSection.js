@@ -106,7 +106,7 @@ function NavItem({ item, active, isMiniDrawer }) {
     fontSize: isMiniDrawer ? 10 : 14,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: '10px'
+    marginBottom: '15px'
   };
 
   if (children) {
@@ -190,7 +190,7 @@ function NavItem({ item, active, isMiniDrawer }) {
       }}
     >
       <ListItemIconStyle
-        sx={{ ml: isMiniDrawer ? 2 : 0, mt: isMiniDrawer ? 1 : 0, mb: isMiniDrawer ? 0.5 : 0 }}
+        sx={{ ml: isMiniDrawer ? 2 : 0, mt: isMiniDrawer ? 1.5 : 0, mb: isMiniDrawer ? 0.5 : 0 }}
       >
         {icon && icon}
       </ListItemIconStyle>

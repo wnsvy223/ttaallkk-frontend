@@ -21,6 +21,7 @@ export default function ConferenceRoom() {
   const { participants } = useContext(ConnectionContext);
 
   useEffect(() => {
+    // detect mute
     connection.onmute = (e) => {
       if (!e.mediaElement) {
         return;
@@ -36,7 +37,9 @@ export default function ConferenceRoom() {
         }
       }
     };
+  }, []);
 
+  useEffect(() => {
     // detect unmute
     connection.onunmute = (e) => {
       if (!e.mediaElement) {
