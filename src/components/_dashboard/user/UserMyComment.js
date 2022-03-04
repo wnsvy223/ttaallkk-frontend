@@ -19,6 +19,8 @@ import { request } from '../../../api/axios/axios';
 import Scrollbar from '../../Scrollbar';
 import LetterAvatar from '../../common/LetterAvatar';
 
+// utils
+import decodeHtmlEntity from '../../../utils/decodeHtmlEntity';
 // ----------------------------------------------------------------------
 
 const PostIdBox = styled(Box)({
@@ -76,7 +78,7 @@ function UserMyCommentItem({ comments }) {
           component={RouterLink}
         >
           <Typography variant="subtitle2" noWrap>
-            {content}
+            {decodeHtmlEntity(content)}
           </Typography>
         </Link>
         <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '10px' }} noWrap>

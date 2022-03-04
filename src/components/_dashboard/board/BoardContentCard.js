@@ -212,7 +212,7 @@ export default function BoardContentCard() {
                   noWrap
                   sx={{ fontSize: 15, color: 'text.primary', textAlign: 'center' }}
                 >
-                  {postData.title}
+                  {decodeHtmlEntity(postData.title)}
                 </Typography>
               </Stack>
             </Grid>
