@@ -67,7 +67,6 @@ export default function AccountPopover() {
             toast.success('로그아웃 성공', {
               position: toast.POSITION.TOP_CENTER
             });
-            storage.remove('user'); // 스토리지에서 유저 정보 제거
           }
         })
         .catch((error) => {
@@ -75,6 +74,7 @@ export default function AccountPopover() {
             console.error(error.response);
           }
         });
+      storage.remove('user'); // 스토리지에서 유저 정보 제거
     }
     navigate('/login'); // 로그인 페이지로 이동
   };

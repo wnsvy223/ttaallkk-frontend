@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState } from 'react';
 import { Box, Tabs, Tab } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import UserMyPost from './UserMyPost';
@@ -38,8 +38,8 @@ function a11yProps(index) {
   };
 }
 
-export default function BasicTabs() {
-  const [value, setValue] = React.useState(0);
+export default function UserTabPanel() {
+  const [value, setValue] = useState(0);
 
   const handleChange = (event, tabIndex) => {
     setValue(tabIndex);

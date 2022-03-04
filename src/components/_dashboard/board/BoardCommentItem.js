@@ -54,6 +54,18 @@ import { request } from '../../../api/axios/axios';
 import decodeHtmlEntity from '../../../utils/decodeHtmlEntity';
 // ----------------------------------------------------------------------
 
+function ChildrenCommentArrow() {
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', pr: 1 }}>
+      <Box
+        component={Icon}
+        icon={arrowRightBottomBold}
+        sx={{ width: 15, height: 15, color: 'text.secondary', mb: 2 }}
+      />
+    </Box>
+  );
+}
+
 BoardCommentItem.propTypes = {
   comment: PropTypes.object.isRequired,
   isRootComment: PropTypes.bool.isRequired
@@ -235,13 +247,7 @@ export default function BoardCommentItem({ comment, isRootComment }) {
   return (
     <Box sx={{ mb: 1 }}>
       <Stack direction="row">
-        {!isRootComment && (
-          <Box
-            component={Icon}
-            icon={arrowRightBottomBold}
-            sx={{ width: 15, height: 15, color: 'text.secondary', mt: 2, mr: 1 }}
-          />
-        )}
+        {!isRootComment && <ChildrenCommentArrow />}
         <Grid container>
           <Grid item xs={10} md={10}>
             <Stack direction="row" alignItems="center" justifyContent="start" spacing={2}>

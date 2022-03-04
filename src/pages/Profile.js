@@ -4,7 +4,7 @@ import { styled } from '@material-ui/core/styles';
 import { useSelector } from 'react-redux';
 import Page from '../components/Page';
 import NotificationSwitch from '../components/_dashboard/user/NotificationSwitch';
-import TabPanel from '../components/_dashboard/user/UserTabPanel';
+import UserTabPanel from '../components/_dashboard/user/UserTabPanel';
 import UserProfileCard from '../components/_dashboard/user/UserProfileCard';
 
 const ProfileContainer = styled(Container)(() => ({
@@ -46,7 +46,7 @@ function ProfileCard() {
         </Box>
 
         <Box mt={3}>
-          <TabPanel />
+          <UserTabPanel />
         </Box>
       </ProfileContainer>
     </Page>

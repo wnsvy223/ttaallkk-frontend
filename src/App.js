@@ -1,11 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+
+// react-router-dom
+import { useNavigate } from 'react-router-dom';
 
 // recoil
 import { RecoilRoot } from 'recoil';
 
 // toastify
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+// moment
+import moment from 'moment';
 
 // theme
 import ThemeConfig from './theme';
@@ -20,9 +26,26 @@ import ScrollToTop from './components/ScrollToTop';
 import { ConnectionProvider } from './api/context/ConnectionContext';
 import { MessageProvider } from './api/context/MessageContext';
 
+// utils
+import storage from './utils/storage';
+
 // ----------------------------------------------------------------------
 
 export default function App() {
+  const navigate = useNavigate();
+  const user = storage.get('user');
+  const isSessionExpired = user?.expiredAtRefereshToken;
+
+  useEffect(() => {
+    const now = moment.now();
+    if (isSessionExpired && moment(now).isAfter(isSessionExpired)) {
+      toast.error('인증이 만료되어 로그인 페이지로 이동합니다.', {
+        position: toast.POSITION.TOP_CENTER
+      });
+      navigate('/login', { replace: true });
+    }
+  }, [isSessionExpired, navigate]);
+
   return (
     <RecoilRoot>
       <ConnectionProvider>
