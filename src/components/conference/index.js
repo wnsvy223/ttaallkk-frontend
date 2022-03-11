@@ -5,3 +5,5 @@ export { default as ConferenceControlMenu } from './ConferenceControlMenu';
 export { default as ConferencePublicRoomList } from './ConferencePublicRoomList';
 export { default as ConferencePublicRoomItem } from './ConferencePublicRoomItem';
 export { default as ConfereParticipantsSlider } from './ConferecParticipantsSlider';
+export { default as ConferenceChatBox } from './ConferenceChatBox';
+export { default as ConferenceChatInput } from './ConferenceChatInput';

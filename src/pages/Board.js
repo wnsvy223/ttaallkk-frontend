@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import PropTypes from 'prop-types';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import { styled } from '@material-ui/core/styles';
@@ -38,6 +38,7 @@ const PostPagination = styled(Pagination)(({ theme }) => ({
 }));
 
 export default function Board({ title, category }) {
+  const [url, setUrl] = useState('');
   const [page, setPage] = useState(1);
   const [keyword, setKeyword] = useState('');
   const [sort, setSort] = useState('createdAt');
@@ -46,28 +47,20 @@ export default function Board({ title, category }) {
   const location = useLocation();
   const query = queryString.parse(location.search); // 쿼리스트링을 JSON형태로 파싱해서 키값으로 접근가능
 
-  useEffect(() => {
-    handlePageState(query?.page);
-  }, [query?.page]);
-
-  useEffect(() => {
-    handleSearchState(query?.search);
-  }, [query?.search]);
-
-  useEffect(() => {
-    handleSortState(query?.sort);
-  }, [query?.sort]);
-
-  useEffect(() => {
-    handleCategoryColor(category?.id);
-  }, [category?.id]);
-
-  // 키워드 상태값이 존재하면 검색 api url로 요청
-  const url = keyword
-    ? `/api/post/search?keyword=${keyword}&category=${category?.id}&page=${page - 1}&sort=${sort}`
-    : `/api/post?category=${category?.id}&page=${page - 1}&sort=${sort}`;
   const fetcher = () => request.get(url).then((res) => res.data);
   const { data, isLoading, isError } = useRequest(url, fetcher);
+
+  /**
+   * url 상태 변경 함수
+   * 쿼리스트링으로 적용되어있는 state와 props 값들의 변화에 따라 호출할 api url변경
+   */
+  const handleChangeUrl = useCallback(() => {
+    if (keyword) {
+      setUrl(`/api/post/search?keyword=${keyword}&category=${category?.id}&page=${page - 1}&sort=${sort}`);
+    } else {
+      setUrl(`/api/post?category=${category?.id}&page=${page - 1}&sort=${sort}`);
+    }
+  }, [category?.id, keyword, page, sort]);
 
   /**
    * 페이지 상태 변경 함수
@@ -96,7 +89,7 @@ export default function Board({ title, category }) {
 
   /**
    * 정렬 상태 변경 함수
-   * @param {*} orderBy 
+   * @param {*} orderBy
    */
   const handleSortPost = (orderBy) => {
     setSort(orderBy);
@@ -132,7 +125,7 @@ export default function Board({ title, category }) {
     } else {
       setSort('createdAt');
     }
-  }
+  };
 
   // 게시판 카테고리별 컬러 설정 함수
   const handleCategoryColor = (categoryId) => {
@@ -152,6 +145,26 @@ export default function Board({ title, category }) {
       default:
     }
   };
+
+  useEffect(() => {
+    handleChangeUrl();
+  }, [handleChangeUrl]);
+
+  useEffect(() => {
+    handlePageState(query?.page);
+  }, [query?.page]);
+
+  useEffect(() => {
+    handleSearchState(query?.search);
+  }, [query?.search]);
+
+  useEffect(() => {
+    handleSortState(query?.sort);
+  }, [query?.sort]);
+
+  useEffect(() => {
+    handleCategoryColor(category?.id);
+  }, [category?.id]);
 
   return (
     <Page title={`Board: ${title} | TTAALLKK`}>

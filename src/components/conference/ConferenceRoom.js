@@ -1,10 +1,15 @@
 import { useEffect, useContext, useRef } from 'react';
 
 // material ui
-import { Stack, Box, Typography } from '@material-ui/core';
+import { Stack, Box, Typography, Grow } from '@material-ui/core';
+import { styled } from '@material-ui/core/styles';
 
 // simplebar-react
 import SimpleBarReact from 'simplebar-react';
+
+// recoil
+import { useRecoilValue } from 'recoil';
+import { chatActiveState } from '../../recoil/atom';
 
 // api
 import connection from '../../api/rtcmulticonnection/RTCMultiConnection';
@@ -15,10 +20,26 @@ import { ConnectionContext } from '../../api/context/ConnectionContext';
 // component
 import ConferenceParticipantsItem from './ConferenceParticipantsItem';
 import ConferenceControlMenu from './ConferenceControlMenu';
+import ConferenceChatBox from './ConferenceChatBox';
+import ConferenceChatInput from './ConferenceChatInput';
+
+const SimplebarStyle = styled(SimpleBarReact)(() => ({
+  height: 500,
+  padding: 10,
+  marginTop: 5,
+  borderRadius: 10,
+  backgroundColor: '#dedee4'
+}));
+
+const ConferenceChatContainer = styled(Box)(() => ({
+  background: 'linear-gradient(to right, #282828, #202020)',
+  borderRadius: 15
+}));
 
 export default function ConferenceRoom() {
   const participantsRef = useRef({});
   const { participants } = useContext(ConnectionContext);
+  const isChatActive = useRecoilValue(chatActiveState);
 
   useEffect(() => {
     // detect mute
@@ -61,18 +82,39 @@ export default function ConferenceRoom() {
   return (
     <Stack sx={{ p: 2, height: '90%' }} spacing={3}>
       <ConferenceControlMenu />
-      <Typography variant="h6">대화방 참가자 ({participants?.length})</Typography>
-      <SimpleBarReact style={{ height: '70%' }}>
-        {participants.map((event) => (
-          <Box
-            key={event?.userid}
-            ref={(element) => (participantsRef.current[event?.userid] = element)}
-            sx={{ filter: event?.extra?.isMute === true ? 'brightness(0.5)' : 'brightness(1)' }}
-          >
-            <ConferenceParticipantsItem event={event} />
+      <Box>
+        <Grow in={isChatActive}>
+          <Box sx={{ display: isChatActive ? 'block' : 'none' }}>
+            <Box sx={{ pb: 1, pl: 1 }}>
+              <Typography variant="h6">채팅</Typography>
+            </Box>
+            <ConferenceChatContainer>
+              <ConferenceChatBox />
+              <ConferenceChatInput />
+            </ConferenceChatContainer>
           </Box>
-        ))}
-      </SimpleBarReact>
+        </Grow>
+        <Grow in={!isChatActive}>
+          <Box sx={{ display: isChatActive ? 'none' : 'block' }}>
+            <Box sx={{ pb: 1, pl: 1 }}>
+              <Typography variant="h6">대화방 참가자 ({participants?.length})</Typography>
+            </Box>
+            <SimplebarStyle>
+              {participants.map((event) => (
+                <Box
+                  key={event?.userid}
+                  ref={(element) => (participantsRef.current[event?.userid] = element)}
+                  sx={{
+                    filter: event?.extra?.isMute === true ? 'brightness(0.5)' : 'brightness(1)'
+                  }}
+                >
+                  <ConferenceParticipantsItem event={event} />
+                </Box>
+              ))}
+            </SimplebarStyle>
+          </Box>
+        </Grow>
+      </Box>
     </Stack>
   );
 }

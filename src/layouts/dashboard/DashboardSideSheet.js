@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React from 'react';
 import PropTypes from 'prop-types';
 // material
@@ -13,7 +14,8 @@ import { conferenceState, conferenceLoadingState } from '../../recoil/atom';
 // component
 import ConferenceRoom from '../../components/conference/ConferenceRoom';
 
-const DRAWER_WIDTH = '30%';
+const DRAWER_WIDTH = '30%'; // 데스크탑 화면에서는 30%
+const DRAWER_WIDTH_TABLET = '50%'; // 태블릿 화면에서는 50%
 const DRAWER_WIDTH_MOBILE = '100%'; // 모바일 화면에서는 Full Width
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -40,7 +42,8 @@ DashboardSideSheet.propTypes = {
 export default function DashboardSideSheet({ isOpenSheet, onCloseSheet }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const WIDTH = isMobile ? DRAWER_WIDTH_MOBILE : DRAWER_WIDTH;
+  const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
+  const WIDTH = isMobile ? DRAWER_WIDTH_MOBILE : isTablet ? DRAWER_WIDTH_TABLET : DRAWER_WIDTH; // 미디어 쿼리를 이용해 사이드시트의 Width 변경
   const isOnAir = useRecoilValue(conferenceState); // 음성대화 진행유무 전역 상태값
   const isLoadingConference = useRecoilValue(conferenceLoadingState);
 

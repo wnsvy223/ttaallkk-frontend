@@ -62,10 +62,10 @@ DashboardNavbar.propTypes = {
   onOpenSidebar: PropTypes.func,
   onOpenSheet: PropTypes.func,
   mini: PropTypes.bool,
-  onSetMiniSidebar: PropTypes.func
+  onChangeMiniSidebar: PropTypes.func
 };
 
-export default function DashboardNavbar({ onOpenSidebar, onOpenSheet, mini, onSetMiniSidebar }) {
+export default function DashboardNavbar({ onOpenSidebar, onOpenSheet, mini, onChangeMiniSidebar }) {
   const isOnAir = useRecoilValue(conferenceState);
 
   return (
@@ -78,7 +78,7 @@ export default function DashboardNavbar({ onOpenSidebar, onOpenSheet, mini, onSe
         </MHidden>
 
         <MHidden width="lgDown">
-          <IconButton onClick={onSetMiniSidebar} sx={{ mr: 1, color: 'text.primary' }}>
+          <IconButton onClick={onChangeMiniSidebar} sx={{ mr: 1, color: 'text.primary' }}>
             <Icon icon={menu2Fill} />
           </IconButton>
         </MHidden>

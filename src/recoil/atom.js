@@ -29,3 +29,8 @@ export const muteState = atom({
   key: 'muteState',
   default: false
 });
+
+export const chatActiveState = atom({
+  key: 'chatActiveState',
+  default: false
+});

@@ -62,8 +62,9 @@ ConferenceParticipantsItem.propTypes = {
 };
 
 export default function ConferenceParticipantsItem({ event }) {
-  const videoRef = useRef(); // 비디오 엘리먼트 참조 값(useRef로 항상 같은값을 참조)
-
+  const videoRef = useRef(); // 비디오 엘리먼트 참조 값
+  const speechRef = useRef(); // 스피치 이벤트 참조 값
+  const [isMount, setIsMount] = useState(false); // 컴포넌트 언마운트시 상태 변경 방지를 위한 상태값 : 스피치 이벤트를 통한 상태변경은 컴포넌트 마운트된 경우에만 수행
   const [localSpeak, setLocalSpeak] = useState(false); // 로컬 유저의 대화 상태값
   const [remoteSpeak, setRemoteSpeak] = useState(false); // 리모트 유저의 대화 상태값
   const isMute = useRecoilValue(muteState); // 음성대화 컨트롤러 컴포넌트에서 제어하는 로컬 유저 음소거 상태값
@@ -71,6 +72,15 @@ export default function ConferenceParticipantsItem({ event }) {
   const handleVolumeChange = (e) => {
     videoRef.current.volume = e.target.value / 10;
   };
+
+  // hark 스피치 이벤트 참조값 초기화
+  useEffect(() => {
+    if (event?.stream) {
+      setIsMount(true);
+      // eslint-disable-next-line new-cap
+      speechRef.current = new hark(event?.stream, {});
+    }
+  }, [event?.stream]);
 
   // 각 비디오 엘리먼트에 stream 리소스 설정
   useEffect(() => {
@@ -81,48 +91,50 @@ export default function ConferenceParticipantsItem({ event }) {
 
   // 로컬유저와 리모트유저의 볼륨 초기값 설정
   useEffect(() => {
-    if (event?.type === 'local') {
-      videoRef.current.volume = 0;
-      videoRef.current.muted = true;
-      videoRef.current.defaultMuted = true;
-    } else {
-      videoRef.current.volume = 0.5;
-      videoRef.current.muted = false;
-      videoRef.current.defaultMuted = false;
+    if (videoRef && videoRef.current) {
+      if (event?.type === 'local') {
+        videoRef.current.volume = 0;
+        videoRef.current.muted = true;
+        videoRef.current.defaultMuted = true;
+      } else {
+        videoRef.current.volume = 0.5;
+        videoRef.current.muted = false;
+        videoRef.current.defaultMuted = false;
+      }
     }
   }, [event?.type]);
 
   // 로컬 유저의 대화상태 감지
   useEffect(() => {
     if (event?.stream && event?.type === 'local') {
-      // eslint-disable-next-line new-cap
-      const speechEvents = new hark(event?.stream, {});
-      speechEvents.on('speaking', () => {
-        if (!isMute) setLocalSpeak(true);
+      speechRef.current.on('speaking', () => {
+        if (!isMute && isMount) setLocalSpeak(true);
       });
 
-      speechEvents.on('stopped_speaking', () => {
-        if (!isMute) setLocalSpeak(false);
+      speechRef.current.on('stopped_speaking', () => {
+        if (!isMute && isMount) setLocalSpeak(false);
       });
     }
-    return () => setLocalSpeak(false);
-  }, [event?.stream, event?.type, isMute]);
+    return () => {
+      if (isMount) setIsMount(false);
+    };
+  }, [event?.stream, event?.type, isMount, isMute]);
 
   // 리모트 유저의 대화상태 감지
   useEffect(() => {
     if (event?.stream && event?.type === 'remote') {
-      // eslint-disable-next-line new-cap
-      const speechEvents = new hark(event?.stream, {});
-      speechEvents.on('speaking', () => {
-        if (!isMute) setRemoteSpeak(true);
+      speechRef.current.on('speaking', () => {
+        if (!isMute && isMount) setRemoteSpeak(true);
       });
 
-      speechEvents.on('stopped_speaking', () => {
-        if (!isMute) setRemoteSpeak(false);
+      speechRef.current.on('stopped_speaking', () => {
+        if (!isMute && isMount) setRemoteSpeak(false);
       });
     }
-    return () => setRemoteSpeak(false);
-  }, [event?.stream, event?.type, isMute]);
+    return () => {
+      if (isMount) setIsMount(false);
+    };
+  }, [event?.stream, event?.type, isMount, isMute]);
 
   return event?.type === 'local' ? (
     <Box sx={{ p: 0.5 }}>

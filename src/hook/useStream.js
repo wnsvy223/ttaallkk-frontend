@@ -5,7 +5,7 @@ import connection from '../api/rtcmulticonnection/RTCMultiConnection';
 import initHark from '../api/rtcmulticonnection/Hark';
 
 /**
- * onstream, onstreamended, onleave 이벤트 호출에 따라 대화 참가자들의 스트림데이터 추가 및 제거
+ * onstream, onstreamended 이벤트 호출에 따라 대화 참가자들의 스트림데이터 추가 및 제거
  */
 const useStream = () => {
   const [participants, setParticipants] = useState([]);
@@ -21,10 +21,6 @@ const useStream = () => {
   };
 
   connection.onstreamended = (event) => {
-    setParticipants((p) => p.filter((user) => user.userid !== event.userid));
-  };
-
-  connection.onleave = (event) => {
     setParticipants((p) => p.filter((user) => user.userid !== event.userid));
   };
 

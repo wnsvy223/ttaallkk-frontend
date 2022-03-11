@@ -1,5 +1,8 @@
 import { useState } from 'react';
 
+// Moment
+import moment from 'moment';
+
 // api
 import connection from '../api/rtcmulticonnection/RTCMultiConnection';
 
@@ -26,6 +29,30 @@ const useMessage = () => {
   // 상대방과 data channel 닫힐 시 대화상태값 초기화
   connection.onclose = () => {
     setSpeak({});
+  };
+
+  // 참가자 입장 시 메시지 상태값 업데이트
+  connection.onopen = (event) => {
+    const systemMessage = {
+      type: 'systemMessage',
+      text: `${event?.extra?.displayName}님이 방에 참가했습니다.`,
+      displayName: connection?.extra?.displayName,
+      profileUrl: connection?.extra?.profileUrl,
+      timeStamp: moment()
+    };
+    setMessageList((message) => [...message, systemMessage]);
+  };
+
+  // 참가자 퇴장 시 메시지 상태값 업데이트
+  connection.onleave = (event) => {
+    const systemMessage = {
+      type: 'systemMessage',
+      text: `${event?.extra?.displayName}님이 방을 나갔습니다.`,
+      displayName: connection?.extra?.displayName,
+      profileUrl: connection?.extra?.profileUrl,
+      timeStamp: moment()
+    };
+    setMessageList((message) => [...message, systemMessage]);
   };
 
   return { speak, setSpeak, messageList, setMessageList };

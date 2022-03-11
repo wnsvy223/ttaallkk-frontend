@@ -36,9 +36,14 @@ export default function App() {
   const user = storage.get('user');
   const isSessionExpired = user?.expiredAtRefereshToken;
 
+  /**
+   * 세션 만료 체크 : 로컬스토리지에 저장된 토큰만료 타임스탬프 값을 체크하여 세션이 만료되었을 시
+   * 로컬스토리지에 저장된 유저정보 제거 및 로그인 페이지 이동
+   */
   useEffect(() => {
     const now = moment.now();
     if (isSessionExpired && moment(now).isAfter(isSessionExpired)) {
+      storage.remove('user');
       toast.error('인증이 만료되어 로그인 페이지로 이동합니다.', {
         position: toast.POSITION.TOP_CENTER
       });
