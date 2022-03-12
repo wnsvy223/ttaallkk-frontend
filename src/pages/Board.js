@@ -22,13 +22,13 @@ import { SortableMenu } from '../components/common';
 import { BoardTable, BoardPostSearch } from '../components/_dashboard/board';
 
 // api
-// import useRequest from '../hook/useRequest';
 import { request } from '../api/axios/axios';
 // ----------------------------------------------------------------------
 
 Board.propTypes = {
   title: PropTypes.string.isRequired,
-  category: PropTypes.object.isRequired
+  category: PropTypes.object.isRequired,
+  color: PropTypes.string.isRequired
 };
 
 const PostPagination = styled(Pagination)(({ theme }) => ({
@@ -37,31 +37,35 @@ const PostPagination = styled(Pagination)(({ theme }) => ({
   display: 'flex'
 }));
 
-export default function Board({ title, category }) {
+export default function Board({ title, category, color }) {
   const [data, setData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [page, setPage] = useState(1);
   const [keyword, setKeyword] = useState('');
   const [sort, setSort] = useState('createdAt');
-  const [color, setColor] = useState('info');
   const navigate = useNavigate();
   const location = useLocation();
   const query = queryString.parse(location.search); // 쿼리스트링을 JSON형태로 파싱해서 키값으로 접근가능
 
+  // 게시글 목록 데이터 조회 API 호출 함수
   const fetchBoardData = (url) => {
     setIsLoading(true);
-    request.get(url).then((res) => {
-      if (res) {
-        setData(res.data);
+    request
+      .get(url)
+      .then((res) => {
+        if (res) {
+          setIsLoading(false);
+          setIsError(false);
+          setData(res.data);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
         setIsLoading(false);
-      }
-    }).catch((error) => {
-      console.log(error);
-      setIsLoading(false);
-      setIsError(true);
-    });
-  }
+        setIsError(true);
+      });
+  };
 
   /**
    * 페이지 상태 변경 함수
@@ -128,32 +132,13 @@ export default function Board({ title, category }) {
     }
   };
 
-  // 게시판 카테고리별 컬러 설정 함수
-  const updateCategoryColor = (categoryId) => {
-    switch (categoryId) {
-      case 1:
-        setColor('info');
-        break;
-      case 2:
-        setColor('purple');
-        break;
-      case 3:
-        setColor('warning');
-        break;
-      case 4:
-        setColor('error');
-        break;
-      default:
-    }
-  };
-
   /**
    * url 상태 변경 이벤트
    * 쿼리스트링으로 적용되어있는 state와 props 값들의 변화에 따라 호출할 api url변경
    */
   useEffect(() => {
     if (keyword) {
-      fetchBoardData(`/api/post/search?keyword=${keyword}&category=${category?.id}&page=${page - 1}&sort=${sort}`)
+      fetchBoardData(`/api/post/search?keyword=${keyword}&category=${category?.id}&page=${page - 1}&sort=${sort}`);
     } else {
       fetchBoardData(`/api/post?category=${category?.id}&page=${page - 1}&sort=${sort}`);
     }
@@ -170,10 +155,6 @@ export default function Board({ title, category }) {
   useEffect(() => {
     updateSortState(query?.sort);
   }, [query?.sort]);
-
-  useEffect(() => {
-    updateCategoryColor(category?.id);
-  }, [category?.id]);
 
   return (
     <Page title={`Board: ${title} | TTAALLKK`}>
@@ -196,21 +177,23 @@ export default function Board({ title, category }) {
           <SortableMenu onSortItem={handleSortPost} />
         </Box>
         <BoardPostSearch category={category} onSearchPost={handleSearchPost} color={color} />
-        {data && isLoading && (
+        {isLoading && (
           <Card>
             <Box textAlign="center" sx={{ p: 3 }}>
               <CircularProgress />
             </Box>
           </Card>
         )}
-        {data && isError && (
+        {isError && (
           <Card>
             <Box textAlign="center" sx={{ p: 3 }}>
               <Typography>오류가 발생하였습니다.</Typography>
             </Box>
           </Card>
         )}
-        {data && !isLoading && !isError &&(<BoardTable category={category} post={data} color={color} />)}
+        {data && !isLoading && !isError && (
+          <BoardTable category={category} post={data} color={color} />
+        )}
         {data && data?.content?.length > 0 && (
           <PostPagination
             component="div"

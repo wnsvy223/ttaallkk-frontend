@@ -43,23 +43,41 @@ export default function Router() {
         {
           path: 'community/free',
           element: (
-            <Board title="자유게시판" category={{ id: 1, name: 'free', categoryTag: 'free' }} />
+            <Board
+              title="자유게시판"
+              category={{ id: 1, name: 'free', categoryTag: 'free' }}
+              color="info"
+            />
           )
         },
         {
           path: 'community/talk',
           element: (
-            <Board title="대화게시판" category={{ id: 2, name: 'talk', categoryTag: 'talk' }} />
+            <Board
+              title="대화게시판"
+              category={{ id: 2, name: 'talk', categoryTag: 'talk' }}
+              color="purple"
+            />
           )
         },
         {
           path: 'community/tip',
-          element: <Board title="Tech&Tip" category={{ id: 3, name: 'tip', categoryTag: 'tip' }} />
+          element: (
+            <Board
+              title="Tech&Tip"
+              category={{ id: 3, name: 'tip', categoryTag: 'tip' }}
+              color="warning"
+            />
+          )
         },
         {
           path: 'community/ads',
           element: (
-            <Board title="홍보게시판" category={{ id: 4, name: 'ads', categoryTag: 'ads' }} />
+            <Board
+              title="홍보게시판"
+              category={{ id: 4, name: 'ads', categoryTag: 'ads' }}
+              color="error"
+            />
           )
         },
         { path: 'community/create', element: <Editor /> },
