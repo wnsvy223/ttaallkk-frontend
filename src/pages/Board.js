@@ -22,7 +22,7 @@ import { SortableMenu } from '../components/common';
 import { BoardTable, BoardPostSearch } from '../components/_dashboard/board';
 
 // api
-import useRequest from '../hook/useRequest';
+// import useRequest from '../hook/useRequest';
 import { request } from '../api/axios/axios';
 // ----------------------------------------------------------------------
 
@@ -38,7 +38,9 @@ const PostPagination = styled(Pagination)(({ theme }) => ({
 }));
 
 export default function Board({ title, category }) {
-  const [url, setUrl] = useState('');
+  const [data, setData] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
   const [page, setPage] = useState(1);
   const [keyword, setKeyword] = useState('');
   const [sort, setSort] = useState('createdAt');
@@ -47,9 +49,19 @@ export default function Board({ title, category }) {
   const location = useLocation();
   const query = queryString.parse(location.search); // 쿼리스트링을 JSON형태로 파싱해서 키값으로 접근가능
 
-  const fetcher = () => request.get(url).then((res) => res.data);
-  const { data, isLoading, isError } = useRequest(url, fetcher);
-
+  const fetchBoardData = (url) => {
+    setIsLoading(true);
+    request.get(url).then((res) => {
+      if (res) {
+        setData(res.data);
+        setIsLoading(false);
+      }
+    }).catch((error) => {
+      console.log(error);
+      setIsLoading(false);
+      setIsError(true);
+    });
+  }
 
   /**
    * 페이지 상태 변경 함수
@@ -90,7 +102,7 @@ export default function Board({ title, category }) {
   };
 
   // 게시판 페이징 히스토리 상태 관리 함수(페이징 쿼리스트링 유무에 따라 상태 변경)
-  const handlePageState = (page) => {
+  const updatePageState = (page) => {
     if (page) {
       setPage(Number(page));
     } else {
@@ -99,7 +111,7 @@ export default function Board({ title, category }) {
   };
 
   // 게시글 검색 히스토리 상태 관리 함수(검색 쿼리스트링 유무에 따라 상태 변경)
-  const handleSearchState = (search) => {
+  const updateSearchState = (search) => {
     if (search) {
       setKeyword(search);
     } else {
@@ -108,7 +120,7 @@ export default function Board({ title, category }) {
   };
 
   // 게시글 정렬 히스토리 상태관리 함수(정렬 쿼리스트링 유무에 따라 상태 변경)
-  const handleSortState = (sort) => {
+  const updateSortState = (sort) => {
     if (sort) {
       setSort(sort);
     } else {
@@ -117,7 +129,7 @@ export default function Board({ title, category }) {
   };
 
   // 게시판 카테고리별 컬러 설정 함수
-  const handleCategoryColor = (categoryId) => {
+  const updateCategoryColor = (categoryId) => {
     switch (categoryId) {
       case 1:
         setColor('info');
@@ -140,30 +152,27 @@ export default function Board({ title, category }) {
    * 쿼리스트링으로 적용되어있는 state와 props 값들의 변화에 따라 호출할 api url변경
    */
   useEffect(() => {
-    if(location){
-      console.log('url 변경');
-      if (keyword) {
-        setUrl(`/api/post/search?keyword=${keyword}&category=${category?.id}&page=${page - 1}&sort=${sort}`);
-      } else {
-        setUrl(`/api/post?category=${category?.id}&page=${page - 1}&sort=${sort}`);
-      }
+    if (keyword) {
+      fetchBoardData(`/api/post/search?keyword=${keyword}&category=${category?.id}&page=${page - 1}&sort=${sort}`)
+    } else {
+      fetchBoardData(`/api/post?category=${category?.id}&page=${page - 1}&sort=${sort}`);
     }
-  }, [category?.id, keyword, location, page, sort]);
+  }, [category?.id, keyword, page, sort]);
 
   useEffect(() => {
-    handlePageState(query?.page);
+    updatePageState(query?.page);
   }, [query?.page]);
 
   useEffect(() => {
-    handleSearchState(query?.search);
+    updateSearchState(query?.search);
   }, [query?.search]);
 
   useEffect(() => {
-    handleSortState(query?.sort);
+    updateSortState(query?.sort);
   }, [query?.sort]);
 
   useEffect(() => {
-    handleCategoryColor(category?.id);
+    updateCategoryColor(category?.id);
   }, [category?.id]);
 
   return (
@@ -187,22 +196,22 @@ export default function Board({ title, category }) {
           <SortableMenu onSortItem={handleSortPost} />
         </Box>
         <BoardPostSearch category={category} onSearchPost={handleSearchPost} color={color} />
-        {isLoading && (
+        {data && isLoading && (
           <Card>
             <Box textAlign="center" sx={{ p: 3 }}>
               <CircularProgress />
             </Box>
           </Card>
         )}
-        {!data && isError && (
+        {data && isError && (
           <Card>
             <Box textAlign="center" sx={{ p: 3 }}>
               <Typography>오류가 발생하였습니다.</Typography>
             </Box>
           </Card>
         )}
-        {data && <BoardTable category={category} post={data} color={color} />}
-        {data?.content.length > 0 && (
+        {data && !isLoading && !isError &&(<BoardTable category={category} post={data} color={color} />)}
+        {data && data?.content?.length > 0 && (
           <PostPagination
             component="div"
             shape="circular"

@@ -68,7 +68,7 @@ export default function BoardTable({ category, post, color }) {
   return (
     <Card>
       <Box sx={{ p: 1, pb: 1 }}>
-        {post?.content.length > 0 ? (
+        {post?.content?.length > 0 ? (
           <TableContainer sx={{ minHeight: 350, p: 2 }}>
             <SimpleBarReact>
               <Table>
@@ -84,7 +84,7 @@ export default function BoardTable({ category, post, color }) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {post?.content.map((row, index) => (
+                  {post?.content?.map((row, index) => (
                     <TableRow
                       hover
                       key={row.id}
