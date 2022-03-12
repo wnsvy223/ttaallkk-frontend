@@ -80,11 +80,11 @@ export default function ConferenceRoom() {
   }, []);
 
   return (
-    <Stack sx={{ p: 2, height: '90%' }} spacing={3}>
+    <Stack sx={{ p: 2, height: '90%' }} justifyContent="space-around" spacing={3}>
       <ConferenceControlMenu />
       <Box>
         <Grow in={isChatActive}>
-          <Box sx={{ display: isChatActive ? 'block' : 'none' }}>
+          <Box sx={{ display: isChatActive ? 'block' : 'none', pb: 2 }}>
             <Box sx={{ pb: 1, pl: 1 }}>
               <Typography variant="h6">채팅</Typography>
             </Box>
@@ -95,8 +95,8 @@ export default function ConferenceRoom() {
           </Box>
         </Grow>
         <Grow in={!isChatActive}>
-          <Box sx={{ display: isChatActive ? 'none' : 'block' }}>
-            <Box sx={{ pb: 1, pl: 1 }}>
+          <Box sx={{ display: isChatActive ? 'none' : 'block', pb: 2 }}>
+            <Box sx={{ pb: 1, ml: 1 }}>
               <Typography variant="h6">대화방 참가자 ({participants?.length})</Typography>
             </Box>
             <SimplebarStyle>

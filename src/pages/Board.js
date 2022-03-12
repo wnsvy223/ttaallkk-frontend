@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import PropTypes from 'prop-types';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import { styled } from '@material-ui/core/styles';
@@ -50,17 +50,6 @@ export default function Board({ title, category }) {
   const fetcher = () => request.get(url).then((res) => res.data);
   const { data, isLoading, isError } = useRequest(url, fetcher);
 
-  /**
-   * url 상태 변경 함수
-   * 쿼리스트링으로 적용되어있는 state와 props 값들의 변화에 따라 호출할 api url변경
-   */
-  const handleChangeUrl = useCallback(() => {
-    if (keyword) {
-      setUrl(`/api/post/search?keyword=${keyword}&category=${category?.id}&page=${page - 1}&sort=${sort}`);
-    } else {
-      setUrl(`/api/post?category=${category?.id}&page=${page - 1}&sort=${sort}`);
-    }
-  }, [category?.id, keyword, page, sort]);
 
   /**
    * 페이지 상태 변경 함수
@@ -146,9 +135,20 @@ export default function Board({ title, category }) {
     }
   };
 
+  /**
+   * url 상태 변경 이벤트
+   * 쿼리스트링으로 적용되어있는 state와 props 값들의 변화에 따라 호출할 api url변경
+   */
   useEffect(() => {
-    handleChangeUrl();
-  }, [handleChangeUrl]);
+    if(location){
+      console.log('url 변경');
+      if (keyword) {
+        setUrl(`/api/post/search?keyword=${keyword}&category=${category?.id}&page=${page - 1}&sort=${sort}`);
+      } else {
+        setUrl(`/api/post?category=${category?.id}&page=${page - 1}&sort=${sort}`);
+      }
+    }
+  }, [category?.id, keyword, location, page, sort]);
 
   useEffect(() => {
     handlePageState(query?.page);
