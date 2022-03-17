@@ -35,7 +35,7 @@ const ChatInputPaper = styled(Paper)(() => ({
 
 export default function ConferenceChatInput() {
   const [chatMessage, setChatMessage] = useState('');
-  const { setMessageList } = useContext(MessageContext);
+  const { setMessageList, resetDividerPosition } = useContext(MessageContext);
 
   const handleEnterPress = (e) => {
     if (e.key === 'Enter') {
@@ -57,6 +57,7 @@ export default function ConferenceChatInput() {
       timeStamp: moment()
     };
     connection.send(newMessage);
+    resetDividerPosition();
     setMessageList((message) => [...message, newMessage]);
     setChatMessage('');
   };

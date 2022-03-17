@@ -1,4 +1,4 @@
-import { useEffect, useContext, useCallback } from 'react';
+import { useEffect, useContext } from 'react';
 
 // material ui
 import { styled } from '@material-ui/core/styles';
@@ -46,7 +46,7 @@ export default function ConferenceControlMenu() {
   const setConference = useSetRecoilState(conferenceState); // 음성대화진행 유무 상태값
   const [isMute, setIsMute] = useRecoilState(muteState); // 음성대화 음소거 유무 상태값
   const [isChatActive, setIsChatActive] = useRecoilState(chatActiveState); // 대화방 채팅 UI 액티브 유무 상태값
-  const { unReadMessageCount, setUnReadMessageCount, messageList, setMessageList } =
+  const { unReadMessageCount, setUnReadMessageCount, setMessageList, setDividerPosition } =
     useContext(MessageContext);
 
   // 음소거 활성화 or 비활성화
@@ -62,6 +62,9 @@ export default function ConferenceControlMenu() {
   // 채팅창 활성화 or 비활성화
   const handleChatActive = () => {
     setIsChatActive((isActive) => !isActive);
+    if (!isChatActive) {
+      setDividerPosition(); // 채팅 비활성화 시 마지막 메시지 위치를 확인하기 위한 구분선 추가
+    }
   };
 
   // 대화 종료(상태 변수값 초기화 및 연결해제 함수 호출)
@@ -73,32 +76,6 @@ export default function ConferenceControlMenu() {
     setUnReadMessageCount(0);
     setMessageList([initialMessage]);
   };
-
-  // 디바이더 아이템 인덱스 찾기
-  const findDivderItem = useCallback(() => {
-    const item = messageList?.splice(
-      messageList?.findIndex((data) => data?.isDividerMessage === true),
-      1
-    );
-    return item;
-  }, [messageList]);
-
-  /**
-   * 채팅창이 비활성화 될 때 마지막 메시지를 표시하여 추가로 메시지가 수신될 때
-   * 어느 위치까지 읽었는지 확인할 수 있는 디바이더 컴포넌트 랜더링을 위해 리스트 상태 변경
-   */
-  useEffect(() => {
-    if (!isChatActive) {
-      const item = findDivderItem();
-      messageList?.splice(messageList.length - unReadMessageCount, 0, item[0]); // 디바이더 아이템 위치 변경(읽지않은 메시지 목록중 첫 요소 해당하는 인덱스)
-    }
-    return () => {
-      if (unReadMessageCount === 0) {
-        const item = findDivderItem();
-        messageList?.splice(0, 0, item[0]); // 디바이더 아이템 위치 0번 인덱스 위치로 변경
-      }
-    };
-  }, [findDivderItem, isChatActive, messageList, unReadMessageCount]);
 
   // 채팅창 활성화 될 경우 읽지않은 채팅메시지 카운트 0으로 리셋
   useEffect(() => {

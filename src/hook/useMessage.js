@@ -29,6 +29,7 @@ const useMessage = () => {
         setSpeak(event.data);
         break;
       case 'textMessage':
+        resetDividerPosition();
         setMessageList((message) => [...message, event.data]);
         if (!isChatActive) setUnReadMessageCount((count) => count + 1);
         break;
@@ -50,6 +51,7 @@ const useMessage = () => {
       profileUrl: connection?.extra?.profileUrl,
       timeStamp: moment()
     };
+    resetDividerPosition();
     setMessageList((message) => [...message, systemMessage]);
   };
 
@@ -62,8 +64,34 @@ const useMessage = () => {
       profileUrl: connection?.extra?.profileUrl,
       timeStamp: moment()
     };
+    resetDividerPosition();
     setMessageList((message) => [...message, systemMessage]);
   };
+
+  // 디바이더 아이템 찾기
+  function findDividerItem(list) {
+    const item = list?.splice(
+      list?.findIndex((data) => data?.isDividerMessage === true),
+      1
+    );
+    return item;
+  }
+
+  // 디바이더 아이템 위치 변경(읽지않은 메시지 목록중 첫 요소 해당하는 인덱스)
+  function setDividerPosition() {
+    const messages = [...messageList];
+    const item = findDividerItem(messages);
+    messages?.splice(messages?.length - unReadMessageCount, 0, item[0]);
+    setMessageList(messages);
+  }
+
+  // 디바이더 아이템 위치 0번 인덱스 위치로 리셋
+  function resetDividerPosition() {
+    const messages = [...messageList];
+    const item = findDividerItem(messages);
+    messages?.splice(0, 0, item[0]);
+    setMessageList(messages);
+  }
 
   return {
     speak,
@@ -71,7 +99,10 @@ const useMessage = () => {
     messageList,
     setMessageList,
     unReadMessageCount,
-    setUnReadMessageCount
+    setUnReadMessageCount,
+    findDividerItem,
+    setDividerPosition,
+    resetDividerPosition
   };
 };
 
