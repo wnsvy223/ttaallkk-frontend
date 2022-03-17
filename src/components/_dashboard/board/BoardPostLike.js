@@ -28,15 +28,19 @@ export default function BoardPostLike({ postData }) {
   // props로 전달된 게시글 데이터로 좋아요 상태값 변경
   useEffect(() => {
     setIsLike(postData?.isAlreadyLike);
+  }, [postData?.isAlreadyLike]);
+
+  useEffect(() => {
     setLikeCount(postData?.likeCnt);
+  }, [postData?.likeCnt]);
+
+  useEffect(() => {
     setIsNotLike(postData?.isAlreadyDisLike);
+  }, [postData?.isAlreadyDisLike]);
+
+  useEffect(() => {
     setNotLikeCount(postData?.disLikeCnt);
-  }, [
-    postData?.isAlreadyLike,
-    postData?.isAlreadyDisLike,
-    postData?.likeCnt,
-    postData?.disLikeCnt
-  ]);
+  }, [postData?.disLikeCnt]);
 
   // 좋아요 or 싫어요 등록 및 취소 요청
   const requsetUpdateLikeDisLike = (postId, url) => {

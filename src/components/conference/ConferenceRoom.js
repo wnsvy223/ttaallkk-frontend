@@ -96,7 +96,7 @@ export default function ConferenceRoom() {
         </Grow>
         <Grow in={!isChatActive}>
           <Box sx={{ display: isChatActive ? 'none' : 'block', pb: 2 }}>
-            <Box sx={{ pb: 1, ml: 1 }}>
+            <Box sx={{ pb: 1, pl: 1 }}>
               <Typography variant="h6">대화방 참가자 ({participants?.length})</Typography>
             </Box>
             <SimplebarStyle>

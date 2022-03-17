@@ -5,9 +5,20 @@ import useMessage from '../../hook/useMessage';
 export const MessageContext = createContext();
 
 export const MessageProvider = ({ children }) => {
-  const { speak, messageList, setMessageList } = useMessage(); // 대화참가자의 대화상태및 채팅메시지 상태변화를 위한 커스텀 훅
+  // 대화참가자의 대화상태및 채팅메시지 상태변화를 위한 커스텀 훅
+  const { speak, messageList, setMessageList, unReadMessageCount, setUnReadMessageCount } =
+    useMessage();
+
   return (
-    <MessageContext.Provider value={{ speak, messageList, setMessageList }}>
+    <MessageContext.Provider
+      value={{
+        speak,
+        messageList,
+        setMessageList,
+        unReadMessageCount,
+        setUnReadMessageCount
+      }}
+    >
       {children}
     </MessageContext.Provider>
   );

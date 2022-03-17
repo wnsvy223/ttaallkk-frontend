@@ -3,7 +3,7 @@ import { useEffect, useContext, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 // material ui
-import { Stack, Box, Typography, Grow } from '@material-ui/core';
+import { Stack, Box, Typography, Grow, Divider } from '@material-ui/core';
 import { styled } from '@material-ui/core/styles';
 
 // simplebar-react
@@ -36,6 +36,12 @@ const DisplayNameTextView = styled(Typography)(() => ({
   fontWeight: 'bold',
   paddingBottom: 5,
   color: '#F2F2F2'
+}));
+
+const UnReadMessageDivider = styled(Divider)(() => ({
+  color: '#FFF',
+  padding: '40px 0px',
+  fontSize: 12
 }));
 
 // -------------------------------SystemMessage---------------------------------------
@@ -76,28 +82,26 @@ SendMessageItem.propTypes = {
 
 function SendMessageItem({ data }) {
   return (
-    <Grow in timeout={600}>
-      <Stack direction="row" justifyContent="right" spacing={1} sx={{ pt: 1, pb: 1 }}>
-        <Stack direction="row" alignItems="flex-end">
-          <Typography noWrap sx={{ fontSize: { xs: 10, md: 5 }, color: 'GrayText' }}>
-            <Moment fromNow>{data?.timeStamp}</Moment>
-          </Typography>
-        </Stack>
-        <Box
-          sx={{
-            backgroundColor: '#505050',
-            color: '#F2F2F2',
-            p: 1.5,
-            borderRadius: 2,
-            minWidth: 150,
-            maxWidth: '80%',
-            boxShadow: 1
-          }}
-        >
-          <Typography sx={{ fontSize: '12px', wordWrap: 'break-word' }}>{data?.text}</Typography>
-        </Box>
+    <Stack direction="row" justifyContent="right" spacing={1} sx={{ pt: 1, pb: 1 }}>
+      <Stack direction="row" alignItems="flex-end">
+        <Typography noWrap sx={{ fontSize: { xs: 10, md: 5 }, color: 'GrayText' }}>
+          <Moment fromNow>{data?.timeStamp}</Moment>
+        </Typography>
       </Stack>
-    </Grow>
+      <Box
+        sx={{
+          backgroundColor: '#505050',
+          color: '#F2F2F2',
+          p: 1.5,
+          borderRadius: 2,
+          minWidth: 150,
+          maxWidth: '80%',
+          boxShadow: 1
+        }}
+      >
+        <Typography sx={{ fontSize: '12px', wordWrap: 'break-word' }}>{data?.text}</Typography>
+      </Box>
+    </Stack>
   );
 }
 
@@ -109,43 +113,36 @@ ReceiveMessageItem.propTypes = {
 
 function ReceiveMessageItem({ data }) {
   return (
-    <Grow in timeout={600}>
-      <Stack
-        direction="row"
-        justifyContent="left"
-        spacing={1}
-        sx={{ pt: 1, pb: 1, maxWidth: '90%' }}
-      >
-        <LetterAvatar
-          src={data?.profileUrl}
+    <Stack direction="row" justifyContent="left" spacing={1} sx={{ pt: 1, pb: 1, maxWidth: '90%' }}>
+      <LetterAvatar
+        src={data?.profileUrl}
+        sx={{
+          width: 32,
+          height: 32,
+          name: data?.displayName,
+          fontSize: 12
+        }}
+      />
+      <Stack sx={{ minWidth: 150, maxWidth: '80%' }}>
+        <DisplayNameTextView>{data?.displayName}</DisplayNameTextView>
+        <Box
           sx={{
-            width: 32,
-            height: 32,
-            name: data?.displayName,
-            fontSize: 12
+            backgroundColor: '#FCEC4F',
+            color: 'black',
+            p: 1.5,
+            borderRadius: 2,
+            boxShadow: 1
           }}
-        />
-        <Stack sx={{ minWidth: 150, maxWidth: '80%' }}>
-          <DisplayNameTextView>{data?.displayName}</DisplayNameTextView>
-          <Box
-            sx={{
-              backgroundColor: '#FCEC4F',
-              color: 'black',
-              p: 1.5,
-              borderRadius: 2,
-              boxShadow: 1
-            }}
-          >
-            <Typography sx={{ fontSize: '12px', wordWrap: 'break-word' }}>{data?.text}</Typography>
-          </Box>
-        </Stack>
-        <Stack direction="row" alignItems="flex-end">
-          <Typography noWrap sx={{ fontSize: { xs: 10, md: 5 }, color: 'GrayText' }}>
-            <Moment fromNow>{data?.timeStamp}</Moment>
-          </Typography>
-        </Stack>
+        >
+          <Typography sx={{ fontSize: '12px', wordWrap: 'break-word' }}>{data?.text}</Typography>
+        </Box>
       </Stack>
-    </Grow>
+      <Stack direction="row" alignItems="flex-end">
+        <Typography noWrap sx={{ fontSize: { xs: 10, md: 5 }, color: 'GrayText' }}>
+          <Moment fromNow>{data?.timeStamp}</Moment>
+        </Typography>
+      </Stack>
+    </Stack>
   );
 }
 
@@ -171,15 +168,27 @@ export default function ConferenceChatBox() {
     <SimplebarStyle ref={simplebarRef}>
       {messageList?.length > 0 &&
         messageList?.map((data, index) => (
-          <Box key={index} ref={scrollRef}>
-            {data?.type === 'systemMessage' ? (
-              <SystemMessageItem data={data} />
-            ) : data?.userid === connection?.userid ? (
-              <SendMessageItem data={data} />
-            ) : (
-              <ReceiveMessageItem data={data} />
-            )}
-          </Box>
+          <Grow key={index} in timeout={600}>
+            <Box ref={scrollRef}>
+              {data?.type === 'systemMessage' ? (
+                data?.isDividerMessage === true ? (
+                  <UnReadMessageDivider
+                    sx={{
+                      display: index === 0 || index === messageList.length - 1 ? 'none' : 'flex'
+                    }}
+                  >
+                    여기까지 읽었습니다.
+                  </UnReadMessageDivider>
+                ) : (
+                  <SystemMessageItem data={data} />
+                )
+              ) : data?.userid === connection?.userid ? (
+                <SendMessageItem data={data} />
+              ) : (
+                <ReceiveMessageItem data={data} />
+              )}
+            </Box>
+          </Grow>
         ))}
     </SimplebarStyle>
   );

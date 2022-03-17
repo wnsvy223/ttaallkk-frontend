@@ -3,12 +3,21 @@ import { useState } from 'react';
 // Moment
 import moment from 'moment';
 
+// recoil
+import { useRecoilValue } from 'recoil';
+import { chatActiveState } from '../recoil/atom';
+
 // api
 import connection from '../api/rtcmulticonnection/RTCMultiConnection';
 
+// utils
+import { initialMessage } from '../utils/constant';
+
 const useMessage = () => {
   const [speak, setSpeak] = useState({});
-  const [messageList, setMessageList] = useState([]);
+  const [messageList, setMessageList] = useState([initialMessage]);
+  const [unReadMessageCount, setUnReadMessageCount] = useState(0);
+  const isChatActive = useRecoilValue(chatActiveState);
 
   // webrtc data channel을 통해 넘어오는 이벤트 메시지 수신(대화상태값 및 텍스트 메시지)
   connection.onmessage = (event) => {
@@ -21,6 +30,7 @@ const useMessage = () => {
         break;
       case 'textMessage':
         setMessageList((message) => [...message, event.data]);
+        if (!isChatActive) setUnReadMessageCount((count) => count + 1);
         break;
       default:
     }
@@ -55,7 +65,14 @@ const useMessage = () => {
     setMessageList((message) => [...message, systemMessage]);
   };
 
-  return { speak, setSpeak, messageList, setMessageList };
+  return {
+    speak,
+    setSpeak,
+    messageList,
+    setMessageList,
+    unReadMessageCount,
+    setUnReadMessageCount
+  };
 };
 
 export default useMessage;
