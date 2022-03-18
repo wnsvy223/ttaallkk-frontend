@@ -88,12 +88,12 @@ export default function Register() {
             align="center"
             sx={{ color: 'text.secondary', mt: 3 }}
           >
-            회원가입 시 TTAALLKK의&nbsp;
-            <Link href="#" underline="hover" sx={{ color: '#00AB55', fontWeight: 'bold' }}>
+            회원가입 시 TTAALLKK의&nbsp;&nbsp;
+            <Link href="#" underline="hover" sx={{ fontWeight: 'bold' }}>
               서비스 이용 약관
             </Link>
-            과&nbsp;
-            <Link href="#" underline="hover" sx={{ color: '#00AB55', fontWeight: 'bold' }}>
+            과&nbsp;&nbsp;
+            <Link href="#" underline="hover" sx={{ fontWeight: 'bold' }}>
               개인정보 보호정책
             </Link>
             에 동의하게 됩니다.

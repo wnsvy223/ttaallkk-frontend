@@ -5,7 +5,7 @@ import { NavLink as RouterLink, matchPath, useLocation } from 'react-router-dom'
 import chevronRightFill from '@iconify/icons-eva/chevron-right-fill';
 import chevronDownFill from '@iconify/icons-eva/chevron-down-fill';
 // material
-import { alpha, useTheme, styled } from '@material-ui/core/styles';
+import { styled } from '@material-ui/core/styles';
 import {
   Box,
   List,
@@ -44,6 +44,10 @@ const ListItemStyle = styled((props) => <ListItemButton disableGutters {...props
       borderBottomLeftRadius: 5,
       borderBottomRightRadius: 5,
       backgroundColor: theme.palette.info.main
+    },
+    '&:hover': {
+      color: theme.palette.ultramarine.main,
+      background: theme.palette.background.neutral
     }
   })
 );
@@ -79,7 +83,6 @@ NavItem.propTypes = {
 };
 
 function NavItem({ item, active, isMiniDrawer }) {
-  const theme = useTheme();
   const isActiveRoot = active(item.path);
   const { title, path, icon, info, children } = item;
   const [open, setOpen] = useState(isActiveRoot);
@@ -89,9 +92,9 @@ function NavItem({ item, active, isMiniDrawer }) {
   };
 
   const activeRootStyle = {
-    color: 'background.paper',
+    color: 'ultramarine.main',
+    bgcolor: 'background.paper',
     fontWeight: 'fontWeightMedium',
-    bgcolor: alpha(theme.palette.info.lighter, theme.palette.action.selectedOpacity),
     '&:before': { display: 'block' }
   };
 

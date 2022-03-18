@@ -86,12 +86,12 @@ const PURPLE = {
 };
 
 const ULTRAMARINE = {
-  lighter: '#257fb3',
-  light: '#125e8a',
-  main: '#053c5c',
-  dark: '#012e47',
-  darker: '#00263b',
-  contrastText: '#fff'
+  lighter: '#257FB3',
+  light: '#125E8A',
+  main: '#053C5C',
+  dark: '#012E47',
+  darker: '#00263B',
+  contrastText: '#FFF'
 };
 
 const GRADIENTS = {

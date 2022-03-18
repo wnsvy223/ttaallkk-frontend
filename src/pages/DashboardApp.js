@@ -35,7 +35,7 @@ export default function DashboardApp() {
         </Box>
         <Grid container spacing={3}>
           <Grid item xs={6} sm={6} md={3}>
-            <AppMainCard title="친구찾기" color="primary.light" />
+            <AppMainCard title="친구찾기" color="success.light" />
           </Grid>
           <Grid item xs={6} sm={6} md={3}>
             <AppMainCard title="커뮤니티" color="info.light" />

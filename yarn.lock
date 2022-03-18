@@ -1457,6 +1457,13 @@
   "resolved" "https://registry.npmjs.org/@iconify/icons-eva/-/icons-eva-1.1.0.tgz"
   "version" "1.1.0"
 
+"@iconify/icons-fluent@^1.2.4":
+  "integrity" "sha512-dVPx7nKI9Jy37Q0Z9HBPSNpm3BtH/MUuVk2u68RAFxOGICvypfgvktKyiV2yyX6zythTyJA414jRieR0HURvBw=="
+  "resolved" "https://registry.npmjs.org/@iconify/icons-fluent/-/icons-fluent-1.2.4.tgz"
+  "version" "1.2.4"
+  dependencies:
+    "@iconify/types" "^1.0.12"
+
 "@iconify/icons-ic@^1.1.7":
   "integrity" "sha512-bNABWmzSnwEV5y141KX0uuBl1cm2WjxWo/BoPX3j73sZ/9e+/mfJu3DB5DaPas2x7tjXj95r+eVMEJavllmHCA=="
   "resolved" "https://registry.npmjs.org/@iconify/icons-ic/-/icons-ic-1.1.7.tgz"

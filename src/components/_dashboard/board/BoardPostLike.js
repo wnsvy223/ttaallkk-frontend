@@ -4,11 +4,17 @@ import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 // material-ui
 import { Box, Typography, Stack, IconButton } from '@material-ui/core';
-import ThumbUpAltOutlined from '@material-ui/icons/ThumbUpAltOutlined';
-import ThumbUpAlt from '@material-ui/icons/ThumbUpAlt';
-import ThumbDownAltOutlined from '@material-ui/icons/ThumbDownAltOutlined';
-import ThumbDownAlt from '@material-ui/icons/ThumbDownAlt';
+
+// iconify
+import { Icon } from '@iconify/react';
+import ThumbUp from '@iconify/icons-fluent/thumb-like-16-regular';
+import ThumbUpFill from '@iconify/icons-fluent/thumb-like-16-filled';
+import ThumbDown from '@iconify/icons-fluent/thumb-dislike-16-regular';
+import ThumbDownFill from '@iconify/icons-fluent/thumb-dislike-16-filled';
+
+// toast
 import { toast } from 'react-toastify';
+
 // api
 import { request } from '../../../api/axios/axios';
 
@@ -42,14 +48,14 @@ export default function BoardPostLike({ postData }) {
     setNotLikeCount(postData?.disLikeCnt);
   }, [postData?.disLikeCnt]);
 
-  // 좋아요 or 싫어요 등록 및 취소 요청
-  const requsetUpdateLikeDisLike = (postId, url) => {
+  // 좋아요 등록 및 취소 요청
+  const requsetUpdateLike = (postId) => {
     const body = {
       postId,
       uid: user?.uid
     };
     request
-      .post(url, body)
+      .post(`/api/like`, body)
       .then((res) => {
         console.log(JSON.stringify(res.data));
         if (res.data?.status === 200) {
@@ -59,7 +65,28 @@ export default function BoardPostLike({ postData }) {
         }
       })
       .catch((error) => {
-        console.log(`좋아요/싫어요 오류 : ${error}`);
+        console.log(`좋아요 오류 : ${error}`);
+      });
+  };
+
+  // 싫어요 등록 및 취소 요청
+  const requsetUpdateDisLike = (postId) => {
+    const body = {
+      postId,
+      uid: user?.uid
+    };
+    request
+      .post(`/api/like`, body)
+      .then((res) => {
+        console.log(JSON.stringify(res.data));
+        if (res.data?.status === 200) {
+          toast.success(res.data?.message, {
+            position: toast.POSITION.BOTTOM_CENTER
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(`싫어요 오류 : ${error}`);
       });
   };
 
@@ -78,7 +105,7 @@ export default function BoardPostLike({ postData }) {
       } else {
         setLikeCount((prev) => prev + 1);
       }
-      requsetUpdateLikeDisLike(params?.postId, `/api/like`);
+      requsetUpdateLike(params?.postId);
     } else {
       toast.error('로그인이 필요합니다.', {
         position: toast.POSITION.BOTTOM_CENTER
@@ -101,7 +128,7 @@ export default function BoardPostLike({ postData }) {
       } else {
         setNotLikeCount((prev) => prev + 1);
       }
-      requsetUpdateLikeDisLike(params?.postId, `/api/dislike`);
+      requsetUpdateDisLike(params?.postId);
     } else {
       toast.error('로그인이 필요합니다.', {
         position: toast.POSITION.BOTTOM_CENTER
@@ -112,23 +139,33 @@ export default function BoardPostLike({ postData }) {
   return (
     <Box>
       <Stack direction="row" spacing={6}>
-        <Stack>
-          <IconButton color="secondary" aria-label="add like" onClick={handleLike}>
-            {isLike ? (
-              <ThumbUpAlt sx={{ fontSize: 20 }} />
-            ) : (
-              <ThumbUpAltOutlined sx={{ fontSize: 20 }} />
-            )}
+        <Stack spacing={1}>
+          <IconButton
+            color="secondary"
+            aria-label="add like"
+            onClick={handleLike}
+            sx={{ color: 'ultramarine.light', backgroundColor: 'info.lighter' }}
+          >
+            <Box
+              component={Icon}
+              icon={isLike ? ThumbUpFill : ThumbUp}
+              sx={{ width: 20, height: 20 }}
+            />
           </IconButton>
           <Typography sx={{ fontSize: 13, textAlign: 'center' }}>{likeCount}</Typography>
         </Stack>
-        <Stack>
-          <IconButton color="secondary" aria-label="add not like" onClick={handleNotLike}>
-            {isNotLike ? (
-              <ThumbDownAlt sx={{ fontSize: 20 }} />
-            ) : (
-              <ThumbDownAltOutlined sx={{ fontSize: 20 }} />
-            )}
+        <Stack spacing={1}>
+          <IconButton
+            color="secondary"
+            aria-label="add not like"
+            onClick={handleNotLike}
+            sx={{ color: 'ultramarine.light', backgroundColor: 'info.lighter' }}
+          >
+            <Box
+              component={Icon}
+              icon={isNotLike ? ThumbDownFill : ThumbDown}
+              sx={{ width: 20, height: 20 }}
+            />
           </IconButton>
           <Typography sx={{ fontSize: 13, textAlign: 'center' }}>{notLikeCount}</Typography>
         </Stack>
