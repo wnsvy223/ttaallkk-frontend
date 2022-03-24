@@ -76,7 +76,7 @@ export default function BoardPostLike({ postData }) {
       uid: user?.uid
     };
     request
-      .post(`/api/like`, body)
+      .post(`/api/dislike`, body)
       .then((res) => {
         console.log(JSON.stringify(res.data));
         if (res.data?.status === 200) {

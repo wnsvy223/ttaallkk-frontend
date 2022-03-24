@@ -9,6 +9,7 @@ import { chatActiveState } from '../recoil/atom';
 
 // api
 import connection from '../api/rtcmulticonnection/RTCMultiConnection';
+import { reSendFileByCheckIndex } from '../api/rtcmulticonnection/FileShare';
 
 // utils
 import { initialMessage } from '../utils/constant';
@@ -16,6 +17,7 @@ import { initialMessage } from '../utils/constant';
 const useMessage = () => {
   const [speak, setSpeak] = useState({});
   const [messageList, setMessageList] = useState([initialMessage]);
+  const [file, setFile] = useState({});
   const [unReadMessageCount, setUnReadMessageCount] = useState(0);
   const isChatActive = useRecoilValue(chatActiveState);
 
@@ -68,6 +70,54 @@ const useMessage = () => {
     setMessageList((message) => [...message, systemMessage]);
   };
 
+  // 파일 공유 시작 이벤트
+  // : 파일 데이터를 메시지 데이터 배열에 추가
+  connection.onFileStart = (file) => {
+    const extra = connection.getExtraData(file.userid);
+    const fileMessage = {
+      type: 'textMessage',
+      text:
+        connection?.userid === file.userid
+          ? `파일 전송중...`
+          : `${extra?.displayName}님이 파일 전송중...`,
+      userid: file.userid,
+      displayName: extra?.displayName,
+      profileUrl: extra?.profileUrl,
+      file
+    };
+    resetDividerPosition();
+    setMessageList((message) => message?.filter((data) => data?.file?.uuid !== file?.uuid));
+    setMessageList((message) => [...message, fileMessage]);
+  };
+
+  // 파일 공유 진행상황 이벤트
+  // : 업로드 진행상황 업데이트
+  connection.onFileProgress = (file) => {
+    setFile(file);
+  };
+
+  // 파일 공유 완료 이벤트
+  // : onFileStart에서 추가한 배열 요소중 uuid값이 같은(동일한 파일)요소 제거 후 새로운 데이터를 메시지 데이터 배열에 추가
+  // : 파일 공유 완료이벤트 수신 시 채팅창 활성화 X + 보낸 사람이 아닐 경우에 읽지않은 메시지 카운트 값 증가
+  connection.onFileEnd = (file) => {
+    const extra = connection.getExtraData(file.userid);
+    const fileMessage = {
+      type: 'textMessage',
+      text: file?.name,
+      userid: file.extra.userid,
+      displayName: extra?.displayName,
+      profileUrl: extra?.profileUrl,
+      file
+    };
+    resetDividerPosition();
+    setMessageList((message) => message?.filter((data) => data?.file?.uuid !== file?.uuid));
+    setMessageList((message) => [...message, fileMessage]);
+    if (!isChatActive && file.extra.userid !== connection.userid) {
+      setUnReadMessageCount((count) => count + 1);
+    }
+    reSendFileByCheckIndex();
+  };
+
   // 디바이더 아이템 찾기
   function findDividerItem(list) {
     const item = list?.splice(
@@ -102,7 +152,8 @@ const useMessage = () => {
     setUnReadMessageCount,
     findDividerItem,
     setDividerPosition,
-    resetDividerPosition
+    resetDividerPosition,
+    file
   };
 };
 

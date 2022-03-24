@@ -7,3 +7,4 @@ export { default as ConferencePublicRoomItem } from './ConferencePublicRoomItem'
 export { default as ConfereParticipantsSlider } from './ConferecParticipantsSlider';
 export { default as ConferenceChatBox } from './ConferenceChatBox';
 export { default as ConferenceChatInput } from './ConferenceChatInput';
+export { default as ConferenceShareFile } from './ConferenceShareFile';

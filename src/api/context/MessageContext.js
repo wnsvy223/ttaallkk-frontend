@@ -14,7 +14,8 @@ export const MessageProvider = ({ children }) => {
     setUnReadMessageCount,
     findDividerItem,
     setDividerPosition,
-    resetDividerPosition
+    resetDividerPosition,
+    file
   } = useMessage();
 
   return (
@@ -27,7 +28,8 @@ export const MessageProvider = ({ children }) => {
         setUnReadMessageCount,
         findDividerItem,
         setDividerPosition,
-        resetDividerPosition
+        resetDividerPosition,
+        file
       }}
     >
       {children}

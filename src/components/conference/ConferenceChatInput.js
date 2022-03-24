@@ -4,12 +4,16 @@ import { useState, useContext } from 'react';
 import { Box, IconButton, Paper, InputBase } from '@material-ui/core';
 import { styled } from '@material-ui/core/styles';
 
+// iconify
 import { Icon } from '@iconify/react';
 import SendIcon from '@iconify/icons-mdi/send';
 
 // Moment
 import moment from 'moment';
 import 'moment/locale/ko';
+
+// component
+import ConferenceShareFile from './ConferenceShareFile';
 
 // api
 import connection from '../../api/rtcmulticonnection/RTCMultiConnection';
@@ -65,6 +69,7 @@ export default function ConferenceChatInput() {
   return (
     <ChatInputBox>
       <ChatInputPaper>
+        <ConferenceShareFile />
         <InputBase
           sx={{ ml: 1, flex: 1, height: 40, fontSize: 12, color: '#F2F2F2' }}
           placeholder="채팅 메시지를 입력하세요."

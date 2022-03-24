@@ -3,7 +3,18 @@ import { useEffect, useContext, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 // material ui
-import { Stack, Box, Typography, Grow, Divider } from '@material-ui/core';
+import {
+  Stack,
+  Box,
+  Typography,
+  Grow,
+  Divider,
+  LinearProgress,
+  linearProgressClasses,
+  Link,
+  IconButton,
+  CardMedia
+} from '@material-ui/core';
 import { styled } from '@material-ui/core/styles';
 
 // simplebar-react
@@ -12,6 +23,10 @@ import SimpleBarReact from 'simplebar-react';
 // Moment
 import Moment from 'react-moment';
 import 'moment/locale/ko';
+
+// iconify
+import { Icon } from '@iconify/react';
+import DownLoad from '@iconify/icons-mdi/download';
 
 // api
 import connection from '../../api/rtcmulticonnection/RTCMultiConnection';
@@ -42,6 +57,29 @@ const UnReadMessageDivider = styled(Divider)(() => ({
   color: '#FFF',
   padding: '40px 0px',
   fontSize: 12
+}));
+
+const FileMessageWrapper = styled(Box)(() => ({
+  width: '100%',
+  height: '100%',
+  textAlign: 'center',
+  borderRadius: 10,
+  backgroundColor: '#FFF',
+  padding: 20,
+  margin: 10
+}));
+
+const ProgressBar = styled(LinearProgress)(({ theme }) => ({
+  margin: 10,
+  padding: 3,
+  borderRadius: 5,
+  [`&.${linearProgressClasses.colorPrimary}`]: {
+    backgroundColor: theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800]
+  },
+  [`& .${linearProgressClasses.bar}`]: {
+    borderRadius: 5,
+    backgroundColor: theme.palette.mode === 'light' ? '#1a90ff' : '#308fe8'
+  }
 }));
 
 // -------------------------------SystemMessage---------------------------------------
@@ -81,6 +119,8 @@ SendMessageItem.propTypes = {
 };
 
 function SendMessageItem({ data }) {
+  const { file } = useContext(MessageContext);
+
   return (
     <Stack direction="row" justifyContent="right" spacing={1} sx={{ pt: 1, pb: 1 }}>
       <Stack direction="row" alignItems="flex-end">
@@ -99,7 +139,46 @@ function SendMessageItem({ data }) {
           boxShadow: 1
         }}
       >
-        <Typography sx={{ fontSize: '12px', wordWrap: 'break-word' }}>{data?.text}</Typography>
+        <Typography
+          sx={{
+            fontSize: '12px',
+            wordWrap: 'break-word',
+            textAlign: data?.file ? 'center' : 'initial'
+          }}
+        >
+          {data?.text}
+        </Typography>
+        {data?.file && data?.file?.uuid === file?.uuid && data?.file?.end !== true && (
+          <ProgressBar
+            variant="determinate"
+            value={(file?.currentPosition * 100) / file?.maxChunks}
+          />
+        )}
+        {data?.file && data?.file?.end === true && (
+          <Stack alignItems="center" justifyContent="center">
+            <FileMessageWrapper>
+              {data?.file?.type.indexOf('image') !== -1 && (
+                <CardMedia component="img" image={data?.file?.url} alt="image file" />
+              )}
+              <Link
+                href={data?.file?.url}
+                target="_blank"
+                rel="noreferrer"
+                download={data?.file?.name}
+                underline="hover"
+                sx={{ fontSize: 12, textAlign: 'center' }}
+              >
+                <IconButton sx={{ fontSize: 20 }}>
+                  <Box
+                    component={Icon}
+                    icon={DownLoad}
+                    sx={{ width: 23, heigh: 23, color: 'gray' }}
+                  />
+                </IconButton>
+              </Link>
+            </FileMessageWrapper>
+          </Stack>
+        )}
       </Box>
     </Stack>
   );
@@ -112,6 +191,8 @@ ReceiveMessageItem.propTypes = {
 };
 
 function ReceiveMessageItem({ data }) {
+  const { file } = useContext(MessageContext);
+
   return (
     <Stack direction="row" justifyContent="left" spacing={1} sx={{ pt: 1, pb: 1, maxWidth: '90%' }}>
       <LetterAvatar
@@ -134,7 +215,46 @@ function ReceiveMessageItem({ data }) {
             boxShadow: 1
           }}
         >
-          <Typography sx={{ fontSize: '12px', wordWrap: 'break-word' }}>{data?.text}</Typography>
+          <Typography
+            sx={{
+              fontSize: '12px',
+              wordWrap: 'break-word',
+              textAlign: data?.file ? 'center' : 'initial'
+            }}
+          >
+            {data?.text}
+          </Typography>
+          {data?.file && data?.file?.uuid === file?.uuid && data?.file?.end !== true && (
+            <ProgressBar
+              variant="determinate"
+              value={(file?.currentPosition * 100) / file?.maxChunks}
+            />
+          )}
+          {data?.file && data?.file?.end === true && (
+            <Stack alignItems="center" justifyContent="center">
+              <FileMessageWrapper>
+                {data?.file?.type.indexOf('image') !== -1 && (
+                  <CardMedia component="img" image={data?.file?.url} alt="image file" />
+                )}
+                <Link
+                  href={data?.file?.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  download={data?.file?.name}
+                  underline="hover"
+                  sx={{ fontSize: 12, textAlign: 'center' }}
+                >
+                  <IconButton sx={{ fontSize: 20 }}>
+                    <Box
+                      component={Icon}
+                      icon={DownLoad}
+                      sx={{ width: 23, heigh: 23, color: 'gray' }}
+                    />
+                  </IconButton>
+                </Link>
+              </FileMessageWrapper>
+            </Stack>
+          )}
         </Box>
       </Stack>
       <Stack direction="row" alignItems="flex-end">
