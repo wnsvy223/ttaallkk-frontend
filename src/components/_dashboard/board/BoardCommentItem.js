@@ -255,7 +255,7 @@ export default function BoardCommentItem({ comment, isRootComment }) {
                 src={comment?.profileUrl}
                 sx={{ width: 26, height: 26, name: comment?.displayName, fontSize: 11 }}
               />
-              <Box sx={{ pt: 1.5 }}>
+              <Box sx={{ pt: 1.5, wordBreak: 'break-all' }}>
                 <Stack direction="row" alignItems="center" justifyContent="start" spacing={1}>
                   <Typography sx={{ fontSize: 10, minWidth: 30 }}>
                     {comment?.displayName}

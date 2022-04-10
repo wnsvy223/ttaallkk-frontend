@@ -34,3 +34,8 @@ export const chatActiveState = atom({
   key: 'chatActiveState',
   default: false
 });
+
+export const notificationCountState = atom({
+  key: 'notificationCountState',
+  default: 0
+});

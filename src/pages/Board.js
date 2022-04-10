@@ -184,7 +184,7 @@ export default function Board({ title, category, color }) {
             </Box>
           </Card>
         )}
-        {isError && (
+        {isError && !isLoading &&(
           <Card>
             <Box textAlign="center" sx={{ p: 3 }}>
               <Typography>오류가 발생하였습니다.</Typography>

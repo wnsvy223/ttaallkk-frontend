@@ -11,6 +11,7 @@ import '@toast-ui/editor/dist/i18n/ko-kr';
  * 인증 관련 빌드 오류(The unauthenticated git protocol on port 9418 is no longer supported.)가 발생하여 제거함.
  * "@toast-ui/chart": "^4.0.0" 로 설치시 해당 의존성url은 해결되지만 현재 사용할 필요없는 패키지라 추가 설치하지 않음.
  */
+import chart from '@toast-ui/editor-plugin-chart';
 import 'highlight.js/styles/github.css';
 import codeSyntaxHighlight from '@toast-ui/editor-plugin-code-syntax-highlight';
 import 'tui-color-picker/dist/tui-color-picker.css';
@@ -34,7 +35,7 @@ export default function BoardEditor({ editorRef, height, initialValue }) {
       useCommandShortcut
       usageStatistics={false}
       ref={editorRef}
-      plugins={[codeSyntaxHighlight, colorSyntax, tableMergedCell, uml]}
+      plugins={[chart, codeSyntaxHighlight, colorSyntax, tableMergedCell, uml]}
       language="ko-KR"
     />
   );

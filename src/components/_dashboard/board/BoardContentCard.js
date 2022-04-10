@@ -292,7 +292,7 @@ export default function BoardContentCard() {
               alt="image"
             />
           )}
-          <CardContent sx={{ minHeight: 400 }}>
+          <CardContent sx={{ minHeight: 400, wordBreak: 'break-all' }}>
             <Viewer initialValue={decodeHtmlEntity(postData.content)} />
           </CardContent>
           <CardActions sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>

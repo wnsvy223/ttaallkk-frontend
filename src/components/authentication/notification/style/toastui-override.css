@@ -1,0 +1,8 @@
+/* Toastify 토스트 메시지 내부에 있는 toast ui viewr 전용 클래스 : 색상 변경 및 말줄임표 효과 적용 */
+.Toastify__toast .toastui-editor-contents p{
+    color: #FFFFFF;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap
+}

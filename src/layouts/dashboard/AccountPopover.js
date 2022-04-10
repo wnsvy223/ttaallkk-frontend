@@ -75,6 +75,7 @@ export default function AccountPopover() {
           }
         });
       storage.remove('user'); // 스토리지에서 유저 정보 제거
+      storage.remove('isSubscribe'); // 스토리지에서 알림 설정 정보 제거
     }
     navigate('/login'); // 로그인 페이지로 이동
   };
