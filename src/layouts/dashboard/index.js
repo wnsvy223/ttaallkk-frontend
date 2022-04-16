@@ -41,10 +41,10 @@ const MainStyle = styled('div')(({ theme }) => ({
 
 export default function DashboardLayout() {
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.between('sm', 'md'));
   const [open, setOpen] = useState(false); // 좌측 사이드바 open 상태
-  const [openSheet, setOpenSheet] = useState(false); // 우측 사이드바 open 상태
   const [mini, setMini] = useState(false); // 좌측 사이드바 Mini Drawer 상태
+  const [openSheet, setOpenSheet] = useState(false); // 우측 사이드바 open 상태
 
   const isOnAir = useRecoilValue(conferenceState); // 음성대화 전역 상태값
 
