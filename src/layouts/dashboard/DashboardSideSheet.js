@@ -3,9 +3,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 // material
 import { styled, useTheme } from '@material-ui/core/styles';
-import { useMediaQuery, Drawer, IconButton, Box, CircularProgress } from '@material-ui/core';
+import { useMediaQuery, Drawer, Stack, IconButton, Box, CircularProgress } from '@material-ui/core';
 import { Icon } from '@iconify/react';
-import closeFill from '@iconify/icons-eva/close-circle-fill';
+import arrowIosForwardFill from '@iconify/icons-eva/arrow-ios-forward-fill';
 
 // recoil
 import { useRecoilValue } from 'recoil';
@@ -21,10 +21,7 @@ const DRAWER_WIDTH_MOBILE = '100%'; // 모바일 화면에서는 Full Width
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
-  padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
-  ...theme.mixins.toolbar,
-  justifyContent: 'end'
+  padding: theme.spacing(1, 1)
 }));
 
 const ProgressWrapper = styled(Box)({
@@ -64,21 +61,19 @@ export default function DashboardSideSheet({ isOpenSheet, onCloseSheet }) {
         sx: { width: WIDTH }
       }}
     >
-      <DrawerHeader>
-        <IconButton onClick={onCloseSheet}>
-          <Box
-            component={Icon}
-            icon={closeFill}
-            sx={{ minWidth: 25, minHeight: 25, color: 'gray' }}
-          />
-        </IconButton>
-      </DrawerHeader>
-      {!isOnAir && isLoadingConference && (
-        <ProgressWrapper>
-          <CircularProgress color="info" />
-        </ProgressWrapper>
-      )}
-      {isOnAir && !isLoadingConference && <ConferenceRoom />}
+      <Stack>
+        <DrawerHeader>
+          <IconButton onClick={onCloseSheet}>
+            <Box component={Icon} icon={arrowIosForwardFill} sx={{ fontSize: 25, color: 'gray' }} />
+          </IconButton>
+        </DrawerHeader>
+        {!isOnAir && isLoadingConference && (
+          <ProgressWrapper>
+            <CircularProgress color="info" />
+          </ProgressWrapper>
+        )}
+        {isOnAir && !isLoadingConference && <ConferenceRoom />}
+      </Stack>
     </Drawer>
   );
 }

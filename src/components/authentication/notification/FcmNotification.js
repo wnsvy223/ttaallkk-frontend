@@ -77,49 +77,51 @@ export default function FcmNotification() {
   /**
    * 포그라운드 FCM 메시지 수신 시 이미지가 포함된 커스텀 토스트 메시지 호출
    */
-  firebase.messaging().onMessage((payload) => {
-    console.log(JSON.stringify(payload));
-    const { title, body, imageUrl, notificationType } = payload.data;
-    const toastTitle = setToastTitle(notificationType, title);
-    setNotificationCount((prev) => prev + 1);
+  if (firebase.messaging.isSupported()) {
+    firebase.messaging().onMessage((payload) => {
+      console.log(JSON.stringify(payload));
+      const { title, body, imageUrl, notificationType } = payload.data;
+      const toastTitle = setToastTitle(notificationType, title);
+      setNotificationCount((prev) => prev + 1);
 
-    toast(
-      () => (
-        <Stack direction="row" alignItems="center" spacing={1}>
-          <Avatar
-            src={'/favicon/android-chrome-192x192.png' || imageUrl}
-            sx={{ m: 1, width: 30, height: 30 }}
-          />
-          <Stack
-            direction="column"
-            spacing={1}
-            sx={{ wordBreak: 'break-all', textAlign: 'center', width: '100%' }}
-          >
-            <Box sx={{ fontSize: 11 }}>{toastTitle}</Box>
-            <Viewer initialValue={decodeHtmlEntity(body)} />
+      toast(
+        () => (
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <Avatar
+              src={'/favicon/android-chrome-192x192.png' || imageUrl}
+              sx={{ m: 1, width: 30, height: 30 }}
+            />
             <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="center"
-              spacing={5}
-              sx={{ backgroundColor: '#FFF', p: 0.3, borderRadius: 1 }}
+              direction="column"
+              spacing={1}
+              sx={{ wordBreak: 'break-all', textAlign: 'center', width: '100%' }}
             >
-              <Button size="small" color="info" onClick={() => handleClickToast(payload)}>
-                보러가기
-              </Button>
-              <Button size="small" color="info" onClick={handleOffNotification}>
-                알림끄기
-              </Button>
+              <Box sx={{ fontSize: 11 }}>{toastTitle}</Box>
+              <Viewer initialValue={decodeHtmlEntity(body)} />
+              <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="center"
+                spacing={5}
+                sx={{ backgroundColor: '#FFF', p: 0.3, borderRadius: 1 }}
+              >
+                <Button size="small" color="info" onClick={() => handleClickToast(payload)}>
+                  보러가기
+                </Button>
+                <Button size="small" color="info" onClick={handleOffNotification}>
+                  알림끄기
+                </Button>
+              </Stack>
             </Stack>
           </Stack>
-        </Stack>
-      ),
-      {
-        autoClose: 7000,
-        style: { backgroundColor: '#053C5C', color: '#FFFFFF' }
-      }
-    );
-  });
+        ),
+        {
+          autoClose: 7000,
+          style: { backgroundColor: '#053C5C', color: '#FFFFFF' }
+        }
+      );
+    });
+  }
 
   return null;
 }
