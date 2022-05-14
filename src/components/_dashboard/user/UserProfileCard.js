@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { Card, Button, Typography, Box, TextField, Stack } from '@material-ui/core';
 import { styled } from '@material-ui/core/styles';
@@ -6,7 +7,11 @@ import { toast } from 'react-toastify';
 import EditRounded from '@material-ui/icons/EditRounded';
 import CancelRounded from '@material-ui/icons/CancelRounded';
 import CheckCircle from '@material-ui/icons/CheckCircle';
-import { updateProfile } from '../../../redux/actions/userAction';
+
+// redux
+import { updateProfile, updateProfileImage } from '../../../redux/actions/userAction';
+
+// utils
 import storage from '../../../utils/storage';
 
 const ProfileCard = styled(Card)(() => ({
@@ -26,7 +31,12 @@ const ProfileEditBox = styled(Box)(({ theme }) => ({
   }
 }));
 
-function UserProfileCard() {
+UserProfileCard.propTypes = {
+  onEditableProfile: PropTypes.func,
+  file: PropTypes.object
+};
+
+function UserProfileCard({ onEditableProfile, file }) {
   const dispatch = useDispatch();
   const user = useSelector((store) => store.auth.user);
 
@@ -36,7 +46,8 @@ function UserProfileCard() {
 
   // 프로필 편집 가능 상태 변경
   const handleEditAble = () => {
-    setIsEdit(!isEdit);
+    setIsEdit(true);
+    onEditableProfile(true);
   };
 
   const handleEmailChange = (event) => {
@@ -47,14 +58,25 @@ function UserProfileCard() {
     setDisplayName(event.target.value);
   };
 
-  const handleProfileEditCancel = () => {
+  const handleEditDisAble = () => {
     setIsEdit(false);
+    onEditableProfile(false);
     setEmail(user?.email);
     setDisplayName(user?.displayName);
   };
 
+  // 프로필 업데이트
   const handleProfileEditSubmit = () => {
-    requestProfileUpdate(user.uid);
+    if (user.email !== email || user.displayName !== displayName) {
+      requestProfileUpdate(user.uid);
+      if (file !== null) {
+        requestProfileImageUpdate(user.uid, file);
+      }
+    } else if (file !== null) {
+      requestProfileImageUpdate(user.uid, file);
+    } else {
+      handleEditDisAble();
+    }
   };
 
   // 프로필 업데이트 요청(전역 상태값 변경 및 로컬스토리지에 변경된 유저데이터만 업데이트)
@@ -65,10 +87,33 @@ function UserProfileCard() {
         if (res) {
           storage.update('user', 'email', res.email);
           storage.update('user', 'displayName', res.displayName);
-          setIsEdit(false);
           toast.success('프로필 업데이트 성공', {
             position: toast.POSITION.TOP_CENTER
           });
+          handleEditDisAble();
+        }
+      })
+      .catch((error) => {
+        console.log(error?.response);
+        toast.error(error?.response?.data?.message, {
+          position: toast.POSITION.TOP_CENTER
+        });
+      });
+  };
+
+  // 프로필 이미지 업로드 및 업데이트 요청
+  const requestProfileImageUpdate = async (uid, file) => {
+    const formData = new FormData();
+    formData.append('files', file);
+    const body = { uid, formData };
+    dispatch(updateProfileImage(body))
+      .then((res) => {
+        if (res) {
+          storage.update('user', 'profileUrl', res);
+          toast.success('프로필 이미지 업데이트 성공', {
+            position: toast.POSITION.TOP_CENTER
+          });
+          handleEditDisAble();
         }
       })
       .catch((error) => {
@@ -82,11 +127,12 @@ function UserProfileCard() {
   return (
     <ProfileCard>
       {isEdit ? (
-        <Stack justifyContent="center" alignItems="center" spacing={2} sx={{ mt: 9 }}>
+        <Stack justifyContent="center" alignItems="center" spacing={5} sx={{ mt: 10 }}>
           <TextField
             name="displayName"
             label="닉네임"
             focused
+            color="purple"
             inputProps={{ style: { fontSize: 15, textAlign: 'center' } }}
             value={displayName}
             onChange={handleDisplayNameChange}
@@ -95,6 +141,7 @@ function UserProfileCard() {
             name="email"
             label="이메일"
             focused
+            color="purple"
             inputProps={{ style: { fontSize: 15, textAlign: 'center' } }}
             value={email}
             onChange={handleEmailChange}
@@ -127,14 +174,14 @@ function UserProfileCard() {
             size="normal"
             onClick={handleProfileEditSubmit}
           >
-            확인
+            저장
           </Button>
           <Button
             startIcon={<CancelRounded sx={{ fontSize: 16 }} />}
             color="purple"
             variant="contained"
             size="normal"
-            onClick={handleProfileEditCancel}
+            onClick={handleEditDisAble}
           >
             취소
           </Button>

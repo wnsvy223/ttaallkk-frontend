@@ -4,7 +4,8 @@ import {
   SIGNUP_SUCCESS,
   SIGNUP_FAILURE,
   LOG_OUT_SUCCESS,
-  UPDATE_PROFILE
+  UPDATE_PROFILE,
+  UPDATE_PROFILE_IMAGE
 } from '../actionType/type';
 import { request } from '../../api/axios/axios';
 import { setMessage } from './messageAction';
@@ -72,6 +73,24 @@ export const updateProfile = (req) => async (dispatch) => {
     dispatch({
       type: UPDATE_PROFILE,
       payload: { user: res.data }
+    });
+    return Promise.resolve(res.data);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+// 프로필 이미지 업데이트
+export const updateProfileImage = (req) => async (dispatch) => {
+  try {
+    const res = await request.post(`/api/user/${req.uid}/profile`, req.formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    dispatch({
+      type: UPDATE_PROFILE_IMAGE,
+      payload: { profileUrl: res.data }
     });
     return Promise.resolve(res.data);
   } catch (error) {

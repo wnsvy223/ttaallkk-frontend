@@ -4,7 +4,8 @@ import {
   SIGNUP_SUCCESS,
   SIGNUP_FAILURE,
   LOG_OUT_SUCCESS,
-  UPDATE_PROFILE
+  UPDATE_PROFILE,
+  UPDATE_PROFILE_IMAGE
 } from '../actionType/type';
 import storage from '../../utils/storage';
 
@@ -47,6 +48,14 @@ export default function auth(state = initialState, action) {
       return {
         ...state,
         user: payload.user
+      };
+    case UPDATE_PROFILE_IMAGE:
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          profileUrl: payload.profileUrl
+        }
       };
     default:
       return state;

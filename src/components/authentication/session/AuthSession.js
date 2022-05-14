@@ -9,6 +9,9 @@ import moment from 'moment';
 // toastify
 import { toast } from 'react-toastify';
 
+// api
+import { removeDeviceToken } from '../../../api/firebase/FcmService';
+
 // utils
 import storage from '../../../utils/storage';
 
@@ -26,6 +29,7 @@ export default function AuthSession() {
     if (isSessionExpired && moment(now).isAfter(isSessionExpired)) {
       storage.remove('user');
       storage.remove('isSubscribe');
+      removeDeviceToken();
       toast.error('인증이 만료되어 로그인 페이지로 이동합니다.', {
         position: toast.POSITION.TOP_CENTER
       });
