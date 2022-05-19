@@ -77,6 +77,7 @@ export default function ConferenceForm({ isPublicRoom }) {
   const openConference = () => {
     connection.extra = {
       displayName: user ? user?.displayName : username, // 대화방 닉네임
+      profileUrl: user ? user?.profileUrl : '', // 프로필 이미지
       uid: user ? user?.uid : connection?.userid
     };
     connection.checkPresence(roomname, (isRoomExist, roomid) => {
@@ -140,6 +141,7 @@ export default function ConferenceForm({ isPublicRoom }) {
   const joinConference = () => {
     connection.extra = {
       displayName: user ? user?.displayName : username, // 대화방 닉네임
+      profileUrl: user ? user?.profileUrl : '', // 프로필 이미지
       uid: user ? user?.uid : connection?.userid
     };
     connection.checkPresence(roomname, (isRoomExist, roomid, extra) => {

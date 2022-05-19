@@ -10,7 +10,9 @@ import { Avatar } from '@material-ui/core';
  * props 이름은 material ui 커스텀 props 혼동방지를 위해 그대로 sx로 사용
  */
 BackgroundLetterAvatars.propTypes = {
-  sx: PropTypes.object.isRequired,
+  sx: PropTypes.shape({
+    name: PropTypes.string.isRequired
+  }),
   src: PropTypes.string
 };
 

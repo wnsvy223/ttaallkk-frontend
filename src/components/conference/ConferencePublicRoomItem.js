@@ -2,10 +2,10 @@ import PropTypes from 'prop-types';
 
 import { useState, useEffect } from 'react';
 
-// material
-import { Typography, Stack, Button, Box, CardMedia } from '@material-ui/core';
+// material ui
+import { Typography, Stack, Button, Box, CardMedia, TextField } from '@material-ui/core';
 
-// toast
+// toastify
 import { toast } from 'react-toastify';
 
 // iconify
@@ -22,6 +22,9 @@ import { conferenceState, conferenceLoadingState } from '../../recoil/atom';
 // api
 import connection, { handleDisconnectRTC } from '../../api/rtcmulticonnection/RTCMultiConnection';
 
+// component
+import AlertDialog from '../common/AlertDialog';
+
 // ----------------------------------------------------------------------
 
 ConferencePublicRoomItem.propTypes = {
@@ -30,10 +33,38 @@ ConferencePublicRoomItem.propTypes = {
 
 export default function ConferencePublicRoomItem({ room }) {
   const { sessionid, maxParticipantsAllowed, participants, imageUrl } = room;
-  const [participantsNum, setParticipantsNum] = useState(participants?.length);
+
+  const [openDialog, setOpenDialog] = useState(false);
+  const [anonymousDisplayName, setAnonymousDisplayName] = useState('');
+  const [participantsNum, setParticipantsNum] = useState(0);
+
   const user = useSelector((store) => store.auth.user);
   const setConference = useSetRecoilState(conferenceState); // 음성대화진행 유무 상태값
   const setConferenceLoading = useSetRecoilState(conferenceLoadingState); // 음성대화 로딩 상태값
+
+  const handleDialogSubmit = (displayName) => {
+    if (displayName === '') {
+      toast.error('닉네임을 입력하세요.', {
+        position: toast.POSITION.TOP_CENTER
+      });
+    } else {
+      connection.extra = {
+        displayName,
+        profileUrl: '',
+        uid: connection?.userid
+      };
+      handleJoinPublicRoom(sessionid);
+    }
+  };
+
+  const handleDialogClose = () => {
+    setOpenDialog(false);
+    setAnonymousDisplayName('');
+  };
+
+  const handleChangeTextField = (e) => {
+    setAnonymousDisplayName(e.target.value);
+  };
 
   const handleDisconnectConference = () => {
     handleDisconnectRTC();
@@ -42,12 +73,16 @@ export default function ConferencePublicRoomItem({ room }) {
   };
 
   const handleCheckAuth = () => {
-    connection.extra = {
-      displayName: user ? user?.displayName : '익명닉네임',
-      uid: user ? user?.uid : connection?.userid
-    };
-    // 비로그인 유저면 닉네임 입력할 창 열어야함
-    handleJoinPublicRoom(sessionid);
+    if (user) {
+      connection.extra = {
+        displayName: user?.displayName,
+        profileUrl: user?.profileUrl,
+        uid: user?.uid
+      };
+      handleJoinPublicRoom(sessionid);
+    } else {
+      setOpenDialog(true);
+    }
   };
 
   const handleJoinPublicRoom = (room) => {
@@ -81,6 +116,16 @@ export default function ConferencePublicRoomItem({ room }) {
       }
     });
   };
+
+  // props로 넘어온 방 참가 인원수 세팅
+  useEffect(() => {
+    if (participants) {
+      setParticipantsNum(participants?.length);
+    }
+    return () => {
+      setParticipantsNum(0);
+    };
+  }, [participants]);
 
   // 시그널링 서버로부터 넘어온 실시간 방 변경 데이터에서 방 참가 인원수 세팅
   useEffect(() => {
@@ -133,6 +178,31 @@ export default function ConferencePublicRoomItem({ room }) {
           참가
         </Button>
       </Stack>
+      {openDialog && (
+        <AlertDialog
+          element={{ title: '익명 사용자' }}
+          open={openDialog}
+          onDialogClose={handleDialogClose}
+          onDialogSubmit={() => handleDialogSubmit(anonymousDisplayName)}
+          children={
+            <Box>
+              <TextField
+                autoFocus
+                margin="dense"
+                id="displayname"
+                label="닉네임을 입력하세요"
+                type="text"
+                fullWidth
+                variant="standard"
+                color="info"
+                onChange={handleChangeTextField}
+                value={anonymousDisplayName}
+              />
+            </Box>
+          }
+          dialogContentStyle={{ width: 250 }}
+        />
+      )}
     </Box>
   );
 }
