@@ -93,6 +93,10 @@ export default function Router() {
           element: isLoggedIn ? <Profile /> : <Navigate to="/login" replace />
         },
         {
+          path: '/profile/:uid',
+          element: <Profile />
+        },
+        {
           path: '/friend',
           element: isLoggedIn ? <Friend /> : <Navigate to="/login" replace />
         }

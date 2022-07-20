@@ -45,7 +45,7 @@ import { childrenCommentState } from '../../../recoil/atom';
 import BoardCommentCreateEditor from './BoardCommentCreateEditor';
 import BoardCommentUpdateEditor from './BoardCommentUpdateEditor';
 import AlertDialog from '../../common/AlertDialog';
-import LetterAvatar from '../../common/LetterAvatar';
+import LetterAvatarButton from '../../common/LetterAvatarButton';
 
 // api
 import { request } from '../../../api/axios/axios';
@@ -251,10 +251,7 @@ export default function BoardCommentItem({ comment, isRootComment }) {
         <Grid container>
           <Grid item xs={10} md={10}>
             <Stack direction="row" alignItems="center" justifyContent="start" spacing={2}>
-              <LetterAvatar
-                src={comment?.profileUrl}
-                sx={{ width: 26, height: 26, name: comment?.displayName, fontSize: 11 }}
-              />
+              <LetterAvatarButton data={comment} />
               <Box sx={{ pt: 1.5, wordBreak: 'break-all' }}>
                 <Stack direction="row" alignItems="center" justifyContent="start" spacing={1}>
                   <Typography sx={{ fontSize: 10, minWidth: 30 }}>

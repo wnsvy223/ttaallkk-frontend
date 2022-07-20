@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useParams } from 'react-router-dom';
 
 // icon
 import VisibilityIcon from '@material-ui/icons/Visibility';
@@ -152,10 +152,20 @@ function UserMyPostItem({ post }) {
 }
 
 export default function UserMyPost() {
+  const params = useParams();
   const user = useSelector((store) => store.auth.user);
-  const url = `/api/post/user/${user.uid}`;
+  const [url, setUrl] = useState('');
+
   const fetcher = () => request.get(url).then((res) => res.data);
   const { data, isLoading, isError } = useRequest(url, fetcher);
+
+  useEffect(() => {
+    if (params?.uid) {
+      setUrl(`/api/post/user/${params?.uid}`);
+    } else {
+      setUrl(`/api/post/user/${user?.uid}`);
+    }
+  }, [params?.uid, user?.uid]);
 
   if (isError)
     return (

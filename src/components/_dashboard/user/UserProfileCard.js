@@ -1,14 +1,18 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
+// material ui
 import { Card, Button, Typography, Box, TextField, Stack } from '@material-ui/core';
 import { styled } from '@material-ui/core/styles';
-import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
 import EditRounded from '@material-ui/icons/EditRounded';
 import CancelRounded from '@material-ui/icons/CancelRounded';
 import CheckCircle from '@material-ui/icons/CheckCircle';
 
+// toastify
+import { toast } from 'react-toastify';
+
 // redux
+import { useDispatch, useSelector } from 'react-redux';
 import { updateProfile, updateProfileImage } from '../../../redux/actions/userAction';
 
 // utils
@@ -21,6 +25,7 @@ const ProfileCard = styled(Card)(() => ({
 }));
 
 const ProfileEditBox = styled(Box)(({ theme }) => ({
+  height: 80,
   display: 'flex',
   justifyContent: 'flex-end',
   alignItems: 'flex-end',
@@ -33,16 +38,20 @@ const ProfileEditBox = styled(Box)(({ theme }) => ({
 
 UserProfileCard.propTypes = {
   onEditableProfile: PropTypes.func,
-  file: PropTypes.object
+  file: PropTypes.object,
+  currentUser: PropTypes.object
 };
 
-function UserProfileCard({ onEditableProfile, file }) {
+function UserProfileCard({ onEditableProfile, file, currentUser }) {
   const dispatch = useDispatch();
   const user = useSelector((store) => store.auth.user);
 
   const [isEdit, setIsEdit] = useState(false);
-  const [email, setEmail] = useState(user?.email);
-  const [displayName, setDisplayName] = useState(user?.displayName);
+  const [email, setEmail] = useState('');
+  const [displayName, setDisplayName] = useState('');
+
+  // 권한 체크 : 현재 로그인한 유저의 프로필 페이지만 편집 버튼 활성화
+  const isPermission = user?.uid === currentUser?.uid;
 
   // 프로필 편집 가능 상태 변경
   const handleEditAble = () => {
@@ -124,6 +133,16 @@ function UserProfileCard({ onEditableProfile, file }) {
       });
   };
 
+  useEffect(() => {
+    if (currentUser) {
+      setEmail(currentUser?.email);
+      setDisplayName(currentUser?.displayName);
+    } else {
+      setEmail(user?.email);
+      setDisplayName(user?.displayName);
+    }
+  }, [currentUser, user, user?.displayName, user?.email]);
+
   return (
     <ProfileCard>
       {isEdit ? (
@@ -150,7 +169,7 @@ function UserProfileCard({ onEditableProfile, file }) {
       ) : (
         <Stack justifyContent="center" alignItems="center" spacing={1} sx={{ mt: 4 }}>
           <Typography variant="subtitle1" noWrap textAlign="center" marginTop="60px">
-            {user?.displayName}
+            {displayName}
           </Typography>
           <Typography
             p={3}
@@ -159,7 +178,7 @@ function UserProfileCard({ onEditableProfile, file }) {
             noWrap
             textAlign="center"
           >
-            {user?.email}
+            {email}
           </Typography>
         </Stack>
       )}
@@ -188,15 +207,17 @@ function UserProfileCard({ onEditableProfile, file }) {
         </ProfileEditBox>
       ) : (
         <ProfileEditBox p={2}>
-          <Button
-            startIcon={<EditRounded sx={{ fontSize: 16 }} />}
-            color="secondary"
-            variant="contained"
-            size="normal"
-            onClick={handleEditAble}
-          >
-            프로필 편집
-          </Button>
+          {isPermission && (
+            <Button
+              startIcon={<EditRounded sx={{ fontSize: 16 }} />}
+              color="secondary"
+              variant="contained"
+              size="normal"
+              onClick={handleEditAble}
+            >
+              프로필 편집
+            </Button>
+          )}
         </ProfileEditBox>
       )}
     </ProfileCard>

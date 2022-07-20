@@ -24,7 +24,7 @@ import heartBrokenFill from '@iconify/icons-mdi/heart-broken';
 
 // component
 import SimpleBarReact from 'simplebar-react';
-import LetterAvatar from '../../common/LetterAvatar';
+import LetterAvatarButton from '../../common/LetterAvatarButton';
 
 // utils
 import decodeHtmlEntity from '../../../utils/decodeHtmlEntity';
@@ -113,10 +113,7 @@ export default function BoardTable({ category, post, color }) {
                           justifyContent="start"
                           spacing={1}
                         >
-                          <LetterAvatar
-                            src={row.profileUrl}
-                            sx={{ width: 23, height: 23, name: row.displayName, fontSize: 10 }}
-                          />
+                          <LetterAvatarButton data={row} sx={{ width: 23, height: 23 }} />
                           <Typography noWrap sx={{ fontSize: 12 }}>
                             {row.displayName}
                           </Typography>

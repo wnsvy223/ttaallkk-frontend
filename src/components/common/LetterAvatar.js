@@ -38,13 +38,13 @@ function stringToColor(string) {
 
 function stringAvatar(props) {
   const inko = new Inko();
-  const color = inko.en2ko(props.name);
+  const name = props?.name ? inko.en2ko(props.name) : 'Unknown';
   return {
     sx: {
       ...props,
-      bgcolor: stringToColor(color)
+      bgcolor: stringToColor(name)
     },
-    children: props.name.charAt(0)
+    children: name.charAt(0)
   };
 }
 

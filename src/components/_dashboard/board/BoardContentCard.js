@@ -36,7 +36,7 @@ import decodeHtmlEntity from '../../../utils/decodeHtmlEntity';
 import BoardPostLike from './BoardPostLike';
 import BoardEditor from './BoardEditor';
 import AlertDialog from '../../common/AlertDialog';
-import LetterAvatar from '../../common/LetterAvatar';
+import LetterAvatarButton from '../../common/LetterAvatarButton';
 
 // redux
 import { updatePost, deletePost } from '../../../redux/actions/postAction';
@@ -274,10 +274,7 @@ export default function BoardContentCard() {
               spacing={1}
               sx={{ maxWidth: '50%' }}
             >
-              <LetterAvatar
-                src={postData.profileUrl}
-                sx={{ width: 26, height: 26, name: postData.displayName, fontSize: 11 }}
-              />
+              <LetterAvatarButton data={postData} />
               <Typography noWrap sx={{ fontSize: 12 }}>
                 {postData.displayName}
               </Typography>

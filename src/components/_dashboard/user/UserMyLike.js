@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useParams } from 'react-router-dom';
 
 // material
 import { styled } from '@material-ui/core/styles';
@@ -127,10 +127,20 @@ function UserMyLikeItem({ likes }) {
 }
 
 export default function UserMyLike() {
+  const params = useParams();
   const user = useSelector((store) => store.auth.user);
-  const url = `/api/like/user/${user.uid}`;
+  const [url, setUrl] = useState('');
+
   const fetcher = () => request.get(url).then((res) => res.data);
   const { data, isLoading, isError } = useRequest(url, fetcher);
+
+  useEffect(() => {
+    if (params?.uid) {
+      setUrl(`/api/like/user/${params?.uid}`);
+    } else {
+      setUrl(`/api/like/user/${user.uid}`);
+    }
+  }, [params?.uid, user.uid]);
 
   if (isError)
     return (

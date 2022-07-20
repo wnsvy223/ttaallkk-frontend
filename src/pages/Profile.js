@@ -1,13 +1,26 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+
+// material ui
+import { useParams } from 'react-router-dom';
 import { Stack, Avatar, Container, Typography, Box, IconButton } from '@material-ui/core';
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
 import { styled } from '@material-ui/core/styles';
+
+// toastify
+import { toast } from 'react-toastify';
+
+// redux
 import { useSelector } from 'react-redux';
+
+// component
 import Page from '../components/Page';
 import NotificationSwitch from '../components/_dashboard/user/NotificationSwitch';
 import UserTabPanel from '../components/_dashboard/user/UserTabPanel';
 import UserProfileCard from '../components/_dashboard/user/UserProfileCard';
+
+// api
+import { getUserByUid } from '../api/service/userService';
 
 const ProfileContainer = styled(Container)(() => ({
   position: 'relative'
@@ -37,9 +50,16 @@ const ProfileImageButton = styled(IconButton)(() => ({
 
 function ProfileCard() {
   const user = useSelector((store) => store.auth.user);
+  const params = useParams();
+
   const [preview, setPreview] = useState('');
   const [file, setFile] = useState(null);
   const [isEditProfile, setIsEditProfile] = useState(false);
+  const [currentUser, setCurrentUser] = useState({
+    email: '',
+    displayName: '',
+    profileUrl: ''
+  });
 
   const onChangePreview = (event) => {
     if (event.target.files.length) {
@@ -62,6 +82,38 @@ function ProfileCard() {
     setPreview('');
   };
 
+  // url params로 받아온 사용자 uid로 정보 조회
+  const fetchUserByUid = useCallback((uid) => {
+    getUserByUid(uid)
+      .then((res) => {
+        setCurrentUser({
+          uid: res?.uid,
+          email: res?.email,
+          displayName: res?.displayName,
+          profileUrl: res?.profileUrl
+        });
+      })
+      .catch((error) => {
+        toast.error(error);
+      });
+  }, []);
+
+  // 프로필 페이지 데이터 2가지
+  // 1. 현재로그인 유저 프로필 : 로컬스토리지에 저장된 유저 정보로 랜더링
+  // 2. 다른 유저 프로필 : url params로 uid파싱해서 데이터 조회
+  useEffect(() => {
+    if (params?.uid) {
+      fetchUserByUid(params?.uid);
+    } else {
+      setCurrentUser({
+        uid: user?.uid,
+        email: user?.email,
+        displayName: user?.displayName,
+        profileUrl: user?.profileUrl
+      });
+    }
+  }, [fetchUserByUid, params?.uid, user?.displayName, user?.email, user?.profileUrl, user?.uid]);
+
   return (
     <Page title="Profile | TTAALLKK">
       <ProfileContainer>
@@ -69,12 +121,15 @@ function ProfileCard() {
           <Typography variant="h4" gutterBottom>
             Profile
           </Typography>
-          <NotificationSwitch />
+          {user?.uid && !params?.uid && <NotificationSwitch />}
         </Stack>
 
         <AvatarContainer>
-          <Avatar src={preview || user.profileUrl} sx={{ width: 100, height: 100, boxShadow: 3 }}>
-            {user?.displayName.charAt(0)}
+          <Avatar
+            src={preview || currentUser?.profileUrl}
+            sx={{ width: 100, height: 100, boxShadow: 3 }}
+          >
+            {currentUser?.displayName.charAt(0)}
           </Avatar>
           {isEditProfile && (
             <Box sx={{ position: 'relative' }}>
@@ -96,7 +151,11 @@ function ProfileCard() {
         </AvatarContainer>
 
         <Box p={2} sx={{ width: 1 }}>
-          <UserProfileCard onEditableProfile={handleEditProfile} file={file} />
+          <UserProfileCard
+            onEditableProfile={handleEditProfile}
+            file={file}
+            currentUser={currentUser}
+          />
         </Box>
 
         <Box mt={3}>
