@@ -4,7 +4,8 @@ import PropTypes from 'prop-types';
 
 // material ui
 import { styled } from '@material-ui/core/styles';
-import { Stack, TextField, Box, Button } from '@material-ui/core';
+import { Stack, TextField, Box } from '@material-ui/core';
+import { LoadingButton } from '@material-ui/lab';
 
 // toast
 import { toast } from 'react-toastify';
@@ -13,7 +14,7 @@ import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 
 // recoil
-import { useSetRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { conferenceState, conferenceLoadingState } from '../../recoil/atom';
 
 // api
@@ -37,7 +38,7 @@ const ConferenceFormBox = styled(Box)({
   justifyContent: 'center'
 });
 
-const ConferenceButton = styled(Button)({
+const ConferenceButton = styled(LoadingButton)({
   backgroundColor: 'rgb(5, 60, 92)',
   '&:hover': {
     backgroundColor: 'rgb(5, 50, 72)'
@@ -52,7 +53,7 @@ export default function ConferenceForm({ isPublicRoom }) {
   const [password, setPassword] = useState('');
 
   const setConference = useSetRecoilState(conferenceState); // 음성대화진행 유무 상태값
-  const setConferenceLoading = useSetRecoilState(conferenceLoadingState); // 음성대화 로딩 상태값
+  const [isConferenceLoading, setConferenceLoading] = useRecoilState(conferenceLoadingState); // 음성대화 로딩 상태값
 
   const handleOpenRoom = () => {
     if (roomname === '') {
@@ -286,10 +287,18 @@ export default function ConferenceForm({ isPublicRoom }) {
         )}
         <ConferenceParticipantsSlider onSetSliderValue={onSetSliderValue} />
         <Stack direction="row" spacing={2} justifyContent="center">
-          <ConferenceButton variant="contained" onClick={handleOpenRoom}>
+          <ConferenceButton
+            variant="contained"
+            onClick={handleOpenRoom}
+            loading={isConferenceLoading}
+          >
             생성
           </ConferenceButton>
-          <ConferenceButton variant="contained" onClick={handleJoinRoom}>
+          <ConferenceButton
+            variant="contained"
+            onClick={handleJoinRoom}
+            loading={isConferenceLoading}
+          >
             참가
           </ConferenceButton>
         </Stack>
