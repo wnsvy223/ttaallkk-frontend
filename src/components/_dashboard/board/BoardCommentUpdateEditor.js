@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
-import { useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 
 // Material UI
 import { Box, Button } from '@material-ui/core';
+import { LoadingButton } from '@material-ui/lab';
 import { styled } from '@material-ui/core/styles';
 
 // toast
@@ -41,6 +42,7 @@ const ButtonWrapper = styled(Box)(({ theme }) => ({
 }));
 
 export default function BoardCommentUpdateEditor({ commentId, onHideEditor, initialValue }) {
+  const [isLoading, setIsLoading] = useState(false);
   const editorRef = useRef();
   const user = useSelector((store) => store.auth.user);
 
@@ -67,6 +69,7 @@ export default function BoardCommentUpdateEditor({ commentId, onHideEditor, init
   const requestUpdateComment = async (data) => {
     console.log(`${commentId}번 댓글 수정`);
     try {
+      setIsLoading(true);
       const res = await request.put(`/api/comment/${commentId}`, data);
       if (res) {
         console.log(JSON.stringify(res.data));
@@ -74,6 +77,7 @@ export default function BoardCommentUpdateEditor({ commentId, onHideEditor, init
           position: toast.POSITION.BOTTOM_CENTER
         });
         onHideEditor(false);
+        setIsLoading(false);
       }
     } catch (error) {
       if (error.response) {
@@ -82,21 +86,28 @@ export default function BoardCommentUpdateEditor({ commentId, onHideEditor, init
           position: toast.POSITION.BOTTOM_CENTER
         });
       }
+      setIsLoading(false);
     }
   };
 
   // 부모 컴포넌트인 BoardCommentItem에 랜더링된 대댓글 수정용 에디터를 숨기기 위해 부모로 이벤트 전달
   const handleCancel = () => {
     onHideEditor(false);
+    setIsLoading(false);
   };
 
   return (
     <EditorWrapper>
       <BoardEditor editorRef={editorRef} initialValue={decodeHtmlEntity(initialValue)} />
       <ButtonWrapper>
-        <Button onClick={handleUpdateComment} variant="contained" sx={{ mr: 1 }}>
+        <LoadingButton
+          loading={isLoading}
+          onClick={handleUpdateComment}
+          variant="contained"
+          sx={{ mr: 1 }}
+        >
           댓글 수정
-        </Button>
+        </LoadingButton>
         <Button onClick={handleCancel} variant="contained" sx={{ ml: 1 }}>
           취소
         </Button>

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 // material ui
 import { Card, Button, Typography, Box, TextField, Stack } from '@material-ui/core';
+import { LoadingButton } from '@material-ui/lab';
 import { styled } from '@material-ui/core/styles';
 import EditRounded from '@material-ui/icons/EditRounded';
 import CancelRounded from '@material-ui/icons/CancelRounded';
@@ -46,6 +47,7 @@ function UserProfileCard({ onEditableProfile, file, currentUser }) {
   const dispatch = useDispatch();
   const user = useSelector((store) => store.auth.user);
 
+  const [isLoading, setIsLoading] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [email, setEmail] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -70,8 +72,6 @@ function UserProfileCard({ onEditableProfile, file, currentUser }) {
   const handleEditDisAble = () => {
     setIsEdit(false);
     onEditableProfile(false);
-    setEmail(user?.email);
-    setDisplayName(user?.displayName);
   };
 
   // 프로필 업데이트
@@ -90,6 +90,7 @@ function UserProfileCard({ onEditableProfile, file, currentUser }) {
 
   // 프로필 업데이트 요청(전역 상태값 변경 및 로컬스토리지에 변경된 유저데이터만 업데이트)
   const requestProfileUpdate = (uid) => {
+    setIsLoading(true);
     const body = { email, displayName, uid };
     dispatch(updateProfile(body))
       .then((res) => {
@@ -100,6 +101,7 @@ function UserProfileCard({ onEditableProfile, file, currentUser }) {
             position: toast.POSITION.TOP_CENTER
           });
           handleEditDisAble();
+          setIsLoading(false);
         }
       })
       .catch((error) => {
@@ -107,11 +109,13 @@ function UserProfileCard({ onEditableProfile, file, currentUser }) {
         toast.error(error?.response?.data?.message, {
           position: toast.POSITION.TOP_CENTER
         });
+        setIsLoading(false);
       });
   };
 
   // 프로필 이미지 업로드 및 업데이트 요청
   const requestProfileImageUpdate = async (uid, file) => {
+    setIsLoading(true);
     const formData = new FormData();
     formData.append('files', file);
     const body = { uid, formData };
@@ -123,6 +127,7 @@ function UserProfileCard({ onEditableProfile, file, currentUser }) {
             position: toast.POSITION.TOP_CENTER
           });
           handleEditDisAble();
+          setIsLoading(false);
         }
       })
       .catch((error) => {
@@ -130,6 +135,7 @@ function UserProfileCard({ onEditableProfile, file, currentUser }) {
         toast.error(error?.response?.data?.message, {
           position: toast.POSITION.TOP_CENTER
         });
+        setIsLoading(false);
       });
   };
 
@@ -142,6 +148,13 @@ function UserProfileCard({ onEditableProfile, file, currentUser }) {
       setDisplayName(user?.displayName);
     }
   }, [currentUser, user, user?.displayName, user?.email]);
+
+  useEffect(() => {
+    if (!isEdit) {
+      setEmail(user?.email);
+      setDisplayName(user?.displayName);
+    }
+  }, [user?.displayName, user?.email, isEdit]);
 
   return (
     <ProfileCard>
@@ -185,16 +198,17 @@ function UserProfileCard({ onEditableProfile, file, currentUser }) {
 
       {isEdit ? (
         <ProfileEditBox p={2}>
-          <Button
+          <LoadingButton
             sx={{ mr: 2 }}
             startIcon={<CheckCircle sx={{ fontSize: 16 }} />}
             color="purple"
             variant="contained"
             size="normal"
+            loading={isLoading}
             onClick={handleProfileEditSubmit}
           >
             저장
-          </Button>
+          </LoadingButton>
           <Button
             startIcon={<CancelRounded sx={{ fontSize: 16 }} />}
             color="purple"

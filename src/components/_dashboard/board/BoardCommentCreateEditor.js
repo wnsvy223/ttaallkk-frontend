@@ -4,7 +4,8 @@ import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 // Material UI
-import { Box, Button, TextField } from '@material-ui/core';
+import { Box, TextField } from '@material-ui/core';
+import { LoadingButton } from '@material-ui/lab';
 import { styled } from '@material-ui/core/styles';
 
 // toast
@@ -30,7 +31,7 @@ const CommentEditorWrapper = styled(Box)(() => ({
   padding: '25px 15px'
 }));
 
-const CommentEditorButton = styled(Button)(() => ({
+const CommentEditorButton = styled(LoadingButton)(() => ({
   backgroundColor: '#605A89',
   color: '#fff',
   '&:hover': {
@@ -56,6 +57,7 @@ export default function BoardCommentCreateEditor({ commentId, isRootComment }) {
   const params = useParams();
   const user = useSelector((store) => store?.auth?.user);
 
+  const [isLoading, setIsLoading] = useState(false);
   const [displayEditor, setDisplayEditor] = useState(false);
   const [displayEditHelper, setDisplayEditHelper] = useState(true);
 
@@ -86,6 +88,7 @@ export default function BoardCommentCreateEditor({ commentId, isRootComment }) {
 
   // 댓글 작성 서버 요청
   const requestCreateComment = (body) => {
+    setIsLoading(true);
     request
       .post(`/api/comment`, body)
       .then((res) => {
@@ -101,9 +104,11 @@ export default function BoardCommentCreateEditor({ commentId, isRootComment }) {
         }
         setCommentCountRecoil((prev) => prev + 1);
         setDisplayEditor(false);
+        setIsLoading(false);
       })
       .catch((error) => {
         console.log(error);
+        setIsLoading(false);
       });
   };
 
@@ -111,6 +116,7 @@ export default function BoardCommentCreateEditor({ commentId, isRootComment }) {
   const handleCancel = () => {
     setDisplayEditor(false);
     setDisplayEditHelper(true);
+    setIsLoading(false);
   };
 
   // 댓글 텍스트 필드 포커싱 이벤트 발생 시 에디터 뷰 상태값 true로 변경
@@ -143,6 +149,7 @@ export default function BoardCommentCreateEditor({ commentId, isRootComment }) {
             {isRootComment ? (
               <Box>
                 <CommentEditorButton
+                  loading={isLoading}
                   onClick={handleCreateComment}
                   type="submit"
                   variant="contained"
@@ -161,9 +168,14 @@ export default function BoardCommentCreateEditor({ commentId, isRootComment }) {
                 </CommentEditorButton>
               </Box>
             ) : (
-              <Button onClick={handleCreateComment} type="submit" variant="contained">
+              <CommentEditorButton
+                loading={isLoading}
+                onClick={handleCreateComment}
+                type="submit"
+                variant="contained"
+              >
                 답글 등록
-              </Button>
+              </CommentEditorButton>
             )}
           </EditorButtonBox>
         </Box>
