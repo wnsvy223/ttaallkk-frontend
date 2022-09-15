@@ -7,7 +7,6 @@ import {
   Box,
   Grid,
   Stack,
-  Button,
   Card,
   CardMedia,
   CardActions,
@@ -15,6 +14,7 @@ import {
   Divider,
   TextField
 } from '@material-ui/core';
+import { LoadingButton } from '@material-ui/lab';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import messageCircleFill from '@iconify/icons-eva/message-circle-fill';
 import { Icon } from '@iconify/react';
@@ -64,7 +64,7 @@ const CardUserPorifle = styled(Box)(() => ({
   marginRight: 20
 }));
 
-const ControlButton = styled(Button)(() => ({
+const ControlButton = styled(LoadingButton)(() => ({
   backgroundColor: '#605A89',
   color: '#fff',
   '&:hover': {
@@ -102,6 +102,7 @@ export default function BoardContentCard() {
   const user = useSelector((store) => store?.auth?.user);
   const postData = useSelector((store) => store?.post?.contents);
 
+  const [isLoading, setIsLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [openEditor, setOpenEditor] = useState(false);
   const [titleValue, setTitleValue] = useState('');
@@ -143,6 +144,7 @@ export default function BoardContentCard() {
 
   // 게시글 수정 요청
   const requestUpdatePost = () => {
+    setIsLoading(true);
     const editorInstance = editorRef.current?.getInstance();
     const markdown = editorInstance?.getMarkdown();
     const body = {
@@ -156,6 +158,7 @@ export default function BoardContentCard() {
             position: toast.POSITION.BOTTOM_CENTER
           });
           setOpenEditor(false);
+          setIsLoading(false);
         }
       })
       .catch((error) => {
@@ -165,6 +168,7 @@ export default function BoardContentCard() {
             position: toast.POSITION.BOTTOM_CENTER
           });
         }
+        setIsLoading(false);
       });
   };
 
@@ -298,10 +302,15 @@ export default function BoardContentCard() {
           <Divider />
           {postData.uid === user?.uid ? (
             <ControlBox>
-              <ControlButton variant="contained" sx={{ mr: 1 }} onClick={handleUpdatePostEditor}>
+              <ControlButton
+                loading={isLoading}
+                onClick={handleUpdatePostEditor}
+                variant="contained"
+                sx={{ mr: 1 }}
+              >
                 수정
               </ControlButton>
-              <ControlButton variant="contained" sx={{ ml: 1 }} onClick={handleRemovePostDialog}>
+              <ControlButton onClick={handleRemovePostDialog} variant="contained" sx={{ ml: 1 }}>
                 삭제
               </ControlButton>
             </ControlBox>
@@ -334,7 +343,12 @@ export default function BoardContentCard() {
             height="600px"
           />
           <EditorButtonBox>
-            <ControlButton onClick={handleUpdatePost} variant="contained" sx={{ mr: 1 }}>
+            <ControlButton
+              loading={isLoading}
+              onClick={handleUpdatePost}
+              variant="contained"
+              sx={{ mr: 1 }}
+            >
               수정
             </ControlButton>
             <ControlButton onClick={handleCancel} variant="contained" sx={{ ml: 1 }}>

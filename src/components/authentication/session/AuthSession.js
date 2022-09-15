@@ -28,7 +28,6 @@ export default function AuthSession() {
     const now = moment.now();
     if (isSessionExpired && moment(now).isAfter(isSessionExpired)) {
       storage.remove('user');
-      storage.remove('isSubscribe');
       removeDeviceToken();
       toast.error('인증이 만료되어 로그인 페이지로 이동합니다.', {
         position: toast.POSITION.TOP_CENTER

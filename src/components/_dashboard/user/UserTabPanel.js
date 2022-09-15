@@ -49,8 +49,8 @@ export default function UserTabPanel() {
     <Box>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label="basic-tabs">
-          <Tab label="내 게시물" {...a11yProps(0)} />
-          <Tab label="내 댓글" {...a11yProps(1)} />
+          <Tab label="작성한 게시물" {...a11yProps(0)} />
+          <Tab label="작성한 댓글" {...a11yProps(1)} />
           <Tab label="좋아요 누른 글" {...a11yProps(2)} />
         </Tabs>
       </Box>

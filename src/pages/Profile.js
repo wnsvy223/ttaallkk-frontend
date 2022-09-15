@@ -157,6 +157,14 @@ function ProfileCard() {
       });
   }, []);
 
+  // 프로필 편집상태가 아닐경우 파일 상태값은 null로 초기화
+  useEffect(() => {
+    if (!isEditProfile) {
+      setFile(null);
+    }
+    return () => setFile(null);
+  }, [isEditProfile]);
+
   // 프로필 페이지 데이터 2가지
   // 1. 현재로그인 유저 프로필 : 로컬스토리지에 저장된 유저 정보로 랜더링
   // 2. 다른 유저 프로필 : url params로 uid파싱해서 데이터 조회

@@ -36,32 +36,29 @@ export function getDeviceToken() {
  * 디바이스 토큰 제거
  */
 export function removeDeviceToken() {
-  const isSubscribe = storage.get('isSubscribe') || false;
   if (firebase.messaging.isSupported()) {
-    if (isSubscribe === true) {
-      firebaseApp
-        .messaging()
-        .getToken()
-        .then((currentToken) => {
-          if (currentToken) {
-            firebaseApp
-              .messaging()
-              .deleteToken()
-              .then(() => {
-                storage.set('isSubscribe', false);
-                toast.error('알림 설정 중지되었습니다.', {
-                  position: toast.POSITION.BOTTOM_CENTER
-                });
-              })
-              .catch((err) => {
-                console.log('Unable to delete token. ', err);
+    firebaseApp
+      .messaging()
+      .getToken()
+      .then((currentToken) => {
+        if (currentToken) {
+          firebaseApp
+            .messaging()
+            .deleteToken()
+            .then(() => {
+              storage.remove('isSubscribe');
+              toast.error('알림 설정 중지되었습니다.', {
+                position: toast.POSITION.BOTTOM_CENTER
               });
-          }
-        })
-        .catch((err) => {
-          console.log('Error retrieving Instance ID token. ', err);
-        });
-    }
+            })
+            .catch((err) => {
+              console.log('Unable to delete token. ', err);
+            });
+        }
+      })
+      .catch((err) => {
+        console.log('Error retrieving Instance ID token. ', err);
+      });
   }
 }
 
