@@ -142,6 +142,7 @@ export default function Board({ title, category, color }) {
     } else {
       fetchBoardData(`/api/post?category=${category?.id}&page=${page - 1}&sort=${sort}`);
     }
+    return () => setIsLoading(false);
   }, [category?.id, keyword, page, sort]);
 
   useEffect(() => {

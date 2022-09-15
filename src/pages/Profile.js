@@ -1,9 +1,12 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useState, useEffect, useCallback } from 'react';
 
+// prop-types
+import PropTypes from 'prop-types';
+
 // material ui
 import { useParams } from 'react-router-dom';
-import { Stack, Avatar, Container, Typography, Box, IconButton } from '@material-ui/core';
+import { Stack, Container, Typography, Box, IconButton } from '@material-ui/core';
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
 import { styled } from '@material-ui/core/styles';
 
@@ -47,6 +50,62 @@ const ProfileImageButton = styled(IconButton)(() => ({
     backgroundColor: '#F2F2F2'
   }
 }));
+
+const ProfileAvatar = styled('img')(() => ({
+  height: 100,
+  width: 100,
+  maxHeight: { xs: 100, md: 100 },
+  maxWidth: { xs: 100, md: 100 },
+  borderRadius: '50%'
+}));
+
+const AvatarBox = styled('div')({
+  position: 'relative',
+  width: 100,
+  height: 100,
+  backgroundColor: 'gray',
+  borderRadius: '50%',
+  display: 'flex'
+});
+
+const AvatarTextBox = styled('div')({
+  margin: 'auto',
+  maxWidth: 100,
+  maxHeight: 100,
+  padding: 20
+});
+
+const AvaterText = styled(Typography)({
+  fontSize: 20,
+  color: 'white'
+});
+
+Avatar.propTypes = {
+  src: PropTypes.string,
+  displayName: PropTypes.string
+};
+
+// 커스텀 아바타 컴포넌트
+function Avatar({ src, displayName }) {
+  if (src) {
+    return (
+      <AvatarBox sx={{ boxShadow: 5 }}>
+        <ProfileAvatar src={src} />
+      </AvatarBox>
+    );
+  }
+  return (
+    <AvatarBox sx={{ boxShadow: 5 }}>
+      {displayName ? (
+        <AvatarTextBox>
+          <AvaterText noWrap>{displayName.charAt(0)}</AvaterText>
+        </AvatarTextBox>
+      ) : (
+        <ProfileAvatar src="/static/mock-images/avatars/avatar_default.jpg" />
+      )}
+    </AvatarBox>
+  );
+}
 
 function ProfileCard() {
   const user = useSelector((store) => store.auth.user);
@@ -125,12 +184,7 @@ function ProfileCard() {
         </Stack>
 
         <AvatarContainer>
-          <Avatar
-            src={preview || currentUser?.profileUrl}
-            sx={{ width: 100, height: 100, boxShadow: 3 }}
-          >
-            {currentUser?.displayName.charAt(0)}
-          </Avatar>
+          <Avatar src={preview || currentUser?.profileUrl} displayName={currentUser?.displayName} />
           {isEditProfile && (
             <Box sx={{ position: 'relative' }}>
               <Box sx={{ position: 'absolute', right: -10, mt: 1, boxShadow: 5, borderRadius: 5 }}>
