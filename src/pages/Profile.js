@@ -87,21 +87,14 @@ Avatar.propTypes = {
 
 // 커스텀 아바타 컴포넌트
 function Avatar({ src, displayName }) {
-  if (src) {
-    return (
-      <AvatarBox sx={{ boxShadow: 5 }}>
-        <ProfileAvatar src={src} />
-      </AvatarBox>
-    );
-  }
   return (
     <AvatarBox sx={{ boxShadow: 5 }}>
-      {displayName ? (
-        <AvatarTextBox>
-          <AvaterText noWrap>{displayName.charAt(0)}</AvaterText>
-        </AvatarTextBox>
+      {src ? (
+        <ProfileAvatar src={src} />
       ) : (
-        <ProfileAvatar src="/static/mock-images/avatars/avatar_default.jpg" />
+        <AvatarTextBox>
+          <AvaterText noWrap>{displayName?.charAt(0)}</AvaterText>
+        </AvatarTextBox>
       )}
     </AvatarBox>
   );
@@ -122,23 +115,25 @@ function ProfileCard() {
 
   const onChangePreview = (event) => {
     if (event.target.files.length) {
-      handlePreview(event);
       setFile(event.target.files[0]);
+      handlePreview(event.target.files[0]);
     }
   };
 
-  const handlePreview = (event) => {
-    const imgTarget = event.target.files[0];
+  const handlePreview = (file) => {
     const fileReader = new FileReader();
-    fileReader.readAsDataURL(imgTarget);
-    fileReader.onload = (e) => {
-      setPreview(e.target.result);
-    };
+    try {
+      fileReader.readAsDataURL(file);
+      fileReader.onload = (e) => {
+        setPreview(e.target.result);
+      };
+    } catch (e) {
+      console.log(`File Reader Error : ${e}`);
+    }
   };
 
   const handleEditProfile = (isEdit) => {
     setIsEditProfile(isEdit);
-    setPreview('');
   };
 
   // url params로 받아온 사용자 uid로 정보 조회
@@ -161,8 +156,12 @@ function ProfileCard() {
   useEffect(() => {
     if (!isEditProfile) {
       setFile(null);
+      setPreview('');
     }
-    return () => setFile(null);
+    return () => {
+      setFile(null);
+      setPreview('');
+    };
   }, [isEditProfile]);
 
   // 프로필 페이지 데이터 2가지
