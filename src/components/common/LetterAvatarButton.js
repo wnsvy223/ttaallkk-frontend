@@ -17,11 +17,13 @@ const defaultHeight = 26;
 const defaultFontSize = 11;
 
 LetterAvatarButton.propTypes = {
-  data: PropTypes.object.isRequired,
+  uid: PropTypes.string,
+  displayName: PropTypes.string,
+  profileUrl: PropTypes.string,
   sx: PropTypes.object
 };
 
-function LetterAvatarButton({ data, sx }) {
+function LetterAvatarButton({ uid, displayName, profileUrl, sx }) {
   const navigate = useNavigate();
 
   const handleAvatarClick = (event, uid) => {
@@ -31,7 +33,7 @@ function LetterAvatarButton({ data, sx }) {
 
   return (
     <IconButton
-      onClick={(event) => handleAvatarClick(event, data?.uid)}
+      onClick={(event) => handleAvatarClick(event, uid)}
       sx={{
         padding: 0,
         width: sx?.width + 4 || defaultWidth + 4,
@@ -39,12 +41,12 @@ function LetterAvatarButton({ data, sx }) {
       }}
     >
       <LetterAvatar
-        src={data?.profileUrl}
+        src={profileUrl}
         sx={{
           ...sx,
           width: sx?.width || defaultWidth,
           height: sx?.height || defaultHeight,
-          name: data?.displayName,
+          name: displayName,
           fontSize: sx?.fontSize || defaultFontSize
         }}
       />

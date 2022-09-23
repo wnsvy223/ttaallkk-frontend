@@ -24,7 +24,8 @@ import { request } from '../../../api/axios/axios';
 // ----------------------------------------------------------------------
 BoardCommentCreateEditor.propTypes = {
   commentId: PropTypes.number.isRequired, // 댓글 아이디
-  isRootComment: PropTypes.bool.isRequired // isRootComment ? 최상위 댓글 : 대댓글
+  isRootComment: PropTypes.bool.isRequired, // isRootComment ? 최상위 댓글 : 대댓글
+  comment: PropTypes.object
 };
 
 const CommentEditorWrapper = styled(Box)(() => ({
@@ -52,7 +53,7 @@ const EditorButtonBox = styled(Box)(({ theme }) => ({
   }
 }));
 
-export default function BoardCommentCreateEditor({ commentId, isRootComment }) {
+export default function BoardCommentCreateEditor({ commentId, isRootComment, comment }) {
   const editorRef = useRef();
   const params = useParams();
   const user = useSelector((store) => store?.auth?.user);
@@ -65,18 +66,26 @@ export default function BoardCommentCreateEditor({ commentId, isRootComment }) {
   const setChildrenCommentsRecoil = useSetRecoilState(childrenCommentState); // 대댓글 rocoil 스토어 상태 변경
   const setCommentCountRecoil = useSetRecoilState(commentCountState); // 전체 댓글 갯수 rocoil 스토어 상태 변경
 
-  // 댓글 작성
+  /**
+   * [댓글 작성]
+   * 최상위 댓글의 경우 : parentId 값은 null
+   * 대댓글 작성하려는 댓글의 부모 댓글이 없는 경우 : 최상위 댓글의 첫 대댓글(parentId 값은, 대댓글 작성하려는 댓글의 id값)
+   * 대댓글 작성하려는 댓글의 부모 댓글이 있는 경우 : 나머지 대댓글(parentId 값은, 대댓글 작성하려는 댓글의 부모 댓글 id값)
+   */
   const handleCreateComment = (e) => {
     e.preventDefault();
     const editorInstance = editorRef.current?.getInstance();
     const markdown = editorInstance?.getMarkdown();
+    // eslint-disable-next-line no-nested-ternary, prettier/prettier
+    const parenCommentId = isRootComment ? null : (comment?.parent == null ? commentId : comment?.parent);
     console.log(`마크다운 : ${markdown}`);
     if (markdown) {
       const body = {
         postId: params?.postId,
         content: markdown,
-        parentId: commentId === 0 ? null : commentId,
-        writerUid: user?.uid
+        parentId: parenCommentId,
+        writerUid: user?.uid,
+        toUserUid: isRootComment ? null : comment?.uid
       };
       requestCreateComment(body);
     } else {
@@ -129,6 +138,7 @@ export default function BoardCommentCreateEditor({ commentId, isRootComment }) {
     if (!isRootComment) {
       setDisplayEditor(true);
     }
+    return () => setIsLoading(false);
   }, [isRootComment]);
 
   return (

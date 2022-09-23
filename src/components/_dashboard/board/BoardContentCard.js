@@ -278,7 +278,11 @@ export default function BoardContentCard() {
               spacing={1}
               sx={{ maxWidth: '50%' }}
             >
-              <LetterAvatarButton data={postData} />
+              <LetterAvatarButton
+                uid={postData?.uid}
+                displayName={postData?.displayName}
+                profileUrl={postData?.profileUrl}
+              />
               <Typography noWrap sx={{ fontSize: 12 }}>
                 {postData.displayName}
               </Typography>

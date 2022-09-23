@@ -113,7 +113,12 @@ export default function BoardTable({ category, post, color }) {
                           justifyContent="start"
                           spacing={1}
                         >
-                          <LetterAvatarButton data={row} sx={{ width: 23, height: 23 }} />
+                          <LetterAvatarButton
+                            sx={{ width: 23, height: 23 }}
+                            uid={row?.uid}
+                            displayName={row?.displayName}
+                            profileUrl={row?.profileUrl}
+                          />
                           <Typography noWrap sx={{ fontSize: 12 }}>
                             {row.displayName}
                           </Typography>

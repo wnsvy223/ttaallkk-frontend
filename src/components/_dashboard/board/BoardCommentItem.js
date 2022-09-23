@@ -46,6 +46,7 @@ import BoardCommentCreateEditor from './BoardCommentCreateEditor';
 import BoardCommentUpdateEditor from './BoardCommentUpdateEditor';
 import AlertDialog from '../../common/AlertDialog';
 import LetterAvatarButton from '../../common/LetterAvatarButton';
+import Label from '../../Label';
 
 // api
 import { request } from '../../../api/axios/axios';
@@ -251,7 +252,11 @@ export default function BoardCommentItem({ comment, isRootComment }) {
         <Grid container>
           <Grid item xs={10} md={10}>
             <Stack direction="row" alignItems="center" justifyContent="start" spacing={2}>
-              <LetterAvatarButton data={comment} />
+              <LetterAvatarButton
+                uid={comment?.uid}
+                displayName={comment?.displayName}
+                profileUrl={comment?.profileUrl}
+              />
               <Box sx={{ pt: 1.5, wordBreak: 'break-all' }}>
                 <Stack direction="row" alignItems="center" justifyContent="start" spacing={1}>
                   <Typography sx={{ fontSize: 10, minWidth: 30 }}>
@@ -262,6 +267,11 @@ export default function BoardCommentItem({ comment, isRootComment }) {
                     <Moment fromNow>{comment?.createdAt}</Moment>
                   </Typography>
                 </Stack>
+                {comment?.toDisplayName && (
+                  <Label variant="filled" color="info">
+                    {`@ ${comment?.toDisplayName}`}
+                  </Label>
+                )}
                 <Viewer initialValue={decodeHtmlEntity(comment?.content)} />
               </Box>
             </Stack>
@@ -353,7 +363,7 @@ export default function BoardCommentItem({ comment, isRootComment }) {
           ))}
       </Stack>
       {createCommentNum === comment?.id && displayEditor && (
-        <BoardCommentCreateEditor commentId={comment?.id} isRootComment={false} />
+        <BoardCommentCreateEditor commentId={comment?.id} isRootComment={false} comment={comment} />
       )}
       {updateCommentNum === comment?.id && displayUpdateEditor && (
         <BoardCommentUpdateEditor
