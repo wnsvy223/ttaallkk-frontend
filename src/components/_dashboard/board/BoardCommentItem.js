@@ -267,7 +267,7 @@ export default function BoardCommentItem({ comment, isRootComment }) {
                     <Moment fromNow>{comment?.createdAt}</Moment>
                   </Typography>
                 </Stack>
-                {comment?.toDisplayName && (
+                {comment?.toCommentId !== comment?.parent && (
                   <Label variant="filled" color="info">
                     {`@ ${comment?.toDisplayName}`}
                   </Label>

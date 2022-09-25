@@ -78,14 +78,15 @@ export default function BoardCommentCreateEditor({ commentId, isRootComment, com
     const markdown = editorInstance?.getMarkdown();
     // eslint-disable-next-line no-nested-ternary, prettier/prettier
     const parenCommentId = isRootComment ? null : (comment?.parent == null ? commentId : comment?.parent);
+    const toCommentId = isRootComment ? null : comment?.id;
     console.log(`마크다운 : ${markdown}`);
     if (markdown) {
       const body = {
-        postId: params?.postId,
         content: markdown,
+        postId: params?.postId,
         parentId: parenCommentId,
-        writerUid: user?.uid,
-        toUserUid: isRootComment ? null : comment?.uid
+        toCommentId,
+        writerUid: user?.uid
       };
       requestCreateComment(body);
     } else {
