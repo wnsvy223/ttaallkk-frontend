@@ -140,7 +140,7 @@ export default function UserMyLike() {
     } else {
       setUrl(`/api/like/user/${user.uid}`);
     }
-  }, [params?.uid, user.uid]);
+  }, [params?.uid, user?.uid]);
 
   if (isError)
     return (
