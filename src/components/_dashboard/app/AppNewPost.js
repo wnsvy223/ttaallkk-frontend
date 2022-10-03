@@ -96,7 +96,7 @@ export default function AppNewPost() {
                           {row.categoryName}
                         </TableCellTextView>
                       </TableData>
-                      <TableData align="center" sx={{ maxWidth: 300 }}>
+                      <TableData align="center" sx={{ minWidth: 200, maxWidth: 300 }}>
                         <TableCellTextView noWrap>{row.title}</TableCellTextView>
                       </TableData>
                       <TableData align="center" sx={{ maxWidth: 150 }}>

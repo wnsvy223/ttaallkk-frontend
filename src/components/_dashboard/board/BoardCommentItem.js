@@ -36,6 +36,7 @@ import { Viewer } from '@toast-ui/react-editor';
 
 // iconify
 import arrowRightBottomBold from '@iconify/icons-mdi/arrow-right-bottom-bold';
+import atFill from '@iconify/icons-eva/at-fill';
 import { Icon } from '@iconify/react';
 
 // recoil
@@ -91,6 +92,12 @@ const Dot = styled('span')(() => ({
   backgroundColor: '#949494',
   borderRadius: '50%',
   display: 'inline-block'
+}));
+
+const CenterBox = styled(Box)(() => ({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center'
 }));
 
 export default function BoardCommentItem({ comment, isRootComment }) {
@@ -281,11 +288,20 @@ export default function BoardCommentItem({ comment, isRootComment }) {
                 </Stack>
                 <Stack direction="row" alignItems="center" justifyContent="start" spacing={1}>
                   {comment?.toCommentId && comment?.toCommentId !== comment?.parent && (
-                    <Label variant="filled" color="info">
-                      {`@ ${comment?.toDisplayName}`}
-                    </Label>
+                    <CenterBox>
+                      <Label variant="filled" color="info">
+                        <Box
+                          component={Icon}
+                          icon={atFill}
+                          sx={{ width: 12, height: 12, color: 'white' }}
+                        />
+                        {comment?.toDisplayName}
+                      </Label>
+                    </CenterBox>
                   )}
-                  <Viewer initialValue={decodeHtmlEntity(comment?.content)} />
+                  <CenterBox>
+                    <Viewer initialValue={decodeHtmlEntity(comment?.content)} />
+                  </CenterBox>
                 </Stack>
               </Box>
             </Stack>
