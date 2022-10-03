@@ -15,7 +15,8 @@ import {
   Menu,
   MenuItem,
   ListItemIcon,
-  ListItemText
+  ListItemText,
+  Chip
 } from '@material-ui/core';
 import { styled } from '@material-ui/core/styles';
 import MoreVert from '@material-ui/icons/MoreVert';
@@ -258,21 +259,34 @@ export default function BoardCommentItem({ comment, isRootComment }) {
                 profileUrl={comment?.profileUrl}
               />
               <Box sx={{ pt: 1.5, wordBreak: 'break-all' }}>
-                <Stack direction="row" alignItems="center" justifyContent="start" spacing={1}>
-                  <Typography sx={{ fontSize: 10, minWidth: 30 }}>
-                    {comment?.displayName}
-                  </Typography>
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="start"
+                  spacing={1}
+                  sx={{ pt: 0.5, pb: 0.5 }}
+                >
+                  {comment?.displayName === comment?.postWriterDisplayName ? (
+                    <Chip
+                      sx={{ fontSize: 10, height: 20, backgroundColor: '#D2D2D2' }}
+                      label={`${comment?.displayName}`}
+                    />
+                  ) : (
+                    <Typography sx={{ fontSize: 10 }}>{comment?.displayName}</Typography>
+                  )}
                   <Dot />
                   <Typography noWrap sx={{ fontSize: { xs: 10, md: 5 }, color: 'GrayText' }}>
                     <Moment fromNow>{comment?.createdAt}</Moment>
                   </Typography>
                 </Stack>
-                {comment?.toCommentId !== comment?.parent && (
-                  <Label variant="filled" color="info">
-                    {`@ ${comment?.toDisplayName}`}
-                  </Label>
-                )}
-                <Viewer initialValue={decodeHtmlEntity(comment?.content)} />
+                <Stack direction="row" alignItems="center" justifyContent="start" spacing={1}>
+                  {comment?.toCommentId && comment?.toCommentId !== comment?.parent && (
+                    <Label variant="filled" color="info">
+                      {`@ ${comment?.toDisplayName}`}
+                    </Label>
+                  )}
+                  <Viewer initialValue={decodeHtmlEntity(comment?.content)} />
+                </Stack>
               </Box>
             </Stack>
           </Grid>
@@ -357,9 +371,22 @@ export default function BoardCommentItem({ comment, isRootComment }) {
               답글 접기
             </Button>
           ) : (
-            <Button size="small" onClick={handleDisplayChildren}>
-              {`${childrenCount}개의 답글 보기`}
-            </Button>
+            <Stack direction="row" alignItems="center" justifyContent="start">
+              {comment?.isContainOwnerComment && (
+                <Stack direction="row" alignItems="center" justifyContent="start" spacing={0.5}>
+                  <LetterAvatarButton
+                    sx={{ width: 20, height: 20, fontSize: 10 }}
+                    uid={comment?.postWriterUid}
+                    displayName={comment?.postWriterDisplayName}
+                    profileUrl={comment?.postWriterProfileUrl}
+                  />
+                  <Dot />
+                </Stack>
+              )}
+              <Button size="small" onClick={handleDisplayChildren}>
+                {`${childrenCount}개의 답글 보기`}
+              </Button>
+            </Stack>
           ))}
       </Stack>
       {createCommentNum === comment?.id && displayEditor && (

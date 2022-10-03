@@ -9,6 +9,10 @@ import moment from 'moment';
 // toastify
 import { toast } from 'react-toastify';
 
+// redux
+import { useDispatch } from 'react-redux';
+import { logOut } from '../../../redux/actions/userAction';
+
 // api
 import { removeDeviceToken } from '../../../api/firebase/FcmService';
 
@@ -17,6 +21,7 @@ import storage from '../../../utils/storage';
 
 export default function AuthSession() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const user = storage.get('user');
   const isSessionExpired = user?.expiredAtRefereshToken;
 
@@ -27,14 +32,25 @@ export default function AuthSession() {
   useEffect(() => {
     const now = moment.now();
     if (isSessionExpired && moment(now).isAfter(isSessionExpired)) {
-      storage.remove('user');
-      removeDeviceToken();
-      toast.error('인증이 만료되어 로그인 페이지로 이동합니다.', {
-        position: toast.POSITION.TOP_CENTER
-      });
-      navigate('/login', { replace: true });
+      dispatch(logOut())
+        .then((res) => {
+          if (res) {
+            storage.remove('user'); // 스토리지에서 유저 정보 제거
+            storage.remove('isSubscribe'); // 스토리지에서 알림 설정 정보 제거
+            removeDeviceToken();
+            navigate('/login', { replace: true });
+            toast.error('인증이 만료되어 로그인 페이지로 이동합니다.', {
+              position: toast.POSITION.TOP_CENTER
+            });
+          }
+        })
+        .catch((error) => {
+          if (error.response) {
+            console.error(error.response);
+          }
+        });
     }
-  }, [isSessionExpired, navigate]);
+  }, [dispatch, isSessionExpired, navigate]);
 
   return null;
 }
