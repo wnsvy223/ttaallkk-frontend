@@ -38,7 +38,11 @@ function stringToColor(string) {
 
 function stringAvatar(props) {
   const inko = new Inko();
-  const name = props?.name ? inko.en2ko(props.name) : 'Unknown';
+  const regex = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/; // 한글 체크 정규식
+  const displayName = props?.name;
+  const isKoreanName = regex.test(displayName.charAt(0)); // 닉네임 첫글자가 한글인지 영어인지 체크
+  const convertName = isKoreanName ? inko.en2ko(displayName) : displayName; // 닉네임 첫글자가 한글이면 한글로 변환값, 영어면 그대로
+  const name = displayName ? convertName : 'Unknown';
   return {
     sx: {
       ...props,
