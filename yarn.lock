@@ -10959,14 +10959,15 @@
   "resolved" "https://registry.npmjs.org/react-moment/-/react-moment-1.1.1.tgz"
   "version" "1.1.1"
 
-"react-moveable@^0.39.6":
-  "integrity" "sha512-3GGRKmtZYbVcCpQmqX1Qq8ukiF5AmT/+DzvFfUtwNxY8QMgH4yua3/dfFNvXMQr+qcxhms8epUhGVqltw9SUzA=="
-  "resolved" "https://registry.npmjs.org/react-moveable/-/react-moveable-0.39.6.tgz"
-  "version" "0.39.6"
+"react-moveable@^0.40.0":
+  "integrity" "sha512-SUxvajNFgGq386OzsCIforoFXAoXjNQN2nvxT4/zcYBzMlkYO096G0ICPUsT8MmR6qGo2hUF5J9TkAQI+ila3A=="
+  "resolved" "https://registry.npmjs.org/react-moveable/-/react-moveable-0.40.0.tgz"
+  "version" "0.40.0"
   dependencies:
     "@daybrush/utils" "^1.10.0"
     "@egjs/agent" "^2.2.1"
     "@egjs/children-differ" "^1.0.1"
+    "@egjs/list-differ" "^1.0.0"
     "@scena/dragscroll" "^1.2.0"
     "@scena/event-emitter" "^1.0.5"
     "@scena/matrix" "^1.1.1"

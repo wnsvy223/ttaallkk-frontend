@@ -93,16 +93,17 @@ export default function BoardEditor({ editorRef, height, initialValue, customHTM
         origin
         edge={false}
         warpable={false}
-        resizable={false}
-        scalable
+        scalable={false}
+        resizable
         draggable
         throttleDrag={0}
         onDrag={({ target, transform }) => {
           target.style.transform = transform;
         }}
-        throttleScale={0}
-        onScale={({ target, transform }) => {
-          target.style.transform = transform;
+        throttleResize={0}
+        onResize={({ target, width, height }) => {
+          target.style.width = `${width}px`;
+          target.style.height = `${height}px`;
         }}
       />
       <Editor
