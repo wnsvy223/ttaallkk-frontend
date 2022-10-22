@@ -1,6 +1,9 @@
 import * as React from 'react';
 import Inko from 'inko';
 import PropTypes from 'prop-types';
+
+// material ui
+import { styled } from '@material-ui/core/styles';
 import { Avatar } from '@material-ui/core';
 
 /**
@@ -15,6 +18,10 @@ BackgroundLetterAvatars.propTypes = {
   }),
   src: PropTypes.string
 };
+
+const CustomAvatar = styled(Avatar)({
+  lineHeight: 0
+});
 
 function stringToColor(string) {
   let hash = 0;
@@ -54,7 +61,7 @@ function stringAvatar(props) {
 
 export default function BackgroundLetterAvatars({ sx, src }) {
   if (src) {
-    return <Avatar sx={sx} src={src} />;
+    return <CustomAvatar sx={sx} src={src} />;
   }
-  return <Avatar {...stringAvatar(sx)} src={src} />;
+  return <CustomAvatar {...stringAvatar(sx)} src={src} />;
 }
