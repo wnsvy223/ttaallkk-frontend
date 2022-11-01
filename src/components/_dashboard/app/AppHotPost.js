@@ -123,7 +123,7 @@ export default function AppHotPost() {
                         >
                           <LetterAvatar
                             src={row.profileUrl}
-                            sx={{ width: 23, height: 23, name: row.displayName, fontSize: 11 }}
+                            sx={{ width: 24, height: 24, name: row.displayName, fontSize: 10 }}
                           />
                           <TableCellTextView noWrap>{row.displayName}</TableCellTextView>
                         </Stack>

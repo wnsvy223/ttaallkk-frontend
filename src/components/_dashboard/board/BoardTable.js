@@ -114,7 +114,7 @@ export default function BoardTable({ category, post, color }) {
                           spacing={1}
                         >
                           <LetterAvatarButton
-                            sx={{ width: 23, height: 23 }}
+                            sx={{ width: 24, height: 24, fontSize: 10 }}
                             uid={row?.uid}
                             displayName={row?.displayName}
                             profileUrl={row?.profileUrl}

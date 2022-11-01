@@ -21,6 +21,9 @@ import BoardEditor from './BoardEditor';
 // api
 import { request } from '../../../api/axios/axios';
 
+// utils
+import { convertImgMarkdownToHtml } from '../../../utils/markdownUtil';
+
 // ----------------------------------------------------------------------
 BoardCommentCreateEditor.propTypes = {
   commentId: PropTypes.number.isRequired, // 댓글 아이디
@@ -76,13 +79,14 @@ export default function BoardCommentCreateEditor({ commentId, isRootComment, com
     e.preventDefault();
     const editorInstance = editorRef.current?.getInstance();
     const markdown = editorInstance?.getMarkdown();
+    const html = editorInstance?.getHTML();
+    const convertContent = convertImgMarkdownToHtml(markdown, html);
     // eslint-disable-next-line no-nested-ternary, prettier/prettier
     const parenCommentId = isRootComment ? null : (comment?.parent == null ? commentId : comment?.parent);
     const toCommentId = isRootComment ? null : comment?.id;
-    console.log(`마크다운 : ${markdown}`);
     if (markdown) {
       const body = {
-        content: markdown,
+        content: convertContent,
         postId: params?.postId,
         parentId: parenCommentId,
         toCommentId,

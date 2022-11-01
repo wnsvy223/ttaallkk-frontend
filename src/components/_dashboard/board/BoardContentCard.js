@@ -31,6 +31,7 @@ import { toast } from 'react-toastify';
 
 // utils
 import decodeHtmlEntity from '../../../utils/decodeHtmlEntity';
+import { convertImgMarkdownToHtml } from '../../../utils/markdownUtil';
 
 // components
 import BoardPostLike from './BoardPostLike';
@@ -115,6 +116,7 @@ export default function BoardContentCard() {
   // 게시글 수정 에디터 닫기
   const handleCancel = () => {
     setOpenEditor(false);
+    setIsLoading(false);
   };
 
   // 게시글 수정 요청
@@ -147,9 +149,11 @@ export default function BoardContentCard() {
     setIsLoading(true);
     const editorInstance = editorRef.current?.getInstance();
     const markdown = editorInstance?.getMarkdown();
+    const html = editorInstance?.getHTML();
+    const convertContent = convertImgMarkdownToHtml(markdown, html);
     const body = {
       title: titleValue || postData.title,
-      content: markdown
+      content: convertContent
     };
     dispatch(updatePost(params?.postId, body))
       .then((res) => {

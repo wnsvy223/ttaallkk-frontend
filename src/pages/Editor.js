@@ -22,11 +22,16 @@ import closeOutline from '@iconify/icons-eva/close-outline';
 import styled from 'styled-components';
 import * as Yup from 'yup';
 import { useFormik, Form, FormikProvider } from 'formik';
+
 // api
 import { request } from '../api/axios/axios';
+
 // components
 import Page from '../components/Page';
 import BoardEditor from '../components/_dashboard/board/BoardEditor';
+
+// utils
+import { convertImgMarkdownToHtml } from '../utils/markdownUtil';
 
 // ----------------------------------------------------------------------
 
@@ -65,11 +70,13 @@ export default function PostEditor() {
     onSubmit: (postData, { setSubmitting }) => {
       const editorInstance = editorRef.current?.getInstance();
       const markdown = editorInstance?.getMarkdown();
+      const html = editorInstance?.getHTML();
+      const convertContent = convertImgMarkdownToHtml(markdown, html);
       const body = {
         writeUid: user.uid,
         categoryId: category,
         title: postData.title,
-        content: markdown
+        content: convertContent
       };
       createPost(body, setSubmitting);
     }

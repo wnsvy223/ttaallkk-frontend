@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 // Material UI
@@ -18,6 +18,7 @@ import { request } from '../../../api/axios/axios';
 
 // utils
 import decodeHtmlEntity from '../../../utils/decodeHtmlEntity';
+import { convertImgMarkdownToHtml } from '../../../utils/markdownUtil';
 // ----------------------------------------------------------------------
 
 BoardCommentUpdateEditor.propTypes = {
@@ -51,11 +52,12 @@ export default function BoardCommentUpdateEditor({ commentId, onHideEditor, init
     e.preventDefault();
     const editorInstance = editorRef.current?.getInstance();
     const markdown = editorInstance?.getMarkdown();
-    console.log(`댓글수정 마크다운 : ${markdown}`);
+    const html = editorInstance?.getHTML();
+    const convertContent = convertImgMarkdownToHtml(markdown, html);
     if (markdown) {
       const body = {
         uid: user?.uid,
-        content: markdown
+        content: convertContent
       };
       requestUpdateComment(body);
     } else {
@@ -95,6 +97,9 @@ export default function BoardCommentUpdateEditor({ commentId, onHideEditor, init
     onHideEditor(false);
     setIsLoading(false);
   };
+
+  // 언마운트시 로딩상태 해제
+  useEffect(() => () => setIsLoading(false), []);
 
   return (
     <EditorWrapper>
