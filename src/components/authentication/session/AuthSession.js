@@ -33,16 +33,14 @@ export default function AuthSession() {
     const now = moment.now();
     if (isSessionExpired && moment(now).isAfter(isSessionExpired)) {
       dispatch(sessionExpired())
-        .then((res) => {
-          if (res) {
-            storage.remove('user'); // 스토리지에서 유저 정보 제거
-            storage.remove('isSubscribe'); // 스토리지에서 알림 설정 정보 제거
-            removeDeviceToken();
-            navigate('/login', { replace: true });
-            toast.error('인증이 만료되어 로그인 페이지로 이동합니다.', {
-              position: toast.POSITION.TOP_CENTER
-            });
-          }
+        .then(() => {
+          storage.remove('user'); // 스토리지에서 유저 정보 제거
+          storage.remove('isSubscribe'); // 스토리지에서 알림 설정 정보 제거
+          removeDeviceToken();
+          navigate('/login', { replace: true });
+          toast.error('인증이 만료되어 로그인 페이지로 이동합니다.', {
+            position: toast.POSITION.TOP_CENTER
+          });
         })
         .catch((error) => {
           if (error.response) {

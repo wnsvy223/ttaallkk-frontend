@@ -53,8 +53,13 @@ export const sessionExpired = () => async (dispatch) => {
     dispatch({
       type: SESSION_EXPIRED
     });
+    return Promise.resolve({
+      type: SESSION_EXPIRED,
+      isSessionExpired: true
+    });
   } catch (error) {
     dispatch(setMessage(error.message));
+    return Promise.resolve(error.message);
   } finally {
     dispatch({
       type: SESSION_EXPIRED
