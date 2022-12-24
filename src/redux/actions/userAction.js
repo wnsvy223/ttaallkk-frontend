@@ -5,7 +5,8 @@ import {
   SIGNUP_FAILURE,
   LOG_OUT_SUCCESS,
   UPDATE_PROFILE,
-  UPDATE_PROFILE_IMAGE
+  UPDATE_PROFILE_IMAGE,
+  SESSION_EXPIRED
 } from '../actionType/type';
 import { request } from '../../api/axios/axios';
 import { setMessage } from './messageAction';
@@ -43,6 +44,21 @@ export const logOut = () => async (dispatch) => {
   } catch (error) {
     dispatch(setMessage(error.message));
     return Promise.reject(error);
+  }
+};
+
+// 세션만료
+export const sessionExpired = () => async (dispatch) => {
+  try {
+    dispatch({
+      type: SESSION_EXPIRED
+    });
+  } catch (error) {
+    dispatch(setMessage(error.message));
+  } finally {
+    dispatch({
+      type: SESSION_EXPIRED
+    });
   }
 };
 

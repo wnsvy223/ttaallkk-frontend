@@ -17,3 +17,4 @@ export const FRIEND_ACCEPT = 'FRIEND_ACCEPT_SUCCESS';
 export const FRIEND_REJECT = 'FRIEND_REJECT_SUCCESS';
 export const GET_FRIEND = 'GET_FRIEND';
 export const ERROR = 'ERROR';
+export const SESSION_EXPIRED = 'SESSION_EXPIRED';

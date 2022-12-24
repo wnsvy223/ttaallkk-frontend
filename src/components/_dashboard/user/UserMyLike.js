@@ -101,10 +101,10 @@ function UserMyLikeItem({ likes }) {
         <LetterAvatar
           src={profileUrl}
           sx={{
-            width: 36,
-            height: 36,
+            width: 28,
+            height: 28,
             name: displayName,
-            fontSize: 14
+            fontSize: 10
           }}
         />
         <Box sx={{ textAlign: 'center', ml: 1, mr: 1, minWidth: 50 }}>

@@ -5,7 +5,8 @@ import {
   SIGNUP_FAILURE,
   LOG_OUT_SUCCESS,
   UPDATE_PROFILE,
-  UPDATE_PROFILE_IMAGE
+  UPDATE_PROFILE_IMAGE,
+  SESSION_EXPIRED
 } from '../actionType/type';
 import storage from '../../utils/storage';
 
@@ -39,6 +40,12 @@ export default function auth(state = initialState, action) {
         user: null
       };
     case LOG_OUT_SUCCESS:
+      return {
+        ...state,
+        isLoggedIn: false,
+        user: null
+      };
+    case SESSION_EXPIRED:
       return {
         ...state,
         isLoggedIn: false,

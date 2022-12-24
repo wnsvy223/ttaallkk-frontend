@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 
 // redux
 import { useDispatch } from 'react-redux';
-import { logOut } from '../../../redux/actions/userAction';
+import { sessionExpired } from '../../../redux/actions/userAction';
 
 // api
 import { removeDeviceToken } from '../../../api/firebase/FcmService';
@@ -32,7 +32,7 @@ export default function AuthSession() {
   useEffect(() => {
     const now = moment.now();
     if (isSessionExpired && moment(now).isAfter(isSessionExpired)) {
-      dispatch(logOut())
+      dispatch(sessionExpired())
         .then((res) => {
           if (res) {
             storage.remove('user'); // 스토리지에서 유저 정보 제거
