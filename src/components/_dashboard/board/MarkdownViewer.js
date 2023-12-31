@@ -20,6 +20,7 @@ export default function MarkdownViewer({ markdown }) {
   const convertMarkdown = (content) => {
     const md = MarkdownIt().use(MarkdownItAttrs);
     const html = md.render(content);
+    console.log(html);
     return html;
   };
 
