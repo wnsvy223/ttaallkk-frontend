@@ -35,7 +35,6 @@ export default function AppTodayImgVideo() {
   const [image, setImage] = useState('');
 
   useEffect(() => {
-    console.log(extractImageFromContent(data?.content));
     setImage(extractImageFromContent(data?.content));
   }, [data?.content]);
 
@@ -46,7 +45,9 @@ export default function AppTodayImgVideo() {
         titleTypographyProps={{ variant: 'subtitle2' }}
         sx={{ backgroundColor: 'purple.lighter', pt: 1.5, pb: 1 }}
       />
-      <CardContent>
+      <CardContent
+        sx={{ height: 300, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+      >
         {isError ? (
           <Box
             component={Icon}

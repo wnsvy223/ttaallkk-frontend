@@ -282,7 +282,7 @@ export default function BoardCommentItem({ comment, isRootComment }) {
                     <Typography sx={{ fontSize: 10 }}>{comment?.displayName}</Typography>
                   )}
                   <Dot />
-                  <Typography noWrap sx={{ fontSize: { xs: 10, md: 5 }, color: 'GrayText' }}>
+                  <Typography noWrap sx={{ fontSize: 10, color: 'GrayText' }}>
                     <Moment fromNow>{comment?.createdAt}</Moment>
                   </Typography>
                 </Stack>

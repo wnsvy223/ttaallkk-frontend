@@ -78,11 +78,13 @@ export default function Board({ title, category, color }) {
 
   /**
    * 키워드 상태 변경 함수
+   * 검색시 페이지는 첫페이지를 제공해야 하므로 페이지값은 1로 설정
    * @param {*} searchValue
    */
   const handleSearchPost = (searchValue) => {
     setKeyword(searchValue);
-    navigate(`/dashboard/community/${category?.categoryTag}?search=${searchValue}&page=${page}&sort=${sort}`);
+    setPage(1);
+    navigate(`/dashboard/community/${category?.categoryTag}?search=${searchValue}&page=${1}&sort=${sort}`);
   };
 
   /**
