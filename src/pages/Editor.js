@@ -28,10 +28,7 @@ import { request } from '../api/axios/axios';
 
 // components
 import Page from '../components/Page';
-import BoardEditor from '../components/_dashboard/board/BoardEditor';
-
-// utils
-import { convertImgMarkdownToHtml } from '../utils/markdownUtil';
+import QuillEditor, { getMarkdownWithAttributes } from '../components/_dashboard/board/QuillEditor';
 
 // ----------------------------------------------------------------------
 
@@ -68,10 +65,7 @@ export default function PostEditor() {
     },
     validationSchema: PostSchema,
     onSubmit: (postData, { setSubmitting }) => {
-      const editorInstance = editorRef.current?.getInstance();
-      const markdown = editorInstance?.getMarkdown();
-      const html = editorInstance?.getHTML();
-      const convertContent = convertImgMarkdownToHtml(markdown, html);
+      const convertContent = getMarkdownWithAttributes(editorRef.current.getEditor());
       const body = {
         writeUid: user.uid,
         categoryId: category,
@@ -164,7 +158,7 @@ export default function PostEditor() {
                   }}
                 />
                 <EditBlock>
-                  <BoardEditor editorRef={editorRef} height="600px" />
+                  <QuillEditor editorRef={editorRef} height="600px" />
                 </EditBlock>
                 <Box sx={{ display: 'flex', justifyContent: 'end', alignItems: 'end' }}>
                   <LoadingButton

@@ -19,23 +19,23 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import messageCircleFill from '@iconify/icons-eva/message-circle-fill';
 import { Icon } from '@iconify/react';
 
+// moment
 import moment from 'moment';
 import 'moment/locale/ko';
-import { numToKorean, FormatOptions } from 'num-to-korean';
 
-// TOAST UI Viewer
-import { Viewer } from '@toast-ui/react-editor';
+// num-to-korean
+import { numToKorean, FormatOptions } from 'num-to-korean';
 
 // toast
 import { toast } from 'react-toastify';
 
 // utils
 import decodeHtmlEntity from '../../../utils/decodeHtmlEntity';
-import { convertImgMarkdownToHtml } from '../../../utils/markdownUtil';
 
 // components
 import BoardPostLike from './BoardPostLike';
-import BoardEditor from './BoardEditor';
+import QuillEditor, { getMarkdownWithAttributes } from './QuillEditor';
+import MarkdownViewer from './MarkdownViewer';
 import AlertDialog from '../../common/AlertDialog';
 import LetterAvatarButton from '../../common/LetterAvatarButton';
 
@@ -147,10 +147,7 @@ export default function BoardContentCard() {
   // 게시글 수정 요청
   const requestUpdatePost = () => {
     setIsLoading(true);
-    const editorInstance = editorRef.current?.getInstance();
-    const markdown = editorInstance?.getMarkdown();
-    const html = editorInstance?.getHTML();
-    const convertContent = convertImgMarkdownToHtml(markdown, html);
+    const convertContent = getMarkdownWithAttributes(editorRef.current.getEditor());
     const body = {
       title: titleValue || postData.title,
       content: convertContent
@@ -302,7 +299,7 @@ export default function BoardContentCard() {
             />
           )}
           <CardContent sx={{ minHeight: 400, wordBreak: 'break-all' }}>
-            <Viewer initialValue={decodeHtmlEntity(postData.content)} />
+            <MarkdownViewer markdown={decodeHtmlEntity(postData.content)} />
           </CardContent>
           <CardActions sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
             <BoardPostLike postData={postData} />
@@ -345,7 +342,7 @@ export default function BoardContentCard() {
               style: { fontSize: '13px' }
             }}
           />
-          <BoardEditor
+          <QuillEditor
             editorRef={editorRef}
             initialValue={decodeHtmlEntity(postData.content)}
             height="600px"

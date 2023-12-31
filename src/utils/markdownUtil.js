@@ -1,5 +1,8 @@
 import { Content } from '../model/Content';
 
+const markdownRegex = /!\[[^\]]*\]\((.*?)\s*("(?:.*[^"])")?\s*\)/gm; // MarkDown 이미지 태그 정규표현식
+const htmlRegex = /<img[^>]*src="([^"]+)"[^>]*>/gm; // HTML 이미지 태그 정규표현식
+
 /**
  * 본문의 마크다운 이미지 태그를 HTML 이미지 태그로 치환하여 반환하는 함수
  * @param {*} markdown 마크다운 본문
@@ -8,9 +11,6 @@ import { Content } from '../model/Content';
  */
 const convertImgMarkdownToHtml = (markdown, html) => {
   const content = new Content(markdown); // Content DTO 생성
-
-  const markdownRegex = /!\[[^\]]*\]\((.*?)\s*("(?:.*[^"])")?\s*\)/gm; // MarkDown 이미지 태그 정규표현식
-  const htmlRegex = /<img[^>]*src="([^"]+)"[^>]*>/gm; // HTML 이미지 태그 정규표현식
   const markdownMatch = markdown.match(markdownRegex);
   const htmlMatch = html.match(htmlRegex);
   const contentMatch = content.getContent().match(htmlRegex);
@@ -34,4 +34,22 @@ const convertImgMarkdownToHtml = (markdown, html) => {
   return content.getContent();
 };
 
-export { convertImgMarkdownToHtml };
+/**
+ * 게시글 본문 데이터에 포함된 이미지 태그의 이미지 경로 추출
+ * @param {r} content
+ * @returns
+ */
+const extractImageFromContent = (content) => {
+  const regex = /!\[.*?\]\((.*?)\)/g; // 마크다운 이미지 경로 추출  정규표현
+  const imagePaths = [];
+  let match;
+
+  // eslint-disable-next-line no-cond-assign
+  while ((match = regex.exec(content)) !== null) {
+    imagePaths.push(match[1]);
+  }
+
+  return imagePaths;
+};
+
+export { convertImgMarkdownToHtml, extractImageFromContent };

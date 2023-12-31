@@ -46,7 +46,6 @@ export default function Board({ title, category, color }) {
   const [sort, setSort] = useState('createdAt');
   const navigate = useNavigate();
   const location = useLocation();
-  const query = queryString.parse(location.search); // 쿼리스트링을 JSON형태로 파싱해서 키값으로 접근가능
 
   // 게시글 목록 데이터 조회 API 호출 함수
   const fetchBoardData = (url) => {
@@ -68,28 +67,22 @@ export default function Board({ title, category, color }) {
   };
 
   /**
-   * 페이지 상태 변경 함수
-   * 키워드 상태 변수가 존재할경우(=검색기능 수행한 경우) 검색 + 페이징 api 요청 및 히스토리 적용
+   * 페이지 상태 변경 함수\
    * @param {*} event
    * @param {*} newPage
    */
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    if (keyword) {
-      navigate(`/dashboard/community/${category?.categoryTag}?search=${keyword}&page=${newPage}`);
-    } else {
-      navigate(`/dashboard/community/${category?.categoryTag}?page=${newPage}`);
-    }
+    navigate(`/dashboard/community/${category?.categoryTag}?search=${keyword}&page=${newPage}&sort=${sort}`);
   };
 
   /**
    * 키워드 상태 변경 함수
-   * 키워드값을 파라미터로 검색 api호출
    * @param {*} searchValue
    */
   const handleSearchPost = (searchValue) => {
     setKeyword(searchValue);
-    navigate(`/dashboard/community/${category?.categoryTag}?search=${searchValue}`);
+    navigate(`/dashboard/community/${category?.categoryTag}?search=${searchValue}&page=${page}&sort=${sort}`);
   };
 
   /**
@@ -98,38 +91,7 @@ export default function Board({ title, category, color }) {
    */
   const handleSortPost = (orderBy) => {
     setSort(orderBy);
-    if (keyword) {
-      navigate(`/dashboard/community/${category?.categoryTag}?search=${keyword}&sort=${orderBy}`);
-    } else {
-      navigate(`/dashboard/community/${category?.categoryTag}?sort=${orderBy}`);
-    }
-  };
-
-  // 게시판 페이징 히스토리 상태 관리 함수(페이징 쿼리스트링 유무에 따라 상태 변경)
-  const updatePageState = (page) => {
-    if (page) {
-      setPage(Number(page));
-    } else {
-      setPage(1);
-    }
-  };
-
-  // 게시글 검색 히스토리 상태 관리 함수(검색 쿼리스트링 유무에 따라 상태 변경)
-  const updateSearchState = (search) => {
-    if (search) {
-      setKeyword(search);
-    } else {
-      setKeyword('');
-    }
-  };
-
-  // 게시글 정렬 히스토리 상태관리 함수(정렬 쿼리스트링 유무에 따라 상태 변경)
-  const updateSortState = (sort) => {
-    if (sort) {
-      setSort(sort);
-    } else {
-      setSort('createdAt');
-    }
+    navigate(`/dashboard/community/${category?.categoryTag}?search=${keyword}&page=${page}&sort=${orderBy}`);
   };
 
   /**
@@ -137,25 +99,21 @@ export default function Board({ title, category, color }) {
    * 쿼리스트링으로 적용되어있는 state와 props 값들의 변화에 따라 호출할 api url변경
    */
   useEffect(() => {
+    const { page, search, sort } = queryString.parse(location.search); // 쿼리스트링에서 페이지, 검색, 정렬 키워드 추출
+    const pageNum = page ? Number(page) : 1;
+    setPage(pageNum);
+    const keyword = search || "";
+    setKeyword(keyword);
+    const orderBy = sort || 'createdAt';
+    setSort(orderBy);
+
     if (keyword) {
-      fetchBoardData(`/api/post/search?keyword=${keyword}&category=${category?.id}&page=${page - 1}&sort=${sort}`);
+      fetchBoardData(`/api/post/search?keyword=${keyword}&category=${category?.id}&page=${pageNum - 1}&sort=${orderBy}`);
     } else {
-      fetchBoardData(`/api/post?category=${category?.id}&page=${page - 1}&sort=${sort}`);
+      fetchBoardData(`/api/post?category=${category?.id}&page=${pageNum - 1}&sort=${orderBy}`);
     }
     return () => setIsLoading(false);
-  }, [category?.id, keyword, page, sort]);
-
-  useEffect(() => {
-    updatePageState(query?.page);
-  }, [query?.page]);
-
-  useEffect(() => {
-    updateSearchState(query?.search);
-  }, [query?.search]);
-
-  useEffect(() => {
-    updateSortState(query?.sort);
-  }, [query?.sort]);
+  }, [category?.id, location.search]);
 
   return (
     <Page title={`Board: ${title} | TTAALLKK`}>
