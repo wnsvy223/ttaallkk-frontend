@@ -66,6 +66,7 @@ export default function PostEditor() {
     validationSchema: PostSchema,
     onSubmit: (postData, { setSubmitting }) => {
       const convertContent = getMarkdownWithAttributes(editorRef.current.getEditor());
+      console.log(convertContent);
       const body = {
         writeUid: user.uid,
         categoryId: category,
