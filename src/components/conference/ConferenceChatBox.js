@@ -146,10 +146,10 @@ function SendMessageItem({ data }) {
         >
           {data?.text}
         </Typography>
-        {data?.file?.end !== true && (
+        {data?.file && data?.file?.end !== true && (
           <ProgressBar variant="determinate" value={0} data-file-uuid={data.file.uuid} />
         )}
-        {data?.file?.end === true && (
+        {data?.file && data?.file?.end === true && (
           <Stack alignItems="center" justifyContent="center">
             <FileMessageWrapper>
               {data?.file?.type.indexOf('image') !== -1 && (
@@ -217,10 +217,10 @@ function ReceiveMessageItem({ data }) {
           >
             {data?.text}
           </Typography>
-          {data?.file?.end !== true && (
-            <ProgressBar variant="determinate" value={0} data-file-uuid={data.file.uuid} />
+          {data?.file && data?.file?.end !== true && (
+            <ProgressBar variant="determinate" value={0} data-file-uuid={data?.file?.uuid} />
           )}
-          {data?.file?.end === true && (
+          {data?.file && data?.file?.end === true && (
             <Stack alignItems="center" justifyContent="center">
               <FileMessageWrapper>
                 {data?.file?.type.indexOf('image') !== -1 && (
