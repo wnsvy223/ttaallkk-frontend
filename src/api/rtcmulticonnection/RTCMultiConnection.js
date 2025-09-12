@@ -87,6 +87,7 @@ export const sendMultipleFile = (files) => {
     files.forEach((file) => {
       // 참가자 수 * 파일 수 만큼 데이터 채널 생성
       const channel = connection.peers[remoteUserId].createDataChannel(`Parallel`, {});
+      channel.binaryType = 'arraybuffer';
       channel.bufferedAmountLowThreshold = maxBufferedAmountLowThreshold;
       const uuid = (Math.random() * 100).toString().replace(/\./g, '');
 
