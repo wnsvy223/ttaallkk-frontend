@@ -119,8 +119,6 @@ SendMessageItem.propTypes = {
 };
 
 function SendMessageItem({ data }) {
-  const { file } = useContext(MessageContext);
-
   return (
     <Stack direction="row" justifyContent="right" spacing={1} sx={{ pt: 1, pb: 1 }}>
       <Stack direction="row" alignItems="flex-end">
@@ -148,13 +146,10 @@ function SendMessageItem({ data }) {
         >
           {data?.text}
         </Typography>
-        {data?.file && data?.file?.uuid === file?.uuid && data?.file?.end !== true && (
-          <ProgressBar
-            variant="determinate"
-            value={(file?.currentPosition * 100) / file?.maxChunks}
-          />
+        {data?.file?.end !== true && (
+          <ProgressBar variant="determinate" value={0} data-file-uuid={data.file.uuid} />
         )}
-        {data?.file && data?.file?.end === true && (
+        {data?.file?.end === true && (
           <Stack alignItems="center" justifyContent="center">
             <FileMessageWrapper>
               {data?.file?.type.indexOf('image') !== -1 && (
@@ -191,8 +186,6 @@ ReceiveMessageItem.propTypes = {
 };
 
 function ReceiveMessageItem({ data }) {
-  const { file } = useContext(MessageContext);
-
   return (
     <Stack direction="row" justifyContent="left" spacing={1} sx={{ pt: 1, pb: 1, maxWidth: '90%' }}>
       <LetterAvatar
@@ -224,13 +217,10 @@ function ReceiveMessageItem({ data }) {
           >
             {data?.text}
           </Typography>
-          {data?.file && data?.file?.uuid === file?.uuid && data?.file?.end !== true && (
-            <ProgressBar
-              variant="determinate"
-              value={(file?.currentPosition * 100) / file?.maxChunks}
-            />
+          {data?.file?.end !== true && (
+            <ProgressBar variant="determinate" value={0} data-file-uuid={data.file.uuid} />
           )}
-          {data?.file && data?.file?.end === true && (
+          {data?.file?.end === true && (
             <Stack alignItems="center" justifyContent="center">
               <FileMessageWrapper>
                 {data?.file?.type.indexOf('image') !== -1 && (

@@ -1,5 +1,5 @@
 import RTCMultiConnection from '../../lib/RTCMultiConnection'; // 기존 RTCMultiConnection 오픈 소스 코드 개선 및 커스터마이징(ES6 이전의 모듈이기 때문에 eslintignore파일에 추가하여 사용)
-import { defaultMaxParticipantsAllowed } from '../../utils/constant';
+import { defaultMaxParticipantsAllowed, maxBufferedAmountLowThreshold } from '../../utils/constant';
 
 const connection = new RTCMultiConnection();
 
@@ -81,6 +81,129 @@ connection.iceServers.push({
   username: 'webrtc@live.com',
   credential: 'muazkh'
 });
+
+export const sendMultipleFile = (files) => {
+  connection.getAllParticipants().forEach((remoteUserId) => {
+    files.forEach((file) => {
+      // 참가자 수 * 파일 수 만큼 데이터 채널 생성
+      const channel = connection.peers[remoteUserId].createDataChannel(`Parallel`, {});
+      channel.bufferedAmountLowThreshold = maxBufferedAmountLowThreshold;
+      const uuid = (Math.random() * 100).toString().replace(/\./g, '');
+
+      channel.addEventListener('open', () => {
+        const reader = new FileReader();
+        const maxChunks = Math.ceil(file.size / connection.chunkSize);
+        const lastModifiedDate = (file.lastModifiedDate || new Date()).toString();
+        const data = {
+          offset: 0,
+          currentPosition: 0,
+          channel,
+          file,
+          connection,
+          reader,
+          uuid,
+          remoteUserId,
+          maxChunks,
+          lastModifiedDate
+        };
+
+        reader.onload = (e) => {
+          const buffer = e.target.result;
+          if (channel.bufferedAmount > channel.bufferedAmountLowThreshold) {
+            // 버퍼가 너무 차면 대기. 4MB 이상 쌓이면 멈춤
+            channel.onbufferedamountlow = () => {
+              // 버퍼에 여유가 생기면 다시 전송
+              channel.onbufferedamountlow = null;
+              sendChunk(buffer, data);
+            };
+          } else {
+            if (data.offset === 0) {
+              sendFileStart(channel, uuid, remoteUserId, file, maxChunks, lastModifiedDate);
+            }
+            sendChunk(buffer, data);
+          }
+        };
+        readNextChunk(file, data.offset, connection.chunkSize, reader);
+      });
+    });
+  });
+};
+
+// 파일 버퍼에서 다음 청크데이터 읽어들임
+const readNextChunk = (file, offset, chunkSize, reader) => {
+  const slice = file.slice(offset, offset + chunkSize);
+  reader.readAsArrayBuffer(slice);
+};
+
+// 파일 청크 데이터 전송
+const sendChunk = (buffer, data) => {
+  const { channel, file, connection, reader, uuid, remoteUserId, maxChunks, lastModifiedDate } =
+    data;
+
+  data.offset += buffer.byteLength;
+  data.currentPosition += 1;
+
+  const chunk = {
+    buffer: data.offset,
+    currentPosition: data.currentPosition,
+    extra: connection.extra,
+    lastModifiedDate,
+    maxChunks,
+    name: file.name,
+    remoteUserId,
+    size: file.size,
+    type: file.type,
+    userid: connection.userid,
+    uuid
+  };
+
+  channel.send(JSON.stringify(chunk));
+  connection.onFileProgress(chunk);
+
+  if (data.offset < file.size) {
+    readNextChunk(file, data.offset, connection.chunkSize, reader);
+  } else {
+    sendFileEnd(channel, uuid, remoteUserId, maxChunks, lastModifiedDate, file);
+  }
+};
+
+// 파일 전송 시작 데이터 송신
+const sendFileStart = (channel, uuid, remoteUserId, file, maxChunks, lastModifiedDate) => {
+  const chunk = {
+    currentPosition: 0,
+    extra: connection.extra,
+    lastModifiedDate,
+    maxChunks,
+    name: file.name,
+    remoteUserId,
+    size: file.size,
+    start: true,
+    type: file.type,
+    userid: connection.userid,
+    uuid
+  };
+  channel.send(JSON.stringify(chunk));
+  connection.onFileStart(chunk);
+};
+
+// 파일 전송 완료 데이터 송신
+const sendFileEnd = (channel, uuid, remoteUserId, maxChunks, lastModifiedDate, file) => {
+  const chunk = {
+    end: true,
+    name: file.name,
+    url: URL.createObjectURL(file),
+    extra: connection.extra,
+    userid: connection.userid,
+    uuid,
+    size: file.size,
+    maxChunks,
+    lastModifiedDate,
+    type: file.type,
+    remoteUserId
+  };
+  channel.send(JSON.stringify(chunk));
+  connection.onFileEnd(chunk);
+};
 
 // 음성대화 연결 해제
 export const handleDisconnectRTC = () => {

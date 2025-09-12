@@ -151,6 +151,7 @@ export default function ConferenceForm({ isPublicRoom }) {
         if (isPublicRoom) {
           // 공개방 체크박스 체크 후, 참가하려는 방이 비밀번호가 설정된 방일 경우 비밀번호 입력요구 경고창 호출.
           if (extra._room.isPasswordProtected) {
+            handleDisconnectConference();
             toast.error(`${roomid} 방은 비밀번호가 설정된 방입니다. 비밀번호를 입력하세요.`, {
               position: toast.POSITION.TOP_CENTER
             });
@@ -209,6 +210,7 @@ export default function ConferenceForm({ isPublicRoom }) {
           });
         }
       } else {
+        handleDisconnectConference();
         toast.error('생성된 방이 없습니다.', {
           position: toast.POSITION.TOP_CENTER
         });

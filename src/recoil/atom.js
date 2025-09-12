@@ -1,5 +1,8 @@
 import { atom } from 'recoil';
 
+// utils
+import { initialMessage } from '../utils/constant';
+
 export const commentState = atom({
   key: 'commentState',
   default: {}
@@ -38,4 +41,9 @@ export const chatActiveState = atom({
 export const notificationCountState = atom({
   key: 'notificationCountState',
   default: 0
+});
+
+export const messageListState = atom({
+  key: 'messageListState',
+  default: [initialMessage]
 });

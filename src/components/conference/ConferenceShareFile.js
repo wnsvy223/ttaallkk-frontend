@@ -7,13 +7,8 @@ import { Icon } from '@iconify/react';
 import SharFileIcon from '@iconify/icons-fluent/image-multiple-16-regular';
 
 // api
-import connection from '../../api/rtcmulticonnection/RTCMultiConnection';
-import {
-  fileData,
-  sendFilesToMultipleUser,
-  getUserListByFileCount,
-  getFileListByUserCount
-} from '../../api/rtcmulticonnection/FileShare';
+import connection, { sendMultipleFile } from '../../api/rtcmulticonnection/RTCMultiConnection';
+
 // ----------------------------------------------------------------------
 
 export default function ConferenceShareFile() {
@@ -34,10 +29,7 @@ export default function ConferenceShareFile() {
       connection.send(files[0]);
     } else {
       // 다수 파일 전송
-      fileData.index = connection.getAllParticipants().length * files.length - 1; // 참가자수 * 파일갯수 = 전체 보내야할 파일 갯수
-      fileData.files = getFileListByUserCount(files);
-      fileData.users = getUserListByFileCount(files);
-      sendFilesToMultipleUser();
+      sendMultipleFile(Array.from(files));
     }
     inputFile.current.value = null; // input 값 리셋
   };

@@ -2816,19 +2816,36 @@ var RTCMultiConnection = function(roomid, forceOptions) {
             isOfferer = false;
         }
 
-        this.createDataChannel = function() {
-            var channel = peer.createDataChannel('sctp', {});
-            setChannelEvents(channel);
+        this.createDataChannel = function(channelName) {
+            var channel;
+            if(channelName === 'sctp' || !channelName){
+                channel = peer.createDataChannel('sctp', {});
+                setChannelEvents(channel)
+            }else{
+                channel = peer.createDataChannel(channelName, {});
+                setChannelEventsParallel(channel);
+            }
+            return channel;
         };
 
         if (connection.session.data === true && !renegotiatingPeer) {
             if (!isOfferer) {
                 peer.ondatachannel = function(event) {
                     var channel = event.channel;
-                    setChannelEvents(channel);
+                    if (channel.label === 'Parallel'){
+                        setChannelEventsParallel(channel);
+                    } else {
+                        setChannelEvents(channel);
+                    }
                 };
             } else {
                 this.createDataChannel();
+                peer.ondatachannel = function(event) {
+                    var channel = event.channel;
+                    if (channel.label === 'Parallel') {
+                        setChannelEventsParallel(channel);
+                    }
+                };
             }
         }
 
@@ -2856,6 +2873,36 @@ var RTCMultiConnection = function(roomid, forceOptions) {
             this.addRemoteSdp(config.remoteSdp, function() {
                 createOfferOrAnswer('createAnswer');
             });
+        }
+
+        // 병렬 처리용 데이터채널 수신 이벤트
+        function setChannelEventsParallel(channel) {
+            // force ArrayBuffer in Firefox; which uses "Blob" by default.
+            channel.binaryType = 'arraybuffer';
+
+            channel.onmessage = function(event) {
+                const file = JSON.parse(event.data);
+                if (file.start) {
+                    connection.onFileStart(file);
+                } else if (file.end) {
+                    connection.onFileEnd(file);
+                    channel.close(); // 병렬 데이터 채널은 전송이 끝난 후 채널 닫음
+                } else {
+                    connection.onFileProgress(file);
+                }
+            };
+
+            channel.onopen = function() {
+                console.log('병렬 데이터 채널 오픈 : ', self.userid);
+            };
+
+            channel.onclose = function(event) {
+                console.log('병렬 데이터 채널 클로즈');
+            };
+
+            channel.onerror = function(error) {
+                console.log('병렬 데이터 채널 오류:', error);
+            };
         }
 
         function setChannelEvents(channel) {

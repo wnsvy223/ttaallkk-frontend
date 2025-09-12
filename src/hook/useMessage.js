@@ -4,20 +4,16 @@ import { useState } from 'react';
 import moment from 'moment';
 
 // recoil
-import { useRecoilValue } from 'recoil';
-import { chatActiveState } from '../recoil/atom';
+import { useRecoilValue, useRecoilState } from 'recoil';
+import { chatActiveState, messageListState } from '../recoil/atom';
 
 // api
 import connection from '../api/rtcmulticonnection/RTCMultiConnection';
-import { reSendFileByCheckIndex } from '../api/rtcmulticonnection/FileShare';
-
-// utils
-import { initialMessage } from '../utils/constant';
 
 const useMessage = () => {
   const [speak, setSpeak] = useState({});
-  const [messageList, setMessageList] = useState([initialMessage]);
-  const [file, setFile] = useState({});
+  const [messageList, setMessageList] = useRecoilState(messageListState);
+  const [progressFileUuid, setProgressFileUuid] = useState('');
   const [unReadMessageCount, setUnReadMessageCount] = useState(0);
   const isChatActive = useRecoilValue(chatActiveState);
 
@@ -44,19 +40,6 @@ const useMessage = () => {
     setSpeak({});
   };
 
-  // 참가자 입장 시 메시지 상태값 업데이트
-  connection.onopen = (event) => {
-    const systemMessage = {
-      type: 'systemMessage',
-      text: `${event?.extra?.displayName}님이 방에 참가했습니다.`,
-      displayName: connection?.extra?.displayName,
-      profileUrl: connection?.extra?.profileUrl,
-      timeStamp: moment()
-    };
-    resetDividerPosition();
-    setMessageList((message) => [...message, systemMessage]);
-  };
-
   // 참가자 퇴장 시 메시지 상태값 업데이트
   connection.onleave = (event) => {
     const systemMessage = {
@@ -73,40 +56,51 @@ const useMessage = () => {
   // 파일 공유 시작 이벤트
   // : 파일 데이터를 메시지 데이터 배열에 추가
   connection.onFileStart = (file) => {
-    const extra = connection.getExtraData(file.userid);
-    const fileMessage = {
-      type: 'textMessage',
-      text:
-        connection?.userid === file.userid
-          ? `파일 전송중...`
-          : `${extra?.displayName}님이 파일 전송중...`,
-      userid: file.userid,
-      displayName: extra?.displayName,
-      profileUrl: extra?.profileUrl,
-      file
-    };
-    resetDividerPosition();
-    setMessageList((message) => message?.filter((data) => data?.file?.uuid !== file?.uuid));
-    setMessageList((message) => [...message, fileMessage]);
+    OnFileShareStart(file);
   };
 
   // 파일 공유 진행상황 이벤트
   // : 업로드 진행상황 업데이트
   connection.onFileProgress = (file) => {
-    setFile(file);
+    OnFileShareProgress(file);
   };
 
   // 파일 공유 완료 이벤트
   // : onFileStart에서 추가한 배열 요소중 uuid값이 같은(동일한 파일)요소 제거 후 새로운 데이터를 메시지 데이터 배열에 추가
   // : 파일 공유 완료이벤트 수신 시 채팅창 활성화 X + 보낸 사람이 아닐 경우에 읽지않은 메시지 카운트 값 증가
   connection.onFileEnd = (file) => {
+    OnFileShareEnd(file);
+  };
+
+  // 파일 공유 시작 메시지 세팅
+  function OnFileShareStart(file) {
+    const extra = connection.getExtraData(file.userid);
+    const fileMessage = {
+      type: 'textMessage',
+      text:
+        connection?.userid === file.userid
+          ? `파일 전송중...`
+          : `${extra.displayName}님이 파일 전송중...`,
+      userid: file.userid,
+      displayName: extra.displayName,
+      profileUrl: extra.profileUrl,
+      file
+    };
+    resetDividerPosition();
+    setMessageList((message) => message?.filter((data) => data?.file?.uuid !== file?.uuid));
+    setMessageList((message) => [...message, fileMessage]);
+    // console.log('파일 공유 시작:', file.uuid);
+  }
+
+  // 파일 공유 종료 메시지 세팅
+  function OnFileShareEnd(file) {
     const extra = connection.getExtraData(file.userid);
     const fileMessage = {
       type: 'textMessage',
       text: file?.name,
-      userid: file.extra.userid,
-      displayName: extra?.displayName,
-      profileUrl: extra?.profileUrl,
+      userid: file.userid,
+      displayName: extra.displayName,
+      profileUrl: extra.profileUrl,
       file
     };
     resetDividerPosition();
@@ -115,8 +109,27 @@ const useMessage = () => {
     if (!isChatActive && file.extra.userid !== connection.userid) {
       setUnReadMessageCount((count) => count + 1);
     }
-    reSendFileByCheckIndex();
-  };
+    // 파일 공유 종료 시 현재 진행 중인 파일 UUID 초기화
+    if (progressFileUuid === file.uuid) {
+      setProgressFileUuid('');
+    }
+    // console.log('파일 공유 종료:', file.uuid);
+  }
+
+  // 파일 공유 진행 상태 세팅
+  function OnFileShareProgress(file) {
+    const progress = Math.round((file.currentPosition * 100) / file.maxChunks);
+    // React 상태 업데이트 없이 DOM 직접 조작
+    const progressBars = document.querySelectorAll(`[data-file-uuid="${file.uuid}"]`);
+    progressBars.forEach((progressBar) => {
+      // LinearProgress의 내부 bar 요소 찾아서 직접 width 조정
+      const barElement = progressBar.querySelector('.MuiLinearProgress-bar');
+      if (barElement) {
+        barElement.style.transform = `translateX(-${100 - progress}%)`;
+      }
+    });
+    // console.log('파일 공유 진행중:', progress, '%');
+  }
 
   // 디바이더 아이템 찾기
   function findDividerItem(list) {
@@ -152,8 +165,7 @@ const useMessage = () => {
     setUnReadMessageCount,
     findDividerItem,
     setDividerPosition,
-    resetDividerPosition,
-    file
+    resetDividerPosition
   };
 };
 
