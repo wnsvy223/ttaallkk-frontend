@@ -2875,21 +2875,125 @@ var RTCMultiConnection = function(roomid, forceOptions) {
             });
         }
 
+        var receivedFiles = new Map(); // 파일별 수신 데이터 저장용 Map 변수
+
+        // 병렬 데이터 채널 수신 데이터 처리
+        function onParallelDataChannelMessage(channel, event) {
+            try {
+                var message = JSON.parse(event.data);
+
+                if (message.messageType === 'fileInfo') { // 전송 파일 정보 수신
+                    var fileInfo = message.data;
+                    receivedFiles.set(
+                        fileInfo.name, 
+                        {
+                            info: fileInfo,
+                            chunks: new Array(Math.ceil(fileInfo.size / connection.chunkSize)).fill(null),
+                            currentPosition: 0,
+                            maxChunks: Math.ceil(fileInfo.size / connection.chunkSize)
+                        }
+                    );
+                    var startData = {
+                        currentPosition: 0,
+                        extra: connection.getExtraData(fileInfo.userid),
+                        lastModifiedDate: fileInfo.lastModifiedDate,
+                        maxChunks: Math.ceil(fileInfo.size / connection.chunkSize),
+                        name: fileInfo.name,
+                        remoteUserId: fileInfo.remoteUserId,
+                        size: fileInfo.size,
+                        start: true,
+                        type: fileInfo.type,
+                        userid: fileInfo.userid,
+                        uuid: fileInfo.uuid
+                    };
+                    connection.onFileStart(startData);
+                } else if (message.messageType === 'fileChunk') { // 전송 파일 청크 데이터 수신
+                    var fileName     = message.fileName,
+                        chunkIndex   = message.chunkIndex,
+                        uuid         = message.uuid,
+                        remoteUserId = message.remoteUserId,
+                        userid       = message.userid,
+                        lastModifiedDate = message.lastModifiedDate,
+                        maxChunks = message.maxChunks,
+                        size = message.size,
+                        type = message.type;
+                    var chunkData = new Uint8Array(message.data);
+
+                    if (receivedFiles.has(fileName)) {
+                        var fileData = receivedFiles.get(fileName);
+                        fileData.chunks[chunkIndex] = chunkData;
+                        fileData.currentPosition++;
+                        var progress = (fileData.currentPosition / fileData.maxChunks) * 100;
+                        var progressData = {
+                            buffer: chunkData.buffer,
+                            currentPosition: fileData.currentPosition,
+                            extra: connection.getExtraData(userid),
+                            lastModifiedDate: lastModifiedDate,
+                            maxChunks: maxChunks,
+                            name: fileName,
+                            remoteUserId: remoteUserId,
+                            size: size,
+                            type: type,
+                            userid: userid,
+                            uuid: uuid
+                        }
+                        connection.onFileProgress(progressData);
+
+                        // 모든 청크를 받았으면 파일 조립
+                        if (fileData.currentPosition === fileData.maxChunks) {
+                            reBuildFile(fileName, fileData, uuid, remoteUserId, userid, lastModifiedDate, maxChunks);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.log('오류', error);
+            }
+        }
+
+        // 수신한 청크 데이터를 이용해 파일 조립
+        function reBuildFile(fileName, fileData, uuid, remoteUserId, userid, lastModifiedDate, maxChunks) {
+            try {
+                // ArrayBuffer 조립
+                var totalSize = fileData.info.size;
+                var assembledBuffer = new ArrayBuffer(totalSize);
+                var assembledArray = new Uint8Array(assembledBuffer);
+
+                var offset = 0;
+                for (const chunk of fileData.chunks) {
+                    if (chunk) {
+                        assembledArray.set(chunk, offset);
+                        offset += chunk.length;
+                    }
+                }
+
+                // Blob 생성
+                var blob = new Blob([assembledBuffer], { type: fileData.info.type });
+                blob.end = true;
+                blob.extra = connection.getExtraData(userid);
+                blob.lastModifiedDate = lastModifiedDate;
+                blob.maxChunks = maxChunks;
+                blob.name = fileName;
+                blob.remoteUserId = remoteUserId;
+                blob.url = URL.createObjectURL(blob);
+                blob.userid = userid;
+                blob.uuid = uuid;
+               
+                connection.onFileEnd(blob); // onFileEnd 이벤트 호출
+                receivedFiles.delete(fileName); // 메모리 정리
+                channel.close(); // 데이터 채널 종료
+            } catch (error) {
+                console.log(`파일 조립 오류 (${fileName}): ${error}`);
+                channel.close();
+            }
+        }
+
         // 병렬 처리용 데이터채널 수신 이벤트
         function setChannelEventsParallel(channel) {
             // force ArrayBuffer in Firefox; which uses "Blob" by default.
             channel.binaryType = 'arraybuffer';
 
             channel.onmessage = function(event) {
-                const file = JSON.parse(event.data);
-                if (file.start) {
-                    connection.onFileStart(file);
-                } else if (file.end) {
-                    connection.onFileEnd(file);
-                    channel.close(); // 병렬 데이터 채널은 전송이 끝난 후 채널 닫음
-                } else {
-                    connection.onFileProgress(file);
-                }
+                onParallelDataChannelMessage(channel, event);
             };
 
             channel.onopen = function() {
