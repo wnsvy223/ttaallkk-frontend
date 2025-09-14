@@ -2941,7 +2941,7 @@ var RTCMultiConnection = function(roomid, forceOptions) {
 
                         // 모든 청크를 받았으면 파일 조립
                         if (fileData.currentPosition === fileData.maxChunks) {
-                            reBuildFile(fileName, fileData, uuid, remoteUserId, userid, lastModifiedDate, maxChunks);
+                            reBuildFile(channel, fileName, fileData, uuid, remoteUserId, userid, lastModifiedDate, maxChunks);
                         }
                     }
                 }
@@ -2951,7 +2951,7 @@ var RTCMultiConnection = function(roomid, forceOptions) {
         }
 
         // 수신한 청크 데이터를 이용해 파일 조립
-        function reBuildFile(fileName, fileData, uuid, remoteUserId, userid, lastModifiedDate, maxChunks) {
+        function reBuildFile(channel, fileName, fileData, uuid, remoteUserId, userid, lastModifiedDate, maxChunks) {
             try {
                 // ArrayBuffer 조립
                 var totalSize = fileData.info.size;
