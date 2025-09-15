@@ -85,35 +85,37 @@ connection.iceServers.push({
 export const sendMultipleFile = (files) => {
   connection.getAllParticipants().forEach((remoteUserId) => {
     files.forEach((file) => {
-      // 참가자 수 * 파일 수 만큼 데이터 채널 생성
       const channel = connection.peers[remoteUserId].createDataChannel(`Parallel`, {});
-      const uuid = (Math.random() * 100).toString().replace(/\./g, '');
+      channel.bufferedAmountLowThreshold = chunkSize; // bufferedamountlow 임계값 설정 (16KB)
       channel.addEventListener('open', async () => {
-        const fileInfo = {
-          name: file.name,
-          size: file.size,
-          type: file.type,
-          lastModifiedDate: file.lastModified,
-          uuid,
-          userid: connection.userid,
-          remoteUserId
-        };
-        channel.send(
-          JSON.stringify({
-            messageType: 'fileInfo',
-            data: fileInfo
-          })
-        );
-        const arrayBuffer = await file.arrayBuffer();
-        const maxChunks = Math.ceil(arrayBuffer.byteLength / connection.chunkSize);
-        for (let i = 0; i < maxChunks; i += 1) {
-          const start = i * connection.chunkSize;
-          const end = Math.min(start + connection.chunkSize, arrayBuffer.byteLength);
-          const chunk = arrayBuffer.slice(start, end);
-
-          // 청크 전송
-          channel.send(
+        const uuid = (Math.random() * 100).toString().replace(/\./g, '');
+        try {
+          // 파일 메타데이터 전송
+          await sendAsync(
+            channel,
             JSON.stringify({
+              messageType: 'fileInfo',
+              data: {
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                lastModifiedDate: file.lastModified,
+                uuid,
+                userid: connection.userid,
+                remoteUserId
+              }
+            })
+          );
+
+          // 파일 청크 데이터 전송
+          const arrayBuffer = await file.arrayBuffer();
+          const maxChunks = Math.ceil(arrayBuffer.byteLength / chunkSize);
+          for (let i = 0; i < maxChunks; i += 1) {
+            const start = i * chunkSize;
+            const end = Math.min(start + chunkSize, arrayBuffer.byteLength);
+            const chunk = arrayBuffer.slice(start, end);
+
+            const chunkData = JSON.stringify({
               messageType: 'fileChunk',
               fileName: file.name,
               chunkIndex: i,
@@ -125,13 +127,44 @@ export const sendMultipleFile = (files) => {
               size: file.size,
               type: file.type,
               lastModifiedDate: file.lastModified
-            })
-          );
+            });
+
+            // eslint-disable-next-line no-await-in-loop
+            await sendAsync(channel, chunkData); // 루프 내부에서 순차전송
+          }
+        } catch (error) {
+          console.error('File transfer error:', error);
         }
       });
     });
   });
 };
+
+const sendAsync = (channel, data) =>
+  new Promise((resolve, reject) => {
+    try {
+      if (channel.bufferedAmount < channel.bufferedAmountLowThreshold) {
+        channel.send(data);
+        resolve();
+      } else {
+        // 버퍼가 가득 찬 경우 bufferedamountlow 이벤트 대기
+        const onBufferLow = () => {
+          channel.removeEventListener('bufferedamountlow', onBufferLow);
+          try {
+            channel.send(data);
+            resolve();
+          } catch (error) {
+            console.error('Send error:', error);
+            reject(error);
+          }
+        };
+        channel.addEventListener('bufferedamountlow', onBufferLow);
+      }
+    } catch (error) {
+      console.error('Send error:', error);
+      reject(error);
+    }
+  });
 
 // 음성대화 연결 해제
 export const handleDisconnectRTC = () => {

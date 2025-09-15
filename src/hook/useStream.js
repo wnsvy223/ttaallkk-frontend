@@ -16,6 +16,7 @@ import initHark from '../api/rtcmulticonnection/Hark';
 const useStream = () => {
   const setMessageList = useSetRecoilState(messageListState);
   const [participants, setParticipants] = useState([]);
+  const [isConversation, setIsConversation] = useState(false);
 
   connection.onstream = (event) => {
     setParticipants((p) => [...p, event]);
@@ -26,6 +27,7 @@ const useStream = () => {
       connection
     });
     setConnectionMessage(event);
+    setIsConversation(true);
   };
 
   function setConnectionMessage(event) {
@@ -43,9 +45,10 @@ const useStream = () => {
 
   connection.onstreamended = (event) => {
     setParticipants((p) => p.filter((user) => user.userid !== event.userid));
+    setIsConversation(false);
   };
 
-  return { participants };
+  return { participants, isConversation };
 };
 
 export default useStream;
