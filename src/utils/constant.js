@@ -18,4 +18,4 @@ export const initialMessage = {
 RTCMultiConnection의 경우 60KB까지 제공 - 내부적으로는 16KB로 다시 나누어 보내는 방식.
 병렬 데이터 채널 전송을 위해 16KB로만 사용하도록 설정
 */
-export const chunkSize = 8192; // 8KB
+export const chunkSize = 16384; // 16kb

@@ -107,31 +107,48 @@ export const sendMultipleFile = (files) => {
             })
           );
 
-          // 파일 청크 데이터 전송
-          const arrayBuffer = await file.arrayBuffer();
-          const maxChunks = Math.ceil(arrayBuffer.byteLength / chunkSize);
-          for (let i = 0; i < maxChunks; i += 1) {
-            const start = i * chunkSize;
-            const end = Math.min(start + chunkSize, arrayBuffer.byteLength);
-            const chunk = arrayBuffer.slice(start, end);
+          const reader = new FileReader(); // FileReader 준비
+          let chunkIndex = 0;
+          const maxChunks = Math.ceil(file.size / chunkSize);
 
-            const chunkData = JSON.stringify({
-              messageType: 'fileChunk',
-              fileName: file.name,
-              chunkIndex: i,
-              maxChunks,
-              data: Array.from(new Uint8Array(chunk)),
-              uuid,
-              remoteUserId,
-              userid: connection.userid,
-              size: file.size,
-              type: file.type,
-              lastModifiedDate: file.lastModified
-            });
+          const sendNextChunk = (start) => {
+            const end = Math.min(start + chunkSize, file.size);
+            const blob = file.slice(start, end);
 
-            // eslint-disable-next-line no-await-in-loop
-            await sendAsync(channel, chunkData); // 루프 내부에서 순차전송
-          }
+            reader.onload = async (e) => {
+              const chunk = e.target.result; // ArrayBuffer
+              const chunkData = JSON.stringify({
+                messageType: 'fileChunk',
+                fileName: file.name,
+                chunkIndex,
+                maxChunks,
+                data: Array.from(new Uint8Array(chunk)),
+                uuid,
+                remoteUserId,
+                userid: connection.userid,
+                size: file.size,
+                type: file.type,
+                lastModifiedDate: file.lastModified
+              });
+
+              try {
+                // eslint-disable-next-line no-await-in-loop
+                await sendAsync(channel, chunkData);
+
+                chunkIndex += 1;
+                if (end < file.size) {
+                  sendNextChunk(end); // 다음 청크 전송
+                }
+              } catch (error) {
+                console.error('Send error while sending chunk:', error);
+              }
+            };
+
+            reader.readAsArrayBuffer(blob);
+          };
+
+          // 첫 번째 청크 전송 시작
+          sendNextChunk(0);
         } catch (error) {
           console.error('File transfer error:', error);
         }
