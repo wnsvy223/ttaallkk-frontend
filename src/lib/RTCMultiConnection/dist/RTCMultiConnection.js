@@ -2895,7 +2895,12 @@ var RTCMultiConnection = function(roomid, forceOptions) {
                     );
                     var startData = {
                         currentPosition: 0,
-                        extra: connection.getExtraData(fileInfo.userid),
+                        extra: {
+                            chunkSize: connection.chunkSize,
+                            userid: fileInfo.userid,
+                            displayName: connection.extra.displayName,
+                            profileUrl: connection.extra.profileUrl
+                        },
                         lastModifiedDate: fileInfo.lastModifiedDate,
                         maxChunks: Math.ceil(fileInfo.size / connection.chunkSize),
                         name: fileInfo.name,
@@ -2927,7 +2932,12 @@ var RTCMultiConnection = function(roomid, forceOptions) {
                         var progressData = {
                             buffer: chunkData.buffer,
                             currentPosition: fileData.currentPosition,
-                            extra: connection.getExtraData(userid),
+                            extra: {
+                                chunkSize: connection.chunkSize,
+                                userid: userid,
+                                displayName: connection.extra.displayName,
+                                profileUrl: connection.extra.profileUrl
+                            },
                             lastModifiedDate: lastModifiedDate,
                             maxChunks: maxChunks,
                             name: fileName,
@@ -2969,7 +2979,12 @@ var RTCMultiConnection = function(roomid, forceOptions) {
                 // Blob 생성
                 var blob = new Blob([assembledBuffer], { type: fileData.info.type });
                 blob.end = true;
-                blob.extra = connection.getExtraData(userid);
+                blob.extra = {
+                    chunkSize: connection.chunkSize,
+                    userid: userid,
+                    displayName: connection.extra.displayName,
+                    profileUrl: connection.extra.profileUrl
+                };
                 blob.lastModifiedDate = lastModifiedDate;
                 blob.maxChunks = maxChunks;
                 blob.name = fileName;

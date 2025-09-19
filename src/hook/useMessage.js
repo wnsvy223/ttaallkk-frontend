@@ -87,9 +87,11 @@ const useMessage = () => {
       file
     };
     resetDividerPosition();
-    setMessageList((message) => message?.filter((data) => data?.file?.uuid !== file?.uuid));
-    setMessageList((message) => [...message, fileMessage]);
-    // console.log('파일 공유 시작:', file.uuid);
+    setMessageList((prev) => {
+      const filtered = prev.filter((data) => data?.file?.uuid !== file?.uuid);
+      return [...filtered, fileMessage];
+    });
+    // console.log('파일 공유 시작:', file);
   }
 
   // 파일 공유 종료 메시지 세팅
@@ -104,8 +106,10 @@ const useMessage = () => {
       file
     };
     resetDividerPosition();
-    setMessageList((message) => message?.filter((data) => data?.file?.uuid !== file?.uuid));
-    setMessageList((message) => [...message, fileMessage]);
+    setMessageList((prev) => {
+      const filtered = prev.filter((data) => data?.file?.uuid !== file?.uuid);
+      return [...filtered, fileMessage];
+    });
     if (!isChatActive && file.extra.userid !== connection.userid) {
       setUnReadMessageCount((count) => count + 1);
     }
@@ -133,27 +137,40 @@ const useMessage = () => {
 
   // 디바이더 아이템 찾기
   function findDividerItem(list) {
-    const item = list?.splice(
-      list?.findIndex((data) => data?.isDividerMessage === true),
-      1
-    );
-    return item;
+    const dividerIndex = list?.findIndex((data) => data?.isDividerMessage === true);
+    if (dividerIndex === -1) {
+      return { item: null, filteredList: list };
+    }
+    const item = list[dividerIndex];
+    const filteredList = list.filter((_, index) => index !== dividerIndex);
+    return { item, filteredList };
   }
 
   // 디바이더 아이템 위치 변경(읽지않은 메시지 목록중 첫 요소 해당하는 인덱스)
   function setDividerPosition() {
-    const messages = [...messageList];
-    const item = findDividerItem(messages);
-    messages?.splice(messages?.length - unReadMessageCount, 0, item[0]);
-    setMessageList(messages);
+    setMessageList((prevMessageList) => {
+      const { item, filteredList } = findDividerItem(prevMessageList);
+      if (!item) {
+        return prevMessageList;
+      }
+      const insertPosition = Math.max(0, filteredList.length - unReadMessageCount);
+      return [
+        ...filteredList.slice(0, insertPosition),
+        item,
+        ...filteredList.slice(insertPosition)
+      ];
+    });
   }
 
   // 디바이더 아이템 위치 0번 인덱스 위치로 리셋
   function resetDividerPosition() {
-    const messages = [...messageList];
-    const item = findDividerItem(messages);
-    messages?.splice(0, 0, item[0]);
-    setMessageList(messages);
+    setMessageList((prevMessageList) => {
+      const { item, filteredList } = findDividerItem(prevMessageList);
+      if (!item) {
+        return prevMessageList;
+      }
+      return [item, ...filteredList];
+    });
   }
 
   return {

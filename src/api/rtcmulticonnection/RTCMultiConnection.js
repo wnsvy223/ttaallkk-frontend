@@ -82,6 +82,7 @@ connection.iceServers.push({
   credential: 'muazkh'
 });
 
+// 병렬 데이터 채널 파일 전송 함수
 export const sendMultipleFile = (files) => {
   connection.getAllParticipants().forEach((remoteUserId) => {
     files.forEach((file) => {
@@ -89,6 +90,7 @@ export const sendMultipleFile = (files) => {
       channel.bufferedAmountLowThreshold = chunkSize; // bufferedamountlow 임계값 설정 (16KB)
       channel.addEventListener('open', async () => {
         const uuid = (Math.random() * 100).toString().replace(/\./g, '');
+        const lastModifiedDate = new Date(file.lastModified).toString() || new Date().toString();
         try {
           // 파일 메타데이터 전송
           await sendAsync(
@@ -99,13 +101,32 @@ export const sendMultipleFile = (files) => {
                 name: file.name,
                 size: file.size,
                 type: file.type,
-                lastModifiedDate: file.lastModified,
+                lastModifiedDate,
                 uuid,
                 userid: connection.userid,
                 remoteUserId
               }
             })
           );
+          // 로컬 피어용 전송 시작 이벤트 호출
+          connection.onFileStart({
+            currentPosition: 0,
+            extra: {
+              chunkSize: connection.chunkSize,
+              userid: connection.userid,
+              displayName: connection.extra.displayName,
+              profileUrl: connection.extra.profileUrl
+            },
+            lastModifiedDate,
+            maxChunks: Math.ceil(file.size / connection.chunkSize),
+            name: file.name,
+            remoteUserId,
+            size: file.size,
+            start: true,
+            type: file.type,
+            userid: connection.userid,
+            uuid
+          });
 
           const reader = new FileReader(); // FileReader 준비
           let chunkIndex = 0;
@@ -128,16 +149,46 @@ export const sendMultipleFile = (files) => {
                 userid: connection.userid,
                 size: file.size,
                 type: file.type,
-                lastModifiedDate: file.lastModified
+                lastModifiedDate
               });
 
               try {
                 // eslint-disable-next-line no-await-in-loop
                 await sendAsync(channel, chunkData);
 
+                // 로컬 피어용 전송 진행 이벤트 호출
+                connection.onFileProgress({
+                  uuid,
+                  lastModifiedDate,
+                  type: file.type,
+                  userid: connection.userid,
+                  remoteUserId,
+                  maxChunks,
+                  currentPosition: chunkIndex
+                });
+
                 chunkIndex += 1;
                 if (end < file.size) {
                   sendNextChunk(end); // 다음 청크 전송
+                } else {
+                  // 로컬 피어용 전송 종료 이벤트 호출
+                  connection.onFileEnd({
+                    end: true,
+                    extra: {
+                      chunkSize: connection.chunkSize,
+                      userid: connection.userid,
+                      displayName: connection.extra.displayName,
+                      profileUrl: connection.extra.profileUrl
+                    },
+                    lastModifiedDate,
+                    maxChunks,
+                    name: file.name,
+                    remoteUserId,
+                    url: URL.createObjectURL(file),
+                    userid: connection.userid,
+                    uuid,
+                    type: file.type
+                  });
                 }
               } catch (error) {
                 console.error('Send error while sending chunk:', error);
@@ -157,6 +208,7 @@ export const sendMultipleFile = (files) => {
   });
 };
 
+// 데이터 채널 전송 관리 함수
 const sendAsync = (channel, data) =>
   new Promise((resolve, reject) => {
     try {

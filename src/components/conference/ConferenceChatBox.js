@@ -119,6 +119,8 @@ SendMessageItem.propTypes = {
 };
 
 function SendMessageItem({ data }) {
+  const { fileList } = useContext(MessageContext);
+
   return (
     <Stack direction="row" justifyContent="right" spacing={1} sx={{ pt: 1, pb: 1 }}>
       <Stack direction="row" alignItems="flex-end">
@@ -149,6 +151,19 @@ function SendMessageItem({ data }) {
         {data?.file && data?.file?.end !== true && (
           <ProgressBar variant="determinate" value={0} data-file-uuid={data.file.uuid} />
         )}
+        {data?.fileUuids?.length > 0 && (
+          <Stack>
+            {data?.fileUuids?.map((f, index) => (
+              <ProgressBar
+                key={f.uuid || index}
+                variant="determinate"
+                value={0}
+                data-file-uuid={f.uuid}
+              />
+            ))}
+          </Stack>
+        )}
+
         {data?.file && data?.file?.end === true && (
           <Stack alignItems="center" justifyContent="center">
             <FileMessageWrapper>
