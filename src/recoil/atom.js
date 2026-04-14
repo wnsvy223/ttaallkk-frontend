@@ -33,6 +33,16 @@ export const muteState = atom({
   default: false
 });
 
+export const chatOnlyModeState = atom({
+  key: 'chatOnlyModeState',
+  default: false
+});
+
+export const participantListState = atom({
+  key: 'participantListState',
+  default: []
+});
+
 export const chatActiveState = atom({
   key: 'chatActiveState',
   default: false

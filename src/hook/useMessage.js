@@ -4,8 +4,8 @@ import { useState } from 'react';
 import moment from 'moment';
 
 // recoil
-import { useRecoilValue, useRecoilState } from 'recoil';
-import { chatActiveState, messageListState } from '../recoil/atom';
+import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
+import { chatActiveState, messageListState, participantListState } from '../recoil/atom';
 
 // api
 import connection from '../api/rtcmulticonnection/RTCMultiConnection';
@@ -16,6 +16,7 @@ const useMessage = () => {
   const [progressFileUuid, setProgressFileUuid] = useState('');
   const [unReadMessageCount, setUnReadMessageCount] = useState(0);
   const isChatActive = useRecoilValue(chatActiveState);
+  const setParticipants = useSetRecoilState(participantListState);
 
   // webrtc data channel을 통해 넘어오는 이벤트 메시지 수신(대화상태값 및 텍스트 메시지)
   connection.onmessage = (event) => {
@@ -40,7 +41,7 @@ const useMessage = () => {
     setSpeak({});
   };
 
-  // 참가자 퇴장 시 메시지 상태값 업데이트
+  // 참가자 퇴장 시 메시지 상태값 업데이트 + 참가자 목록에서 제거
   connection.onleave = (event) => {
     const systemMessage = {
       type: 'systemMessage',
@@ -51,6 +52,7 @@ const useMessage = () => {
     };
     resetDividerPosition();
     setMessageList((message) => [...message, systemMessage]);
+    setParticipants((prev) => prev.filter((p) => p.userid !== event.userid));
   };
 
   // 파일 공유 시작 이벤트

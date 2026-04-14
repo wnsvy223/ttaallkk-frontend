@@ -12,7 +12,13 @@ import MessageCircleFill from '@iconify/icons-eva/message-circle-fill';
 
 // recoil
 import { useSetRecoilState, useRecoilState } from 'recoil';
-import { conferenceState, muteState, chatActiveState } from '../../recoil/atom';
+import {
+  conferenceState,
+  muteState,
+  chatActiveState,
+  chatOnlyModeState,
+  participantListState
+} from '../../recoil/atom';
 
 // context
 import { MessageContext } from '../../api/context/MessageContext';
@@ -46,11 +52,14 @@ export default function ConferenceControlMenu() {
   const setConference = useSetRecoilState(conferenceState); // 음성대화진행 유무 상태값
   const [isMute, setIsMute] = useRecoilState(muteState); // 음성대화 음소거 유무 상태값
   const [isChatActive, setIsChatActive] = useRecoilState(chatActiveState); // 대화방 채팅 UI 액티브 유무 상태값
+  const [isChatOnly, setChatOnlyMode] = useRecoilState(chatOnlyModeState); // 마이크 없음 → 채팅 전용 모드 여부
+  const setParticipants = useSetRecoilState(participantListState);
   const { unReadMessageCount, setUnReadMessageCount, setMessageList, setDividerPosition } =
     useContext(MessageContext);
 
   // 음소거 활성화 or 비활성화
   const handleLocalMute = () => {
+    if (isChatOnly) return; // 채팅 전용 모드에서는 음소거 토글 무의미
     setIsMute((isMute) => !isMute);
   };
 
@@ -73,6 +82,8 @@ export default function ConferenceControlMenu() {
     setConference(false);
     setIsMute(false);
     setIsChatActive(false);
+    setChatOnlyMode(false);
+    setParticipants([]);
     setUnReadMessageCount(0);
     setMessageList([initialMessage]);
   };
@@ -88,6 +99,7 @@ export default function ConferenceControlMenu() {
    * extra 값은 대화방 초기 진입 시 mute or unmute상태 구분을 위해 설정
    */
   useEffect(() => {
+    if (isChatOnly) return; // 로컬 스트림이 없으므로 mute 토글 스킵
     if (isMute) {
       connection.attachStreams.forEach((stream) => {
         stream.mute('audio');
@@ -101,7 +113,7 @@ export default function ConferenceControlMenu() {
         connection.updateExtraData();
       });
     }
-  }, [isMute]);
+  }, [isMute, isChatOnly]);
 
   return (
     <Box sx={{ backgroundColor: '#dedee4', borderRadius: 2 }}>
@@ -111,12 +123,13 @@ export default function ConferenceControlMenu() {
             aria-label="mute"
             color="ultramarine"
             onClick={handleLocalMute}
-            sx={{ backgroundColor: isMute && '#F2F2F2' }}
+            disabled={isChatOnly}
+            sx={{ backgroundColor: (isMute || isChatOnly) && '#F2F2F2' }}
           >
             <Box
               component={Icon}
-              icon={isMute ? micOffOutline : micOutline}
-              sx={{ width: 23, heigh: 23 }}
+              icon={isChatOnly || isMute ? micOffOutline : micOutline}
+              sx={{ width: 23, heigh: 23, opacity: isChatOnly ? 0.4 : 1 }}
             />
           </IconButton>
           <IconButton aria-label="mute" color="ultramarine" onClick={handleInviteUser}>

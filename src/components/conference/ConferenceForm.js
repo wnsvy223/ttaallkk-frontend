@@ -15,12 +15,21 @@ import { useSelector } from 'react-redux';
 
 // recoil
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import { conferenceState, conferenceLoadingState } from '../../recoil/atom';
+import {
+  conferenceState,
+  conferenceLoadingState,
+  chatOnlyModeState,
+  participantListState
+} from '../../recoil/atom';
 
 // api
 import connection, {
   handleDisconnectRTC,
-  handleMaxParticipantsAllowed
+  handleMaxParticipantsAllowed,
+  detectAudioInput,
+  applyChatOnlyMode,
+  applyDefaultMediaMode,
+  setLastOpenOrJoin
 } from '../../api/rtcmulticonnection/RTCMultiConnection';
 
 // utils
@@ -54,6 +63,36 @@ export default function ConferenceForm({ isPublicRoom }) {
 
   const setConference = useSetRecoilState(conferenceState); // 음성대화진행 유무 상태값
   const [isConferenceLoading, setConferenceLoading] = useRecoilState(conferenceLoadingState); // 음성대화 로딩 상태값
+  const setChatOnlyMode = useSetRecoilState(chatOnlyModeState); // 마이크 없음 → 채팅 전용 모드 상태값
+  const setParticipants = useSetRecoilState(participantListState); // 참가자 목록 상태값
+
+  // 로컬 사용자를 참가자 목록에 수동으로 등록 (채팅 전용 모드 시 onstream이 발생하지 않음)
+  const addSelfToParticipants = () => {
+    const selfEvent = {
+      userid: connection.userid,
+      extra: { ...(connection.extra || {}) }, // 동결 방지 얕은 복사
+      type: 'local'
+    };
+    setParticipants((prev) => {
+      if (prev.some((p) => p.userid === selfEvent.userid)) return prev;
+      return [...prev, selfEvent];
+    });
+  };
+
+  // open/join 직전에 마이크 장치 유무를 확인하여 세션을 조정
+  const prepareMediaSession = async () => {
+    const hasAudio = await detectAudioInput();
+    if (hasAudio) {
+      applyDefaultMediaMode();
+      setChatOnlyMode(false);
+    } else {
+      applyChatOnlyMode();
+      setChatOnlyMode(true);
+      toast.info('마이크 장치를 찾을 수 없어 채팅 전용 모드로 참가합니다.', {
+        position: toast.POSITION.TOP_CENTER
+      });
+    }
+  };
 
   const handleOpenRoom = () => {
     if (roomname === '') {
@@ -75,12 +114,13 @@ export default function ConferenceForm({ isPublicRoom }) {
   };
 
   // 방 생성
-  const openConference = () => {
+  const openConference = async () => {
     connection.extra = {
       displayName: user ? user?.displayName : username, // 대화방 닉네임
       profileUrl: user ? user?.profileUrl : '', // 프로필 이미지
       uid: user ? user?.uid : connection?.userid
     };
+    await prepareMediaSession();
     connection.checkPresence(roomname, (isRoomExist, roomid) => {
       if (isRoomExist === true) {
         toast.error(`${roomid} 방이 이미 존재합니다.`, {
@@ -91,30 +131,50 @@ export default function ConferenceForm({ isPublicRoom }) {
         // 공개방
         connection.password = null; // 공개방은 비밀번호값 설정X
         connection.publicRoomIdentifier = publicRoomIdentifier; // 공개방을 구분하기 위한 세팅값
-        connection.open(roomname, (isRoomOpened, roomName, error) => {
-          if (isRoomOpened && !error) {
-            console.log(`방 생성 완료(공개방) : ${roomName}`);
-            setConference(true);
-            setConferenceLoading(false);
-          } else {
-            console.log(`방 생성 오류(공개방) : ${error}`);
-            handleDisconnectConference();
-          }
+        const openPublic = () =>
+          connection.open(roomname, (isRoomOpened, roomName, error) => {
+            if (isRoomOpened && !error) {
+              console.log(`방 생성 완료(공개방) : ${roomName}`);
+              setConference(true);
+              setConferenceLoading(false);
+              addSelfToParticipants();
+            } else {
+              console.log(`방 생성 오류(공개방) : ${error}`);
+              handleDisconnectConference();
+            }
+          });
+        setLastOpenOrJoin(() => {
+          setChatOnlyMode(true);
+          toast.info('마이크 사용이 불가하여 채팅 전용 모드로 재연결합니다.', {
+            position: toast.POSITION.TOP_CENTER
+          });
+          openPublic();
         });
+        openPublic();
       } else {
         // 비공개방
         connection.password = password; // 비밀번호
         connection.publicRoomIdentifier = roomname; // 비공개 방은 방 구분자를 방 제목으로 하여 조회 하도록 함.
-        connection.open(roomname, (isRoomOpened, roomName, error) => {
-          if (isRoomOpened && !error) {
-            console.log(`방 생성 완료(비공개방) : ${roomName}`);
-            setConference(true);
-            setConferenceLoading(false);
-          } else {
-            console.log(`방 생성 오류(비공개방) : ${error}`);
-            handleDisconnectConference();
-          }
+        const openPrivate = () =>
+          connection.open(roomname, (isRoomOpened, roomName, error) => {
+            if (isRoomOpened && !error) {
+              console.log(`방 생성 완료(비공개방) : ${roomName}`);
+              setConference(true);
+              setConferenceLoading(false);
+              addSelfToParticipants();
+            } else {
+              console.log(`방 생성 오류(비공개방) : ${error}`);
+              handleDisconnectConference();
+            }
+          });
+        setLastOpenOrJoin(() => {
+          setChatOnlyMode(true);
+          toast.info('마이크 사용이 불가하여 채팅 전용 모드로 재연결합니다.', {
+            position: toast.POSITION.TOP_CENTER
+          });
+          openPrivate();
         });
+        openPrivate();
       }
     });
   };
@@ -139,12 +199,13 @@ export default function ConferenceForm({ isPublicRoom }) {
   };
 
   // 방 참가
-  const joinConference = () => {
+  const joinConference = async () => {
     connection.extra = {
       displayName: user ? user?.displayName : username, // 대화방 닉네임
       profileUrl: user ? user?.profileUrl : '', // 프로필 이미지
       uid: user ? user?.uid : connection?.userid
     };
+    await prepareMediaSession();
     connection.checkPresence(roomname, (isRoomExist, roomid, extra) => {
       if (isRoomExist === true) {
         // 공개방
@@ -156,10 +217,51 @@ export default function ConferenceForm({ isPublicRoom }) {
               position: toast.POSITION.TOP_CENTER
             });
           } else {
-            connection.join(roomname, (isRoomJoined, roomName, error) => {
+            const joinPublic = () =>
+              connection.join(roomname, (isRoomJoined, roomName, error) => {
+                if (error) {
+                  handleDisconnectConference();
+                  switch (error) {
+                    case 'Room not available':
+                      toast.error('사용할 수 없는 방입니다.', {
+                        position: toast.POSITION.TOP_CENTER
+                      });
+                      break;
+                    case 'Room full':
+                      toast.error('인원수가 초과되었습니다.', {
+                        position: toast.POSITION.TOP_CENTER
+                      });
+                      break;
+                    default:
+                  }
+                } else {
+                  console.log('참가 성공(공개방)');
+                  setConference(true);
+                  setConferenceLoading(false);
+                  addSelfToParticipants();
+                }
+              });
+            setLastOpenOrJoin(() => {
+              setChatOnlyMode(true);
+              toast.info('마이크 사용이 불가하여 채팅 전용 모드로 재연결합니다.', {
+                position: toast.POSITION.TOP_CENTER
+              });
+              joinPublic();
+            });
+            joinPublic();
+          }
+        } else {
+          connection.password = password;
+          const joinPrivate = () =>
+            connection.join(roomname, (isJoinedRoom, roomName, error) => {
               if (error) {
                 handleDisconnectConference();
                 switch (error) {
+                  case 'Invalid password':
+                    toast.error('비밀번호가 틀립니다.', {
+                      position: toast.POSITION.TOP_CENTER
+                    });
+                    break;
                   case 'Room not available':
                     toast.error('사용할 수 없는 방입니다.', {
                       position: toast.POSITION.TOP_CENTER
@@ -173,41 +275,20 @@ export default function ConferenceForm({ isPublicRoom }) {
                   default:
                 }
               } else {
-                console.log('참가 성공(공개방)');
+                console.log('참가성공(비공개방)');
                 setConference(true);
                 setConferenceLoading(false);
+                addSelfToParticipants();
               }
             });
-          }
-        } else {
-          connection.password = password;
-          connection.join(roomname, (isJoinedRoom, roomName, error) => {
-            if (error) {
-              handleDisconnectConference();
-              switch (error) {
-                case 'Invalid password':
-                  toast.error('비밀번호가 틀립니다.', {
-                    position: toast.POSITION.TOP_CENTER
-                  });
-                  break;
-                case 'Room not available':
-                  toast.error('사용할 수 없는 방입니다.', {
-                    position: toast.POSITION.TOP_CENTER
-                  });
-                  break;
-                case 'Room full':
-                  toast.error('인원수가 초과되었습니다.', {
-                    position: toast.POSITION.TOP_CENTER
-                  });
-                  break;
-                default:
-              }
-            } else {
-              console.log('참가성공(비공개방)');
-              setConference(true);
-              setConferenceLoading(false);
-            }
+          setLastOpenOrJoin(() => {
+            setChatOnlyMode(true);
+            toast.info('마이크 사용이 불가하여 채팅 전용 모드로 재연결합니다.', {
+              position: toast.POSITION.TOP_CENTER
+            });
+            joinPrivate();
           });
+          joinPrivate();
         }
       } else {
         handleDisconnectConference();
@@ -238,6 +319,8 @@ export default function ConferenceForm({ isPublicRoom }) {
     handleDisconnectRTC();
     setConference(false);
     setConferenceLoading(false);
+    setChatOnlyMode(false);
+    setParticipants([]);
   };
 
   // 인원수 제한 슬라이더 제어함수

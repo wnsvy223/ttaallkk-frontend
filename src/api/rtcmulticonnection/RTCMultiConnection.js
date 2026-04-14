@@ -30,6 +30,59 @@ connection.mediaConstraints = {
   }
 };
 
+// 오디오 입력 장치(마이크/헤드셋) 존재 여부 사전 감지
+export const detectAudioInput = async () => {
+  try {
+    if (!navigator?.mediaDevices?.enumerateDevices) return false;
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    return devices.some((device) => device.kind === 'audioinput');
+  } catch (error) {
+    console.warn('audio input detection failed:', error);
+    return false;
+  }
+};
+
+// 채팅 전용 모드(마이크 캡처 비활성, 원격 오디오 수신은 유지)
+export const applyChatOnlyMode = () => {
+  connection.session = { video: false, audio: false, data: true };
+  connection.mediaConstraints = { video: false, audio: false };
+};
+
+// 기본 모드(오디오 + 데이터)로 복구
+export const applyDefaultMediaMode = () => {
+  connection.session = { video: false, audio: true, data: true };
+  connection.mediaConstraints = { video: false, audio: { echoCancellation: true } };
+};
+
+// 현재 채팅 전용 모드 여부
+export const isChatOnlyMode = () => connection.session?.audio === false;
+
+// onMediaError 폴백용 마지막 open/join 재시도 함수
+let lastOpenOrJoin = null;
+export const setLastOpenOrJoin = (fn) => {
+  lastOpenOrJoin = fn;
+};
+
+// getUserMedia 실패 시 자동으로 채팅 전용 모드로 재시도
+connection.onMediaError = (error) => {
+  console.warn(`onMediaError: ${error?.name} - ${error?.message}`);
+  const recoverable = [
+    'NotFoundError',
+    'DevicesNotFoundError',
+    'NotReadableError',
+    'TrackStartError',
+    'NotAllowedError',
+    'PermissionDeniedError',
+    'OverconstrainedError'
+  ];
+  if (recoverable.includes(error?.name) && !isChatOnlyMode()) {
+    applyChatOnlyMode();
+    if (typeof lastOpenOrJoin === 'function') {
+      lastOpenOrJoin();
+    }
+  }
+};
+
 connection.bandwidth = {
   audio: 50, // 50 kbps
   video: 256, // 256 kbps
