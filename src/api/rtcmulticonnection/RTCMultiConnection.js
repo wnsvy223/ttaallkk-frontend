@@ -111,35 +111,29 @@ connection.sdpConstraints = {
 // set ice server (ignore default STUN+TURN servers)
 connection.iceServers = [];
 
-// stun server
+// STUN 서버 (Google 공용 + 자체 coturn의 STUN 기능)
 connection.iceServers.push({
   urls: [
     'stun:stun.l.google.com:19302',
     'stun:stun.l.google.com:19302?transport=udp',
     'stun:stun1.l.google.com:19302',
     'stun:stun2.l.google.com:19302',
-    'stun:stun.relay.metered.ca:80'
+    'stun:193.123.251.182:3478'
   ]
 });
 
-// turn server (Metered openrelay - 공개 무료, 별도 호스팅 불필요)
+// 자체 coturn TURN 서버 (Oracle Cloud Always Free)
 connection.iceServers.push({
-  urls: 'turn:openrelay.metered.ca:80',
-  username: 'openrelayproject',
-  credential: 'openrelayproject'
+  urls: 'turn:193.123.251.182:3478?transport=udp',
+  username: 'ttaallkk',
+  credential: 'Dlsvygud223@#'
 });
 
 connection.iceServers.push({
-  urls: 'turn:openrelay.metered.ca:443',
-  username: 'openrelayproject',
-  credential: 'openrelayproject'
-});
-
-connection.iceServers.push({
-  // TCP 443(HTTPS 포트) — 엄격한 방화벽/기업망 환경 폴백
-  urls: 'turn:openrelay.metered.ca:443?transport=tcp',
-  username: 'openrelayproject',
-  credential: 'openrelayproject'
+  // TCP 폴백 (UDP가 차단된 네트워크/기업망 대응)
+  urls: 'turn:193.123.251.182:3478?transport=tcp',
+  username: 'ttaallkk',
+  credential: 'Dlsvygud223@#'
 });
 
 // LTE 등 모바일 망의 짧은 소켓 blip으로 peer가 조기 파괴되어 재협상 루프가
