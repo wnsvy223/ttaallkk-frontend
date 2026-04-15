@@ -116,23 +116,29 @@ connection.iceServers.push({
     'stun:stun.l.google.com:19302',
     'stun:stun.l.google.com:19302?transport=udp',
     'stun:stun1.l.google.com:19302',
-    'stun:stun2.l.google.com:19302'
+    'stun:stun2.l.google.com:19302',
+    'stun:stun.relay.metered.ca:80'
   ]
 });
 
-// turn server
+// turn server (Metered openrelay - 공개 무료, 별도 호스팅 불필요)
 connection.iceServers.push({
-  // own viagenie turn server
-  urls: 'turn:numb.viagenie.ca',
-  username: 'wnsvy223@naver.com',
-  credential: 'dlsvygud223@'
+  urls: 'turn:openrelay.metered.ca:80',
+  username: 'openrelayproject',
+  credential: 'openrelayproject'
 });
 
 connection.iceServers.push({
-  // muazkh viagenie turn server
-  urls: 'turn:numb.viagenie.ca',
-  username: 'webrtc@live.com',
-  credential: 'muazkh'
+  urls: 'turn:openrelay.metered.ca:443',
+  username: 'openrelayproject',
+  credential: 'openrelayproject'
+});
+
+connection.iceServers.push({
+  // TCP 443(HTTPS 포트) — 엄격한 방화벽/기업망 환경 폴백
+  urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+  username: 'openrelayproject',
+  credential: 'openrelayproject'
 });
 
 // 병렬 데이터 채널 파일 전송 함수
