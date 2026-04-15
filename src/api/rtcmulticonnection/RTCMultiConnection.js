@@ -1,6 +1,25 @@
 import RTCMultiConnection from '../../lib/RTCMultiConnection'; // 기존 RTCMultiConnection 오픈 소스 코드 개선 및 커스터마이징(ES6 이전의 모듈이기 때문에 eslintignore파일에 추가하여 사용)
 import { defaultMaxParticipantsAllowed, chunkSize } from '../../utils/constant';
 
+// [DEBUG] Chrome의 RTCPeerConnection 생성 시 실제 전달된 config 로깅 + iceTransportPolicy 강제 적용
+// LTE에서 relay가 적용 안 되는 원인 진단용. 확정되면 제거 예정.
+if (typeof window !== 'undefined' && window.RTCPeerConnection) {
+  const _OriginalRTCPC = window.RTCPeerConnection;
+  const WrappedRTCPC = function WrappedRTCPeerConnection(config, constraints) {
+    console.log('[DEBUG RTCPC] input config:', JSON.stringify(config));
+    const forced = {
+      ...(config || {}),
+      iceTransportPolicy: 'relay'
+    };
+    console.log('[DEBUG RTCPC] forced config:', JSON.stringify(forced));
+    const pc = new _OriginalRTCPC(forced, constraints);
+    console.log('[DEBUG RTCPC] getConfiguration():', JSON.stringify(pc.getConfiguration()));
+    return pc;
+  };
+  WrappedRTCPC.prototype = _OriginalRTCPC.prototype;
+  window.RTCPeerConnection = WrappedRTCPC;
+}
+
 const connection = new RTCMultiConnection();
 
 console.log(`브라우저 :${connection.DetectRTC.browser.name}`);
