@@ -101,8 +101,9 @@ connection.sdpConstraints = {
   mandatory: {
     OfferToReceiveAudio: true,
     OfferToReceiveVideo: true,
-    VoiceActivityDetection: true,
-    IceRestart: true
+    VoiceActivityDetection: true
+    // IceRestart는 mandatory에 두면 재협상마다 ICE 전체를 재시작해 LTE 등
+    // 불안정 망에서 연결 플래핑을 유발하므로 제거
   },
   optional: []
 };
@@ -139,6 +140,47 @@ connection.iceServers.push({
   urls: 'turn:openrelay.metered.ca:443?transport=tcp',
   username: 'openrelayproject',
   credential: 'openrelayproject'
+});
+
+// LTE 등 모바일 망의 짧은 소켓 blip으로 peer가 조기 파괴되어 재협상 루프가
+// 발생하는 문제를 방지하기 위해 deletePeer를 유예 적용(15초 grace).
+// 유예 중 동일 userid가 재접속(user-connected)하면 삭제를 취소한다.
+const PEER_DELETE_GRACE_MS = 15000;
+const pendingPeerDeletions = new Map();
+const originalDeletePeer = connection.deletePeer.bind(connection);
+
+connection.deletePeer = (remoteUserId) => {
+  if (!remoteUserId) return;
+  if (pendingPeerDeletions.has(remoteUserId)) return; // 이미 예약됨
+  const timer = setTimeout(() => {
+    pendingPeerDeletions.delete(remoteUserId);
+    originalDeletePeer(remoteUserId);
+  }, PEER_DELETE_GRACE_MS);
+  pendingPeerDeletions.set(remoteUserId, timer);
+  console.log(`[peer grace] ${remoteUserId} 삭제 ${PEER_DELETE_GRACE_MS}ms 유예`);
+};
+
+// 참가자가 명시적으로 leave를 호출하는 경우 즉시 삭제(유예 우회)
+export const forceDeletePeer = (remoteUserId) => {
+  const timer = pendingPeerDeletions.get(remoteUserId);
+  if (timer) {
+    clearTimeout(timer);
+    pendingPeerDeletions.delete(remoteUserId);
+  }
+  originalDeletePeer(remoteUserId);
+};
+
+// 소켓이 준비되면 user-connected에서 예약된 삭제 취소
+connection.getSocket?.((socket) => {
+  if (!socket || !socket.on) return;
+  socket.on('user-connected', (remoteUserId) => {
+    const timer = pendingPeerDeletions.get(remoteUserId);
+    if (timer) {
+      clearTimeout(timer);
+      pendingPeerDeletions.delete(remoteUserId);
+      console.log(`[peer grace] ${remoteUserId} 재접속 감지 - 삭제 취소`);
+    }
+  });
 });
 
 // 병렬 데이터 채널 파일 전송 함수
