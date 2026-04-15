@@ -1,26 +1,8 @@
+// 반드시 RTCMultiConnection import보다 먼저 실행되어야 함
+// (라이브러리가 window.RTCPeerConnection을 로컬 변수로 캡처하기 때문)
+import './rtcPeerConnectionPatch';
 import RTCMultiConnection from '../../lib/RTCMultiConnection'; // 기존 RTCMultiConnection 오픈 소스 코드 개선 및 커스터마이징(ES6 이전의 모듈이기 때문에 eslintignore파일에 추가하여 사용)
 import { defaultMaxParticipantsAllowed, chunkSize } from '../../utils/constant';
-
-// RTCMultiConnection 라이브러리가 config에 null을 넣으면 최신 Chrome이 InvalidAccessError로
-// 예외를 던져 결국 빈 config로 peer가 생성된다(그러면 TURN도 STUN도 설정되지 않음).
-// 생성자 호출 직전에 null 값을 제거해 이 문제를 회피한다.
-if (typeof window !== 'undefined' && window.RTCPeerConnection) {
-  const _OriginalRTCPC = window.RTCPeerConnection;
-  const stripNulls = (obj) => {
-    if (!obj) return obj;
-    const out = {};
-    Object.keys(obj).forEach((k) => {
-      if (obj[k] !== null) out[k] = obj[k];
-    });
-    return out;
-  };
-  const WrappedRTCPC = function WrappedRTCPeerConnection(config, constraints) {
-    const cleaned = stripNulls(config);
-    return new _OriginalRTCPC(cleaned, constraints);
-  };
-  WrappedRTCPC.prototype = _OriginalRTCPC.prototype;
-  window.RTCPeerConnection = WrappedRTCPC;
-}
 
 const connection = new RTCMultiConnection();
 
