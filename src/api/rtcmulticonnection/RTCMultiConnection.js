@@ -108,6 +108,11 @@ connection.sdpConstraints = {
   optional: []
 };
 
+// 통신사 방화벽에서 UDP TURN이 차단되는 환경 대응:
+// 모든 피어가 TURN 릴레이를 강제 사용하도록 설정한다. 직접 P2P 시도를 생략하고
+// ICE 후보를 relay 타입만 생성해 LTE 등 CGNAT/Symmetric NAT에서도 확실하게 연결된다.
+connection.iceTransportPolicy = 'relay';
+
 // set ice server (ignore default STUN+TURN servers)
 connection.iceServers = [];
 
@@ -123,15 +128,15 @@ connection.iceServers.push({
 });
 
 // 자체 coturn TURN 서버 (Oracle Cloud Always Free)
+// LTE 등 통신사 환경에서 UDP 3478은 차단되는 경우가 많아 TCP를 우선 배치
 connection.iceServers.push({
-  urls: 'turn:193.123.251.182:3478?transport=udp',
+  urls: 'turn:193.123.251.182:3478?transport=tcp',
   username: 'ttaallkk',
   credential: 'Dlsvygud223@#'
 });
 
 connection.iceServers.push({
-  // TCP 폴백 (UDP가 차단된 네트워크/기업망 대응)
-  urls: 'turn:193.123.251.182:3478?transport=tcp',
+  urls: 'turn:193.123.251.182:3478?transport=udp',
   username: 'ttaallkk',
   credential: 'Dlsvygud223@#'
 });
